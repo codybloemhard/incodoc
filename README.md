@@ -10,16 +10,20 @@ I want something like but with the ability to function like a static web page.
 
 features:
 
-navigation
-  links lists of lists of links
 metadata
   key pairs
+navigation
+  links lists of lists of links
+headings/containers
 text
+links (point in text, heading, local file, web url, email, ...)
+  link type hint: img, vid, pdf
 emphasis (italic, bold)
-quotes generalization?
-groups (paragraphs)
 lists
   ordered, unordered, checked
+quotes generalization?
+paragraphs (parts of parts)
+single lines?
 emoji
   user supplies the images
 code generalization?
@@ -27,10 +31,7 @@ code generalization?
   executeable hint
   could be opened in editor
   could be assigned a renderer by the user (eg. bat)
-headings/containers
-links (point in text, heading, local file, web url, email, ...)
-  link type hint: img, vid, pdf
-background text
+background text: bg-text in meta
   titles for links
   alt for images
   etc
@@ -39,7 +40,7 @@ tags
   links can link to tags
   citation can cite a tag
 tables
-
+graphs
 
 anti features:
 
@@ -67,9 +68,9 @@ nav{
 part{
     head{0, 'very important'},
     'One must see this image.',
-    link{'very important image', "image.png"},
+    link{'very important image', "image.png", meta{('bg-text', 'Extremely important image.')}},
     'Also this one.',
-    link{'another important image', "website.com/image.jpg"},
+    link{'another important image', "website.com/image", meta{('type-hint', 'image')}},
     'For further questions see ',
     link{'questions', "#questions"},
     '.',
@@ -111,7 +112,75 @@ part{
         item{'1'},
         item{'0'},
         item{'2'},
-    }
+    },
+    part{
+        'This is a paragraph.',
+        'I will cite something',
+        cite{'@test-citation'},
+    },
+    part{
+        'This is yet another paragraph, with an emoji: ',
+        emoji{"laughing", tag{"@test-citation"}},
+    },
+    part{
+        'This is will not compile:',
+        code{
+            meta{("language", "rust")},
+            '
+                let mut x = 0;
+                let y = &mut x;
+                let z = &mut x;
+                *y = 1;
+            ',
+        },
+        '
+        Your viewer may try to run it, only if it wants to.
+        This is a piece of code that suggest to be ran and its result inserted into this document.
+        Only if you want to.
+        ',
+        code{
+            meta{
+                ("language", "typst-formula"),
+                ("ex-hint", "suggested"),
+            },
+            '
+                x -> y
+            ',
+        },
+        'Truth table for X AND Y',
+        data{
+            meta{
+                ("type-hint", "table"),
+                ("ex-hint", "suggested"),
+            },
+            [
+                [
+                    ['T', F],
+                    ['T', F],
+                ],
+                [
+                    ['T', 'F'],
+                    ['F', 'F'],
+                ],
+            ],
+        },
+        'This is a graph of my happiness:',
+        data{
+            meta{
+                ("type-hint", "line-graph"),
+                ("ex-hint", "suggested"),
+            },
+            [
+                [
+                    'year',
+                    'happiness',
+                ],
+                [
+                    (0, 100), (1, 90.5), (2, 72.3), (3, 45.9), (4, 17.6), (5, 0.3),
+                ],
+            ],
+        },
+    },
 }
 part{
     meta{("type", "footer")},
