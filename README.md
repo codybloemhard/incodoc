@@ -44,6 +44,8 @@ graphs
 
 anti features:
 
+colours
+fonts
 line breaks
 horizontal rules
 
