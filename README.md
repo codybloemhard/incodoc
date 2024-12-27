@@ -70,9 +70,9 @@ nav{
 part{
     head{0, 'very important'},
     'One must see this image.',
-    link{'very important image', "image.png", meta{('bg-text', 'Extremely important image.')}},
+    link{'very important image', "image.png", meta{("bg-text", 'Extremely important image.')}},
     'Also this one.',
-    link{'another important image', "website.com/image", meta{('type-hint', 'image')}},
+    link{'another important image', "website.com/image", meta{("type-hint", 'image')}},
     'For further questions see ',
     link{'questions', "#questions"},
     '.',

@@ -1,1 +1,19 @@
-top = _{ SOI ~ EOI }
+top = _{ SOI ~ (top_structs ~ ",")* ~ top_structs? ~ EOI }
+top_structs = _{ meta }
+
+meta = { "meta" ~ "{" ~ meta_inner ~ "}" }
+meta_inner = { (meta_tuple ~ ",")* ~ meta_tuple? }
+meta_tuple = { ("(" ~ string ~ "," ~ meta_val ~ ")") }
+meta_val = { string | date | int }
+
+string = @{ str ~ string_inner ~ str }
+string_inner = { (!str ~ ANY)+ }
+str = _{ "\"" }
+int = @{ ("-" | "+")? ~ ASCII_DIGIT+ }
+date = @{
+    year ~ "/" ~ month ~ "/" ~ day
+}
+year = { ASCII_DIGIT{4} }
+month = { ASCII_DIGIT{2} }
+day = { ASCII_DIGIT{2} }
+WHITESPACE = _{ WHITE_SPACE }
