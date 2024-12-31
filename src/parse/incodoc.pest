@@ -2,12 +2,12 @@ top = _{ SOI ~ (top_structs ~ ",")* ~ top_structs? ~ EOI }
 top_structs = _{ meta }
 
 meta = { "meta" ~ "{" ~ meta_inner ~ "}" }
-meta_inner = { (meta_tuple ~ ",")* ~ meta_tuple? }
+meta_inner = _{ (meta_tuple ~ ",")* ~ meta_tuple? }
 meta_tuple = { ("(" ~ string ~ "," ~ meta_val ~ ")") }
-meta_val = { string | date | int }
+meta_val = _{ string | date | int }
 
 string = @{ str ~ string_inner ~ str }
-string_inner = { (!str ~ ANY)+ }
+string_inner = !{ (!str ~ ANY)+ }
 str = _{ "\"" }
 int = @{ ("-" | "+")? ~ ASCII_DIGIT+ }
 date = @{

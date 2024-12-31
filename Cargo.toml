@@ -3,6 +3,10 @@ name = "incodoc"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "testbin"
+path = "src/bin.rs"
+
 [dependencies]
 pest = "2.7.15"
 pest_derive = "2.7.15"
