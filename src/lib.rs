@@ -151,42 +151,83 @@ mod tests {
 
     #[test]
     fn it_works() {
-        assert_eq!(parse(""), true);
-        assert_eq!(parse("meta{}"), true);
-        assert_eq!(parse("meta {}"), true);
-        assert_eq!(parse("meta {  },"), true);
+        assert_eq!(parse(""), Ok(Doc::default()));
+        assert_eq!(parse("meta{}"), Ok(Doc::default()));
+        assert_eq!(parse("meta {}"), Ok(Doc::default()));
+        assert_eq!(parse("meta {  }, "), Ok(Doc::default()));
         assert_eq!(parse("
             meta {
 
             },
-        "), true);
-        assert_eq!(parse("
-            meta { (\"prop\", \"test\") }
-        "), true);
-        assert_eq!(parse("
-            meta { (
-                \"pr
-                    op\" ,
-                 \"te
-                 st\"
-                 ),
-            },
-        "), true);
-        assert_eq!(parse("
-            meta { (\"prop\", 5) }
-        "), true);
-        assert_eq!(parse("
-            meta { (\"prop\", +7) }
-        "), true);
-        assert_eq!(parse("
-            meta { (\"prop\", -0) }
-        "), true);
-        assert_eq!(parse("
-            meta { (\"prop\", 2000/01/01) }
-        "), true);
+        "), Ok(Doc::default()));
+        assert_eq!(
+            parse("
+                meta { (\"prop\", \"test\") }
+            "),
+            Ok(Doc{
+                meta: vec![("prop".to_string(), MetaVal::String("test".to_string()))],
+                ..Default::default()
+            })
+        );
+        assert_eq!(
+            parse("
+meta { (
+    \"pr
+        op\" ,
+     \"te
+     st\"
+     ),
+},
+            "),
+            Ok(Doc{
+                meta: vec![(
+                    "pr\n        op".to_string(),
+                    MetaVal::String("te\n     st".to_string())
+                )],
+                ..Default::default()
+            })
+        );
+        assert_eq!(
+            parse("
+                meta { (\"prop\", 5) }
+            "),
+            Ok(Doc{
+                meta: vec![("prop".to_string(), MetaVal::Int(5))],
+                ..Default::default()
+            })
+        );
+        assert_eq!(
+            parse("
+                meta { (\"prop\", +7) }
+            "),
+            Ok(Doc{
+                meta: vec![("prop".to_string(), MetaVal::Int(7))],
+                ..Default::default()
+            })
+        );
+        assert_eq!(
+            parse("
+                meta { (\"prop\", +7) }
+            "),
+            Ok(Doc{
+                meta: vec![("prop".to_string(), MetaVal::Int(7))],
+                ..Default::default()
+            })
+        );
+        assert_eq!(
+            parse("
+                meta { (\"prop\", 2000/01/01) }
+            "),
+            Ok(Doc{
+                meta: vec![("prop".to_string(), MetaVal::Date(Date::new(2000, 1, 1).unwrap()))],
+                ..Default::default()
+            })
+        );
         /*
-        assert_eq!(parse("
-        "), true);
+        assert_eq!(
+            parse(""),
+            Ok(Doc{ ..Default::default() })
+        );
         */
     }
 }
