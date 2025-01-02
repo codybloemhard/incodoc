@@ -13,7 +13,7 @@ int = @{ ("-" | "+")? ~ ASCII_DIGIT+ }
 date = @{
     year ~ "/" ~ month ~ "/" ~ day
 }
-year = { ASCII_DIGIT{4} }
+year = { "-"? ~ ASCII_DIGIT{4} }
 month = { ASCII_DIGIT{2} }
 day = { ASCII_DIGIT{2} }
 WHITESPACE = _{ WHITE_SPACE }

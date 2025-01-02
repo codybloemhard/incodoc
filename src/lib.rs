@@ -1,9 +1,10 @@
+mod tests;
+
 use std::num::ParseIntError;
 
 use pest::{
     Parser,
     iterators::Pair,
-    // iterators::Pairs,
 };
 use pest_derive::Parser;
 
@@ -145,89 +146,3 @@ fn parse_date(pair: Pair<'_, Rule>) -> Result<Date, DateError> {
     )
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        assert_eq!(parse(""), Ok(Doc::default()));
-        assert_eq!(parse("meta{}"), Ok(Doc::default()));
-        assert_eq!(parse("meta {}"), Ok(Doc::default()));
-        assert_eq!(parse("meta {  }, "), Ok(Doc::default()));
-        assert_eq!(parse("
-            meta {
-
-            },
-        "), Ok(Doc::default()));
-        assert_eq!(
-            parse("
-                meta { (\"prop\", \"test\") }
-            "),
-            Ok(Doc{
-                meta: vec![("prop".to_string(), MetaVal::String("test".to_string()))],
-                ..Default::default()
-            })
-        );
-        assert_eq!(
-            parse("
-meta { (
-    \"pr
-        op\" ,
-     \"te
-     st\"
-     ),
-},
-            "),
-            Ok(Doc{
-                meta: vec![(
-                    "pr\n        op".to_string(),
-                    MetaVal::String("te\n     st".to_string())
-                )],
-                ..Default::default()
-            })
-        );
-        assert_eq!(
-            parse("
-                meta { (\"prop\", 5) }
-            "),
-            Ok(Doc{
-                meta: vec![("prop".to_string(), MetaVal::Int(5))],
-                ..Default::default()
-            })
-        );
-        assert_eq!(
-            parse("
-                meta { (\"prop\", +7) }
-            "),
-            Ok(Doc{
-                meta: vec![("prop".to_string(), MetaVal::Int(7))],
-                ..Default::default()
-            })
-        );
-        assert_eq!(
-            parse("
-                meta { (\"prop\", +7) }
-            "),
-            Ok(Doc{
-                meta: vec![("prop".to_string(), MetaVal::Int(7))],
-                ..Default::default()
-            })
-        );
-        assert_eq!(
-            parse("
-                meta { (\"prop\", 2000/01/01) }
-            "),
-            Ok(Doc{
-                meta: vec![("prop".to_string(), MetaVal::Date(Date::new(2000, 1, 1).unwrap()))],
-                ..Default::default()
-            })
-        );
-        /*
-        assert_eq!(
-            parse(""),
-            Ok(Doc{ ..Default::default() })
-        );
-        */
-    }
-}
