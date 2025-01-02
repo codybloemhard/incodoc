@@ -118,4 +118,22 @@ meta { (
             ..Default::default()
         }
     );
+
+    test!(
+        t_meta_tuple_date_c2,
+        "meta { (\"prop\", 2000/13/01) }",
+        Doc {
+            errors: vec![MetaValError::Date(DateError::MonthRange(13))],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_meta_tuple_date_c3,
+        "meta { (\"prop\", 2000/01/32) }",
+        Doc {
+            errors: vec![MetaValError::Date(DateError::DayRange(32))],
+            ..Default::default()
+        }
+    );
 }

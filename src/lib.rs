@@ -130,6 +130,8 @@ impl Date {
         let year: i16 = y.try_into().map_err(|_| DateError::YearRange(y))?;
         let month: u8 = m.try_into().map_err(|_| DateError::MonthRange(m))?;
         let day: u8 = d.try_into().map_err(|_| DateError::DayRange(d))?;
+        if month > 12 { return Err(DateError::MonthRange(m)); }
+        if day > 31 { return Err(DateError::DayRange(d)); }
         Ok(Self { year, month, day })
     }
 }
