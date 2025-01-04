@@ -118,7 +118,7 @@ part{
     part{
         'This is a paragraph.',
         'I will cite something',
-        cite{'@test-citation'},
+        cite{"@test-citation"},
     },
     part{
         'This is yet another paragraph, with an emoji: ',

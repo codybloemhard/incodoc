@@ -66,7 +66,7 @@ fn parse_meta_tuple(pair: Pair<'_, Rule>) -> Result<MetaTuple, MetaValError> {
     let mut inners = pair.into_inner();
     let string = inners.next().expect("IP: parse_meta_tuple: no string;");
     let meta_val = inners.next().expect("IP: parse_meta_tuple: no meta_val;");
-    let string = parse_string(string);
+    let string = parse_string(string).map_err(MetaValError::String)?;
     let meta_val = parse_meta_val(meta_val)?;
     Ok((string, meta_val))
 }
@@ -82,12 +82,13 @@ pub enum MetaVal {
 pub enum MetaValError {
     Int(ParseIntError),
     Date(DateError),
+    String(StringLBError),
 }
 
 fn parse_meta_val(pair: Pair<'_, Rule>) -> Result<MetaVal, MetaValError> {
     Ok(match pair.as_rule() {
         Rule::string => {
-            MetaVal::String(parse_string(pair))
+            MetaVal::String(parse_string(pair).map_err(MetaValError::String)?)
         },
         Rule::int => {
             MetaVal::Int(parse_int(pair).map_err(MetaValError::Int)?)
@@ -101,9 +102,17 @@ fn parse_meta_val(pair: Pair<'_, Rule>) -> Result<MetaVal, MetaValError> {
     })
 }
 
-fn parse_string(pair: Pair<'_, Rule>) -> String {
+#[derive(Clone, Copy, Default, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
+pub struct StringLBError;
+
+fn parse_string(pair: Pair<'_, Rule>) -> Result<String, StringLBError> {
     let inner = pair.into_inner().next().expect("IP: parse_string: no inner;");
-    inner.as_str().to_string()
+    let string = inner.as_str().to_string();
+    if string.chars().any(|c| c == '\n' || c == '\r') {
+        Err(StringLBError)
+    } else {
+        Ok(string)
+    }
 }
 
 fn parse_int(pair: Pair<'_, Rule>) -> Result<i64, ParseIntError> {

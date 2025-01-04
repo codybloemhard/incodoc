@@ -66,10 +66,7 @@ meta { (
 },
 ",
         Doc {
-            meta: vec![(
-                "pr\n        op".to_string(),
-                MetaVal::String("te\n     st".to_string())
-            )],
+            errors: vec![MetaValError::String(StringLBError)],
             ..Default::default()
         }
     );
