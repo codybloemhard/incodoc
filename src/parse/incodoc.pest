@@ -6,8 +6,8 @@ meta_inner = _{ (meta_tuple ~ ",")* ~ meta_tuple? }
 meta_tuple = { ("(" ~ string ~ "," ~ meta_val ~ ")") }
 meta_val = _{ string | date | int }
 
-string = @{ str ~ string_inner ~ str }
-string_inner = !{ (!str ~ ANY)+ }
+string = { str ~ string_inner ~ str }
+string_inner = @{ (!str ~ ANY)+ }
 str = _{ "\"" }
 int = @{ ("-" | "+")? ~ ASCII_DIGIT+ }
 date = @{

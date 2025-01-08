@@ -58,10 +58,12 @@ mod tests {
         t_meta_tuple_string_f1,
 "
 meta { (
-    \"pr
+    \"
+    pr
         op\" ,
      \"te
-     st\"
+     st
+     \"
      ),
 },
 ",

@@ -16,6 +16,12 @@ pub struct IncodocParser;
 pub struct Doc {
     meta: Meta,
     errors: Vec<MetaValError>,
+    items: Vec<DocItem>,
+}
+
+#[derive(Clone, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
+pub enum DocItem {
+    Text(String),
 }
 
 pub fn parse(input: &str) -> Result<Doc, String> {
