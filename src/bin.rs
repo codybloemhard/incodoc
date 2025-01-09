@@ -1,12 +1,16 @@
 const TEST: &str = "
     meta{ (
         \"test\",
-        \"
-        hello
-        \"
+        '
+
+            hello
+            '
     ) },
 ";
 
 fn main() {
-    println!("{:?}", incodoc::parse(TEST));
+    match incodoc::parse(TEST) {
+        Ok(res) => println!("{:?}", res),
+        Err(err) => println!("{}", err),
+    }
 }

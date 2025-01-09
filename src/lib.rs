@@ -15,8 +15,14 @@ pub struct IncodocParser;
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct Doc {
     meta: Meta,
-    errors: Vec<MetaValError>,
+    errors: Vec<DocError>,
     items: Vec<DocItem>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum DocError {
+    Meta(MetaValError),
+    Text(TextIdentError),
 }
 
 #[derive(Clone, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
@@ -35,9 +41,17 @@ pub fn parse(input: &str) -> Result<Doc, String> {
     for inner in pairs {
         match inner.as_rule() {
             Rule::meta => {
-                let (m, e) = parse_meta(inner);
+                let (m, es) = parse_meta(inner);
                 doc.meta = m;
-                doc.errors = e;
+                for e in es {
+                    doc.errors.push(DocError::Meta(e));
+                }
+            },
+            Rule::text => {
+                match parse_text(inner) {
+                    Ok(text) => doc.items.push(DocItem::Text(text)),
+                    Err(err) => doc.errors.push(DocError::Text(err)),
+                }
             },
             _ => {},
         }
@@ -89,12 +103,16 @@ pub enum MetaValError {
     Int(ParseIntError),
     Date(DateError),
     String(StringLBError),
+    Text(TextIdentError),
 }
 
 fn parse_meta_val(pair: Pair<'_, Rule>) -> Result<MetaVal, MetaValError> {
     Ok(match pair.as_rule() {
         Rule::string => {
             MetaVal::String(parse_string(pair).map_err(MetaValError::String)?)
+        },
+        Rule::text => {
+            MetaVal::String(parse_text(pair).map_err(MetaValError::Text)?)
         },
         Rule::int => {
             MetaVal::Int(parse_int(pair).map_err(MetaValError::Int)?)
@@ -119,6 +137,45 @@ fn parse_string(pair: Pair<'_, Rule>) -> Result<String, StringLBError> {
     } else {
         Ok(string)
     }
+}
+
+#[derive(Clone, Copy, Default, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
+pub struct TextIdentError;
+
+fn parse_text(pair: Pair<'_, Rule>) -> Result<String, TextIdentError> {
+    let mut iter = pair.into_inner();
+    let start = iter.next().expect("IP: parse_text: no start;");
+    let inner = iter.next().expect("IP: parse_text: no inner;");
+    // let end = iter.next().expect("IP: parse_text: no end;");
+    let (_start_line, start_col) = start.line_col();
+    // let (inner_line, inner_col) = inner.line_col();
+    // let (end_line, end_col) = end.line_col();
+    let raw = inner.as_str().to_string();
+    let mut res = String::new();
+    let mut identc = 0;
+    for c in raw.chars() {
+        match c {
+            ' ' => {
+                if identc < start_col - 1 {
+                    identc += 1;
+                } else {
+                    res.push(c);
+                }
+            },
+            '\n' => {
+                identc = 0;
+                res.push(c);
+            },
+            _ => {
+                if identc < start_col - 1 {
+                    return Err(TextIdentError);
+                } else {
+                    res.push(c);
+                }
+            },
+        }
+    }
+    Ok(res)
 }
 
 fn parse_int(pair: Pair<'_, Rule>) -> Result<i64, ParseIntError> {

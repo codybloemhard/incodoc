@@ -68,7 +68,7 @@ meta { (
 },
 ",
         Doc {
-            errors: vec![MetaValError::String(StringLBError)],
+            errors: vec![DocError::Meta(MetaValError::String(StringLBError))],
             ..Default::default()
         }
     );
@@ -122,7 +122,7 @@ meta { (
         t_meta_tuple_date_c2,
         "meta { (\"prop\", 2000/13/01) }",
         Doc {
-            errors: vec![MetaValError::Date(DateError::MonthRange(13))],
+            errors: vec![DocError::Meta(MetaValError::Date(DateError::MonthRange(13)))],
             ..Default::default()
         }
     );
@@ -131,7 +131,7 @@ meta { (
         t_meta_tuple_date_c3,
         "meta { (\"prop\", 2000/01/32) }",
         Doc {
-            errors: vec![MetaValError::Date(DateError::DayRange(32))],
+            errors: vec![DocError::Meta(MetaValError::Date(DateError::DayRange(32)))],
             ..Default::default()
         }
     );
