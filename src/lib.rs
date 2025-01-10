@@ -94,6 +94,7 @@ fn parse_meta_tuple(pair: Pair<'_, Rule>) -> Result<MetaTuple, MetaValError> {
 #[derive(Clone, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub enum MetaVal {
     String(String),
+    Text(String),
     Int(i64),
     Date(Date),
 }
@@ -112,7 +113,7 @@ fn parse_meta_val(pair: Pair<'_, Rule>) -> Result<MetaVal, MetaValError> {
             MetaVal::String(parse_string(pair).map_err(MetaValError::String)?)
         },
         Rule::text => {
-            MetaVal::String(parse_text(pair).map_err(MetaValError::Text)?)
+            MetaVal::Text(parse_text(pair).map_err(MetaValError::Text)?)
         },
         Rule::int => {
             MetaVal::Int(parse_int(pair).map_err(MetaValError::Int)?)
@@ -146,13 +147,11 @@ fn parse_text(pair: Pair<'_, Rule>) -> Result<String, TextIdentError> {
     let mut iter = pair.into_inner();
     let start = iter.next().expect("IP: parse_text: no start;");
     let inner = iter.next().expect("IP: parse_text: no inner;");
-    // let end = iter.next().expect("IP: parse_text: no end;");
-    let (_start_line, start_col) = start.line_col();
-    // let (inner_line, inner_col) = inner.line_col();
-    // let (end_line, end_col) = end.line_col();
+    let (_, start_col) = start.line_col();
     let raw = inner.as_str().to_string();
     let mut res = String::new();
-    let mut identc = 0;
+    let mut identc = start_col;
+    let mut first_nl = true;
     for c in raw.chars() {
         match c {
             ' ' => {
@@ -164,8 +163,13 @@ fn parse_text(pair: Pair<'_, Rule>) -> Result<String, TextIdentError> {
             },
             '\n' => {
                 identc = 0;
-                res.push(c);
+                if first_nl {
+                    first_nl = false;
+                } else {
+                    res.push(c);
+                }
             },
+            '\r' => {},
             _ => {
                 if identc < start_col - 1 {
                     return Err(TextIdentError);
@@ -174,6 +178,9 @@ fn parse_text(pair: Pair<'_, Rule>) -> Result<String, TextIdentError> {
                 }
             },
         }
+    }
+    if res.ends_with('\n') {
+        res.pop();
     }
     Ok(res)
 }

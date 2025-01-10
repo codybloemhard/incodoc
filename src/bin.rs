@@ -1,10 +1,7 @@
 const TEST: &str = "
     meta{ (
         \"test\",
-        '
-
-            hello
-            '
+        'this is text'
     ) },
 ";
 
