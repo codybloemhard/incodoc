@@ -22,12 +22,13 @@ pub struct Doc {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum DocError {
     Meta(MetaValError),
-    // Text(TextIdentError),
+    Code(CodeError),
 }
 
 #[derive(Clone, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub enum DocItem {
     Text(String),
+    Code(CodeBlock),
 }
 
 pub fn parse(input: &str) -> Result<Doc, String> {
@@ -50,12 +51,12 @@ pub fn parse(input: &str) -> Result<Doc, String> {
             Rule::text => {
                 doc.items.push(DocItem::Text(parse_text(inner)));
             }
-            // Rule::text => {
-            //     match parse_text(inner) {
-            //         Ok(text) => doc.items.push(DocItem::Text(text)),
-            //         Err(err) => doc.errors.push(DocError::Text(err)),
-            //     }
-            // },
+            Rule::code => {
+                match parse_code(inner) {
+                    Ok(code_block) => doc.items.push(DocItem::Code(code_block)),
+                    Err(err) => doc.errors.push(DocError::Code(err)),
+                }
+            },
             _ => {},
         }
     }
@@ -107,7 +108,6 @@ pub enum MetaValError {
     Int(ParseIntError),
     Date(DateError),
     String(StringLBError),
-    // Text(TextIdentError),
 }
 
 fn parse_meta_val(pair: Pair<'_, Rule>) -> Result<MetaVal, MetaValError> {
@@ -127,6 +127,52 @@ fn parse_meta_val(pair: Pair<'_, Rule>) -> Result<MetaVal, MetaValError> {
         r => {
             panic!("IP: parse_meta_val: illegal rule: {:?};", r);
         },
+    })
+}
+
+#[derive(Clone, Default, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
+pub struct CodeBlock {
+    pub language: String,
+    pub mode: CodeMode,
+    pub code: String,
+}
+
+#[derive(Clone, Copy, Default, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
+pub enum CodeMode {
+    #[default] Show,
+    ChoiceHint,
+    AutoHint,
+    ReplaceHint,
+}
+
+#[derive(Clone, Copy, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
+pub enum CodeError {
+    Ident(CodeIdentError),
+    LineBreak(StringLBError),
+}
+
+fn parse_code(pair: Pair<'_, Rule>) -> Result<CodeBlock, CodeError> {
+    let mut iter = pair.into_inner();
+    let lang_raw = iter.next().expect("IP: parse_code: no language;");
+    let mode_raw = iter.next().expect("IP: parse_code: no mode;");
+    let code_raw = iter.next().expect("IP: parse_code: no code;");
+    let language = parse_string(lang_raw).map_err(CodeError::LineBreak)?;
+    let mode = parse_code_mode(mode_raw).map_err(CodeError::LineBreak)?;
+    let code = parse_code_text(code_raw).map_err(CodeError::Ident)?;
+    Ok(CodeBlock {
+        language,
+        mode,
+        code
+    })
+}
+
+fn parse_code_mode(pair: Pair<'_, Rule>) -> Result<CodeMode, StringLBError> {
+    let string = parse_string(pair)?;
+    Ok(match string.as_ref() {
+        "choice" => CodeMode::ChoiceHint,
+        "auto" => CodeMode::AutoHint,
+        "replace" => CodeMode::ReplaceHint,
+        _ => CodeMode::Show,
     })
 }
 
@@ -187,50 +233,50 @@ fn parse_text(pair: Pair<'_, Rule>) -> String {
     res
 }
 
-// #[derive(Clone, Copy, Default, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
-// pub struct TextIdentError;
-//
-// fn parse_text(pair: Pair<'_, Rule>) -> Result<String, TextIdentError> {
-//     let mut iter = pair.into_inner();
-//     let start = iter.next().expect("IP: parse_text: no start;");
-//     let inner = iter.next().expect("IP: parse_text: no inner;");
-//     let (_, start_col) = start.line_col();
-//     let raw = inner.as_str().to_string();
-//     let mut res = String::new();
-//     let mut identc = start_col;
-//     let mut first_nl = true;
-//     for c in raw.chars() {
-//         match c {
-//             ' ' => {
-//                 if identc < start_col - 1 {
-//                     identc += 1;
-//                 } else {
-//                     res.push(c);
-//                 }
-//             },
-//             '\n' => {
-//                 identc = 0;
-//                 if first_nl {
-//                     first_nl = false;
-//                 } else {
-//                     res.push(c);
-//                 }
-//             },
-//             '\r' => {},
-//             _ => {
-//                 if identc < start_col - 1 {
-//                     return Err(TextIdentError);
-//                 } else {
-//                     res.push(c);
-//                 }
-//             },
-//         }
-//     }
-//     if res.ends_with('\n') {
-//         res.pop();
-//     }
-//     Ok(res)
-// }
+#[derive(Clone, Copy, Default, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
+pub struct CodeIdentError;
+
+fn parse_code_text(pair: Pair<'_, Rule>) -> Result<String, CodeIdentError> {
+    let mut iter = pair.into_inner();
+    let start = iter.next().expect("IP: parse_text: no start;");
+    let inner = iter.next().expect("IP: parse_text: no inner;");
+    let (_, start_col) = start.line_col();
+    let raw = inner.as_str().to_string();
+    let mut res = String::new();
+    let mut identc = start_col;
+    let mut first_nl = true;
+    for c in raw.chars() {
+        match c {
+            ' ' => {
+                if identc < start_col - 1 {
+                    identc += 1;
+                } else {
+                    res.push(c);
+                }
+            },
+            '\n' => {
+                identc = 0;
+                if first_nl {
+                    first_nl = false;
+                } else {
+                    res.push(c);
+                }
+            },
+            '\r' => {},
+            _ => {
+                if identc < start_col - 1 {
+                    return Err(CodeIdentError);
+                } else {
+                    res.push(c);
+                }
+            },
+        }
+    }
+    if res.ends_with('\n') {
+        res.pop();
+    }
+    Ok(res)
+}
 
 fn parse_int(pair: Pair<'_, Rule>) -> Result<i64, ParseIntError> {
     pair.as_str().parse()

@@ -1,17 +1,11 @@
 const TEST: &str = "
-    meta{ (
-        \"test\",
+    code {
+        \"rust\",
+        \"auto\",
         '
-        this
-
-
-
-        is text
-
-
-
+            let x = 3;
         '
-    ) },
+    }
 ";
 
 fn main() {
