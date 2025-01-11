@@ -82,120 +82,6 @@ mod tests {
         }
     );
 
-    // test!(
-    //     t_text_c0,
-    //     "'this is text'",
-    //     Doc {
-    //         items: vec![DocItem::Text("this is text".to_string())],
-    //         ..Default::default()
-    //     }
-    // );
-    //
-    // test!(
-    //     t_text_c1,
-    //     "
-    //     'this is text'
-    //     ",
-    //     Doc {
-    //         items: vec![DocItem::Text("this is text".to_string())],
-    //         ..Default::default()
-    //     }
-    // );
-    //
-    // test!(
-    //     t_text_c2,
-    //     "
-    //     '
-    //     this is text'
-    //     ",
-    //     Doc {
-    //         items: vec![DocItem::Text("this is text".to_string())],
-    //         ..Default::default()
-    //     }
-    // );
-    //
-    // test!(
-    //     t_text_c3,
-    //     "
-    //     'this is text
-    //     '
-    //     ",
-    //     Doc {
-    //         items: vec![DocItem::Text("this is text".to_string())],
-    //         ..Default::default()
-    //     }
-    // );
-    //
-    // test!(
-    //     t_text_c4,
-    //     "
-    //     '
-    //         this is text
-    //     '
-    //     ",
-    //     Doc {
-    //         items: vec![DocItem::Text("    this is text".to_string())],
-    //         ..Default::default()
-    //     }
-    // );
-    //
-    // test!(
-    //     t_text_c5,
-    //     "
-    //     '
-    //
-    //     this is text
-    //     '
-    //     ",
-    //     Doc {
-    //         items: vec![DocItem::Text("\nthis is text".to_string())],
-    //         ..Default::default()
-    //     }
-    // );
-    //
-    // test!(
-    //     t_text_c6,
-    //     "
-    //     '
-    //     this is text
-    //
-    //     '
-    //     ",
-    //     Doc {
-    //         items: vec![DocItem::Text("this is text\n".to_string())],
-    //         ..Default::default()
-    //     }
-    // );
-    //
-    // test!(
-    //     t_text_c7,
-    //     "
-    //     '
-    //
-    //         this is text
-    //          more text
-    //
-    //         '
-    //     ",
-    //     Doc {
-    //         items: vec![DocItem::Text("\n    this is text\n     more text\n\n    ".to_string())],
-    //         ..Default::default()
-    //     }
-    // );
-    //
-    // test!(
-    //     t_text_c8,
-    //     "
-    //     '
-    //    this is text
-    //     '
-    //     ",
-    //     Doc {
-    //         errors: vec![DocError::Text(TextIdentError)],
-    //         ..Default::default()
-    //     }
-    // );
-
     test!(
         t_meta_empty_f0,
         "meta{}",
@@ -326,12 +212,228 @@ meta { (
 
     test!(
         t_meta_tuple_text_c1,
+        // looks incorrect because of the escape characters for "
         "
         meta { (\"prop\", '
                         this is text
         ') }",
         Doc {
             meta: vec![("prop".to_string(), MetaVal::Text("this is text".to_string()))],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_code_c0_f0,
+        "code { \"plain\", \"show\", '' }",
+        Doc {
+            items: vec![DocItem::Code(CodeBlock{
+                language: "plain".to_string(),
+                mode: CodeMode::Show,
+                code: "".to_string(),
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_code_c0_f1,
+        "code
+        {
+    \"plain\",
+            \"show\",
+                ''}",
+        Doc {
+            items: vec![DocItem::Code(CodeBlock{
+                language: "plain".to_string(),
+                mode: CodeMode::Show,
+                code: "".to_string(),
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_code_c1,
+        "code { \"plain\", \"choice\", '' }",
+        Doc {
+            items: vec![DocItem::Code(CodeBlock{
+                language: "plain".to_string(),
+                mode: CodeMode::ChoiceHint,
+                code: "".to_string(),
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_code_c2,
+        "code { \"plain\", \"auto\", '' }",
+        Doc {
+            items: vec![DocItem::Code(CodeBlock{
+                language: "plain".to_string(),
+                mode: CodeMode::AutoHint,
+                code: "".to_string(),
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_code_c3,
+        "code { \"plain\", \"replace\", '' }",
+        Doc {
+            items: vec![DocItem::Code(CodeBlock{
+                language: "plain".to_string(),
+                mode: CodeMode::ReplaceHint,
+                code: "".to_string(),
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_code_c4,
+        "code { \"plain\", \"not a mode!\", '' }",
+        Doc {
+            items: vec![DocItem::Code(CodeBlock{
+                language: "plain".to_string(),
+                mode: CodeMode::Show,
+                code: "".to_string(),
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_code_c5,
+        "code {
+            \"plain\",
+            \"show\",
+            '
+            this is code
+            '
+        }",
+        Doc {
+            items: vec![DocItem::Code(CodeBlock{
+                language: "plain".to_string(),
+                mode: CodeMode::Show,
+                code: "this is code".to_string(),
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_code_c6,
+        "code {
+            \"plain\",
+            \"show\",
+            'this is code
+            '
+        }",
+        Doc {
+            items: vec![DocItem::Code(CodeBlock{
+                language: "plain".to_string(),
+                mode: CodeMode::Show,
+                code: "this is code".to_string(),
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_code_c7,
+        "code {
+            \"plain\",
+            \"show\",
+            '
+                this is code
+            '
+        }",
+        Doc {
+            items: vec![DocItem::Code(CodeBlock{
+                language: "plain".to_string(),
+                mode: CodeMode::Show,
+                code: "    this is code".to_string(),
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_code_c8,
+        "code {
+            \"plain\",
+            \"show\",
+            '
+
+                this is code
+            '
+        }",
+        Doc {
+            items: vec![DocItem::Code(CodeBlock{
+                language: "plain".to_string(),
+                mode: CodeMode::Show,
+                code: "\n    this is code".to_string(),
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_code_c9,
+        "code {
+            \"plain\",
+            \"show\",
+            '
+            this is code
+
+            '
+        }",
+        Doc {
+            items: vec![DocItem::Code(CodeBlock{
+                language: "plain".to_string(),
+                mode: CodeMode::Show,
+                code: "this is code\n".to_string(),
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_code_c10,
+        "code {
+            \"plain\",
+            \"show\",
+            '
+
+                this is code
+                 more code
+
+            '
+        }",
+        Doc {
+            items: vec![DocItem::Code(CodeBlock{
+                language: "plain".to_string(),
+                mode: CodeMode::Show,
+                code: "\n    this is code\n     more code\n".to_string(),
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_code_c11,
+        "code {
+            \"plain\",
+            \"show\",
+            '
+           this is code
+            '
+        }",
+        Doc {
+            errors: vec![DocError::Code(CodeError::Ident(CodeIdentError))],
             ..Default::default()
         }
     );
