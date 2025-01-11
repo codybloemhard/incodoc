@@ -22,7 +22,7 @@ pub struct Doc {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum DocError {
     Meta(MetaValError),
-    Text(TextIdentError),
+    // Text(TextIdentError),
 }
 
 #[derive(Clone, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
@@ -48,11 +48,14 @@ pub fn parse(input: &str) -> Result<Doc, String> {
                 }
             },
             Rule::text => {
-                match parse_text(inner) {
-                    Ok(text) => doc.items.push(DocItem::Text(text)),
-                    Err(err) => doc.errors.push(DocError::Text(err)),
-                }
-            },
+                doc.items.push(DocItem::Text(parse_text(inner)));
+            }
+            // Rule::text => {
+            //     match parse_text(inner) {
+            //         Ok(text) => doc.items.push(DocItem::Text(text)),
+            //         Err(err) => doc.errors.push(DocError::Text(err)),
+            //     }
+            // },
             _ => {},
         }
     }
@@ -104,7 +107,7 @@ pub enum MetaValError {
     Int(ParseIntError),
     Date(DateError),
     String(StringLBError),
-    Text(TextIdentError),
+    // Text(TextIdentError),
 }
 
 fn parse_meta_val(pair: Pair<'_, Rule>) -> Result<MetaVal, MetaValError> {
@@ -113,7 +116,7 @@ fn parse_meta_val(pair: Pair<'_, Rule>) -> Result<MetaVal, MetaValError> {
             MetaVal::String(parse_string(pair).map_err(MetaValError::String)?)
         },
         Rule::text => {
-            MetaVal::Text(parse_text(pair).map_err(MetaValError::Text)?)
+            MetaVal::Text(parse_text(pair))
         },
         Rule::int => {
             MetaVal::Int(parse_int(pair).map_err(MetaValError::Int)?)
@@ -140,50 +143,94 @@ fn parse_string(pair: Pair<'_, Rule>) -> Result<String, StringLBError> {
     }
 }
 
-#[derive(Clone, Copy, Default, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
-pub struct TextIdentError;
 
-fn parse_text(pair: Pair<'_, Rule>) -> Result<String, TextIdentError> {
+fn parse_text(pair: Pair<'_, Rule>) -> String {
     let mut iter = pair.into_inner();
-    let start = iter.next().expect("IP: parse_text: no start;");
     let inner = iter.next().expect("IP: parse_text: no inner;");
-    let (_, start_col) = start.line_col();
-    let raw = inner.as_str().to_string();
     let mut res = String::new();
-    let mut identc = start_col;
-    let mut first_nl = true;
-    for c in raw.chars() {
+    let mut last_nl = true;
+    let mut last_ws = true;
+    for c in inner.as_str().chars() {
         match c {
-            ' ' => {
-                if identc < start_col - 1 {
-                    identc += 1;
-                } else {
-                    res.push(c);
-                }
-            },
             '\n' => {
-                identc = 0;
-                if first_nl {
-                    first_nl = false;
-                } else {
-                    res.push(c);
+                if !last_nl {
+                    last_nl = true;
+                    res.push('\n');
                 }
             },
             '\r' => {},
-            _ => {
-                if identc < start_col - 1 {
-                    return Err(TextIdentError);
+            x => {
+                if x.is_whitespace() {
+                    if !last_ws {
+                        if !last_nl {
+                            res.push(x);
+                        }
+                        last_ws = true;
+                    }
                 } else {
-                    res.push(c);
+                    last_nl = false;
+                    last_ws = false;
+                    res.push(x);
                 }
             },
         }
     }
-    if res.ends_with('\n') {
-        res.pop();
+    loop {
+        if let Some(last) = res.chars().last() {
+            if last == '\n' || last.is_whitespace() {
+                res.pop();
+            } else {
+                break;
+            }
+        }
     }
-    Ok(res)
+    res
 }
+
+// #[derive(Clone, Copy, Default, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
+// pub struct TextIdentError;
+//
+// fn parse_text(pair: Pair<'_, Rule>) -> Result<String, TextIdentError> {
+//     let mut iter = pair.into_inner();
+//     let start = iter.next().expect("IP: parse_text: no start;");
+//     let inner = iter.next().expect("IP: parse_text: no inner;");
+//     let (_, start_col) = start.line_col();
+//     let raw = inner.as_str().to_string();
+//     let mut res = String::new();
+//     let mut identc = start_col;
+//     let mut first_nl = true;
+//     for c in raw.chars() {
+//         match c {
+//             ' ' => {
+//                 if identc < start_col - 1 {
+//                     identc += 1;
+//                 } else {
+//                     res.push(c);
+//                 }
+//             },
+//             '\n' => {
+//                 identc = 0;
+//                 if first_nl {
+//                     first_nl = false;
+//                 } else {
+//                     res.push(c);
+//                 }
+//             },
+//             '\r' => {},
+//             _ => {
+//                 if identc < start_col - 1 {
+//                     return Err(TextIdentError);
+//                 } else {
+//                     res.push(c);
+//                 }
+//             },
+//         }
+//     }
+//     if res.ends_with('\n') {
+//         res.pop();
+//     }
+//     Ok(res)
+// }
 
 fn parse_int(pair: Pair<'_, Rule>) -> Result<i64, ParseIntError> {
     pair.as_str().parse()

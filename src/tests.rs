@@ -29,7 +29,9 @@ mod tests {
     test!(
         t_text_c1,
         "
-        'this is text'
+        '
+        this is text
+        '
         ",
         Doc {
             items: vec![DocItem::Text("this is text".to_string())],
@@ -41,7 +43,8 @@ mod tests {
         t_text_c2,
         "
         '
-        this is text'
+        this is text
+        '
         ",
         Doc {
             items: vec![DocItem::Text("this is text".to_string())],
@@ -52,7 +55,8 @@ mod tests {
     test!(
         t_text_c3,
         "
-        'this is text
+        '
+        this is     text
         '
         ",
         Doc {
@@ -65,71 +69,132 @@ mod tests {
         t_text_c4,
         "
         '
-            this is text
-        '
-        ",
-        Doc {
-            items: vec![DocItem::Text("    this is text".to_string())],
-            ..Default::default()
-        }
-    );
+        this
+          is     text
 
-    test!(
-        t_text_c5,
-        "
-        '
 
-        this is text
-        '
-        ",
-        Doc {
-            items: vec![DocItem::Text("\nthis is text".to_string())],
-            ..Default::default()
-        }
-    );
-
-    test!(
-        t_text_c6,
-        "
-        '
-        this is text
 
         '
         ",
         Doc {
-            items: vec![DocItem::Text("this is text\n".to_string())],
+            items: vec![DocItem::Text("this\nis text".to_string())],
             ..Default::default()
         }
     );
 
-    test!(
-        t_text_c7,
-        "
-        '
-
-            this is text
-             more text
-
-            '
-        ",
-        Doc {
-            items: vec![DocItem::Text("\n    this is text\n     more text\n\n    ".to_string())],
-            ..Default::default()
-        }
-    );
-
-    test!(
-        t_text_c8,
-        "
-        '
-       this is text
-        '
-        ",
-        Doc {
-            errors: vec![DocError::Text(TextIdentError)],
-            ..Default::default()
-        }
-    );
+    // test!(
+    //     t_text_c0,
+    //     "'this is text'",
+    //     Doc {
+    //         items: vec![DocItem::Text("this is text".to_string())],
+    //         ..Default::default()
+    //     }
+    // );
+    //
+    // test!(
+    //     t_text_c1,
+    //     "
+    //     'this is text'
+    //     ",
+    //     Doc {
+    //         items: vec![DocItem::Text("this is text".to_string())],
+    //         ..Default::default()
+    //     }
+    // );
+    //
+    // test!(
+    //     t_text_c2,
+    //     "
+    //     '
+    //     this is text'
+    //     ",
+    //     Doc {
+    //         items: vec![DocItem::Text("this is text".to_string())],
+    //         ..Default::default()
+    //     }
+    // );
+    //
+    // test!(
+    //     t_text_c3,
+    //     "
+    //     'this is text
+    //     '
+    //     ",
+    //     Doc {
+    //         items: vec![DocItem::Text("this is text".to_string())],
+    //         ..Default::default()
+    //     }
+    // );
+    //
+    // test!(
+    //     t_text_c4,
+    //     "
+    //     '
+    //         this is text
+    //     '
+    //     ",
+    //     Doc {
+    //         items: vec![DocItem::Text("    this is text".to_string())],
+    //         ..Default::default()
+    //     }
+    // );
+    //
+    // test!(
+    //     t_text_c5,
+    //     "
+    //     '
+    //
+    //     this is text
+    //     '
+    //     ",
+    //     Doc {
+    //         items: vec![DocItem::Text("\nthis is text".to_string())],
+    //         ..Default::default()
+    //     }
+    // );
+    //
+    // test!(
+    //     t_text_c6,
+    //     "
+    //     '
+    //     this is text
+    //
+    //     '
+    //     ",
+    //     Doc {
+    //         items: vec![DocItem::Text("this is text\n".to_string())],
+    //         ..Default::default()
+    //     }
+    // );
+    //
+    // test!(
+    //     t_text_c7,
+    //     "
+    //     '
+    //
+    //         this is text
+    //          more text
+    //
+    //         '
+    //     ",
+    //     Doc {
+    //         items: vec![DocItem::Text("\n    this is text\n     more text\n\n    ".to_string())],
+    //         ..Default::default()
+    //     }
+    // );
+    //
+    // test!(
+    //     t_text_c8,
+    //     "
+    //     '
+    //    this is text
+    //     '
+    //     ",
+    //     Doc {
+    //         errors: vec![DocError::Text(TextIdentError)],
+    //         ..Default::default()
+    //     }
+    // );
 
     test!(
         t_meta_empty_f0,

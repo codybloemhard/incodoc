@@ -8,7 +8,10 @@ meta_val = _{ string | text | date | int }
 
 text = ${ txt ~ text_inner ~ txt }
 text_inner = { (!txt ~ ANY)+ }
-txt = { "'" }
+txt = _{ "'" }
+// text = ${ txt ~ text_inner ~ txt }
+// text_inner = { (!txt ~ ANY)+ }
+// txt = { "'" }
 string = { str ~ string_inner ~ str }
 string_inner = @{ (!str ~ ANY)+ }
 str = _{ "\"" }
