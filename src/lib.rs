@@ -133,16 +133,16 @@ fn parse_meta_val(pair: Pair<'_, Rule>) -> Result<MetaVal, MetaValError> {
 #[derive(Clone, Default, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub struct CodeBlock {
     pub language: String,
-    pub mode: CodeMode,
+    pub mode: CodeModeHint,
     pub code: String,
 }
 
 #[derive(Clone, Copy, Default, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
-pub enum CodeMode {
+pub enum CodeModeHint {
     #[default] Show,
-    ChoiceHint,
-    AutoHint,
-    ReplaceHint,
+    Choice,
+    Auto,
+    Replace,
 }
 
 #[derive(Clone, Copy, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
@@ -166,13 +166,13 @@ fn parse_code(pair: Pair<'_, Rule>) -> Result<CodeBlock, CodeError> {
     })
 }
 
-fn parse_code_mode(pair: Pair<'_, Rule>) -> Result<CodeMode, StringLBError> {
+fn parse_code_mode(pair: Pair<'_, Rule>) -> Result<CodeModeHint, StringLBError> {
     let string = parse_string(pair)?;
     Ok(match string.as_ref() {
-        "choice" => CodeMode::ChoiceHint,
-        "auto" => CodeMode::AutoHint,
-        "replace" => CodeMode::ReplaceHint,
-        _ => CodeMode::Show,
+        "choice" => CodeModeHint::Choice,
+        "auto" => CodeModeHint::Auto,
+        "replace" => CodeModeHint::Replace,
+        _ => CodeModeHint::Show,
     })
 }
 
