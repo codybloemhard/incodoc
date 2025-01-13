@@ -229,8 +229,7 @@ meta { (
         Doc {
             items: vec![DocItem::Code(CodeBlock{
                 language: "plain".to_string(),
-                mode: CodeModeHint::Show,
-                code: "".to_string(),
+                ..Default::default()
             })],
             ..Default::default()
         }
@@ -246,8 +245,7 @@ meta { (
         Doc {
             items: vec![DocItem::Code(CodeBlock{
                 language: "plain".to_string(),
-                mode: CodeModeHint::Show,
-                code: "".to_string(),
+                ..Default::default()
             })],
             ..Default::default()
         }
@@ -260,7 +258,7 @@ meta { (
             items: vec![DocItem::Code(CodeBlock{
                 language: "plain".to_string(),
                 mode: CodeModeHint::Choice,
-                code: "".to_string(),
+                ..Default::default()
             })],
             ..Default::default()
         }
@@ -273,7 +271,7 @@ meta { (
             items: vec![DocItem::Code(CodeBlock{
                 language: "plain".to_string(),
                 mode: CodeModeHint::Auto,
-                code: "".to_string(),
+                ..Default::default()
             })],
             ..Default::default()
         }
@@ -286,7 +284,7 @@ meta { (
             items: vec![DocItem::Code(CodeBlock{
                 language: "plain".to_string(),
                 mode: CodeModeHint::Replace,
-                code: "".to_string(),
+                ..Default::default()
             })],
             ..Default::default()
         }
@@ -298,8 +296,7 @@ meta { (
         Doc {
             items: vec![DocItem::Code(CodeBlock{
                 language: "plain".to_string(),
-                mode: CodeModeHint::Show,
-                code: "".to_string(),
+                ..Default::default()
             })],
             ..Default::default()
         }
@@ -317,8 +314,8 @@ meta { (
         Doc {
             items: vec![DocItem::Code(CodeBlock{
                 language: "plain".to_string(),
-                mode: CodeModeHint::Show,
                 code: "this is code".to_string(),
+                ..Default::default()
             })],
             ..Default::default()
         }
@@ -335,8 +332,8 @@ meta { (
         Doc {
             items: vec![DocItem::Code(CodeBlock{
                 language: "plain".to_string(),
-                mode: CodeModeHint::Show,
                 code: "this is code".to_string(),
+                ..Default::default()
             })],
             ..Default::default()
         }
@@ -354,8 +351,8 @@ meta { (
         Doc {
             items: vec![DocItem::Code(CodeBlock{
                 language: "plain".to_string(),
-                mode: CodeModeHint::Show,
                 code: "    this is code".to_string(),
+                ..Default::default()
             })],
             ..Default::default()
         }
@@ -374,8 +371,8 @@ meta { (
         Doc {
             items: vec![DocItem::Code(CodeBlock{
                 language: "plain".to_string(),
-                mode: CodeModeHint::Show,
                 code: "\n    this is code".to_string(),
+                ..Default::default()
             })],
             ..Default::default()
         }
@@ -394,8 +391,8 @@ meta { (
         Doc {
             items: vec![DocItem::Code(CodeBlock{
                 language: "plain".to_string(),
-                mode: CodeModeHint::Show,
                 code: "this is code\n".to_string(),
+                ..Default::default()
             })],
             ..Default::default()
         }
@@ -416,8 +413,8 @@ meta { (
         Doc {
             items: vec![DocItem::Code(CodeBlock{
                 language: "plain".to_string(),
-                mode: CodeModeHint::Show,
                 code: "\n    this is code\n     more code\n".to_string(),
+                ..Default::default()
             })],
             ..Default::default()
         }

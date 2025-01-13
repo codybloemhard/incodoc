@@ -135,6 +135,7 @@ pub struct CodeBlock {
     pub language: String,
     pub mode: CodeModeHint,
     pub code: String,
+    pub meta: Meta,
 }
 
 #[derive(Clone, Copy, Default, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
@@ -145,10 +146,11 @@ pub enum CodeModeHint {
     Replace,
 }
 
-#[derive(Clone, Copy, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CodeError {
     Ident(CodeIdentError),
     LineBreak(StringLBError),
+    Meta(MetaValError),
 }
 
 fn parse_code(pair: Pair<'_, Rule>) -> Result<CodeBlock, CodeError> {
@@ -156,13 +158,20 @@ fn parse_code(pair: Pair<'_, Rule>) -> Result<CodeBlock, CodeError> {
     let lang_raw = iter.next().expect("IP: parse_code: no language;");
     let mode_raw = iter.next().expect("IP: parse_code: no mode;");
     let code_raw = iter.next().expect("IP: parse_code: no code;");
+    let meta = if let Some(meta_raw) = iter.next() {
+        let (meta, _errs) = parse_meta(meta_raw);
+        meta
+    } else {
+        Meta::default()
+    };
     let language = parse_string(lang_raw).map_err(CodeError::LineBreak)?;
     let mode = parse_code_mode(mode_raw).map_err(CodeError::LineBreak)?;
     let code = parse_code_text(code_raw).map_err(CodeError::Ident)?;
     Ok(CodeBlock {
         language,
         mode,
-        code
+        code,
+        meta
     })
 }
 

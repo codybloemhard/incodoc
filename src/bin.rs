@@ -4,7 +4,8 @@ const TEST: &str = "
         \"auto\",
         '
             let x = 3;
-        '
+        ',
+        meta { (\"source\", \"www.code.com/user/repo\") }
     }
 ";
 

@@ -6,7 +6,7 @@ meta_inner = _{ (meta_tuple ~ ",")* ~ meta_tuple? }
 meta_tuple = { ("(" ~ string ~ "," ~ meta_val ~ ")") }
 meta_val = _{ string | text | date | int }
 
-code = { "code" ~ "{" ~ string ~ "," ~ string ~ "," ~ code_text ~ "}" }
+code = { "code" ~ "{" ~ string ~ "," ~ string ~ "," ~ code_text ~ ("," ~ meta)? ~ "}" }
 
 code_text = ${ code_txt ~ code_text_inner ~ code_txt }
 code_text_inner = { (!code_txt ~ ANY)* }
