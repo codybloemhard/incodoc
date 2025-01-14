@@ -1,6 +1,7 @@
 mod tests;
 
 use std::num::ParseIntError;
+use std::collections::HashMap;
 
 use pest::{
     Parser,
@@ -25,7 +26,7 @@ pub enum DocError {
     Code(CodeError),
 }
 
-#[derive(Clone, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum DocItem {
     Text(String),
     Code(CodeBlock),
@@ -43,7 +44,9 @@ pub fn parse(input: &str) -> Result<Doc, String> {
         match inner.as_rule() {
             Rule::meta => {
                 let (m, es) = parse_meta(inner);
-                doc.meta = m;
+                for (key, value) in m {
+                    doc.meta.insert(key, value);
+                }
                 for e in es {
                     doc.errors.push(DocError::Meta(e));
                 }
@@ -63,16 +66,16 @@ pub fn parse(input: &str) -> Result<Doc, String> {
     Ok(doc)
 }
 
-pub type Meta = Vec<MetaTuple>;
+pub type Meta = HashMap<String, MetaVal>;
 
 fn parse_meta(pair: Pair<'_, Rule>) -> (Meta, Vec<MetaValError>) {
-    let mut res = Vec::new();
+    let mut res = HashMap::new();
     let mut errs = Vec::new();
     for inner in pair.into_inner() {
         match inner.as_rule() {
             Rule::meta_tuple => {
                 match parse_meta_tuple(inner) {
-                    Ok(tuple) => res.push(tuple),
+                    Ok((key, value)) => { res.insert(key, value); },
                     Err(err) => errs.push(err),
                 }
             },
@@ -130,7 +133,7 @@ fn parse_meta_val(pair: Pair<'_, Rule>) -> Result<MetaVal, MetaValError> {
     })
 }
 
-#[derive(Clone, Default, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct CodeBlock {
     pub language: String,
     pub mode: CodeModeHint,
