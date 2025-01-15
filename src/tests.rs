@@ -139,7 +139,10 @@ meta { (
 },
 ",
         Doc {
-            errors: vec![DocError::Meta(MetaValError::String(StringLBError))],
+            meta: hmap!([(
+                "pr        op".to_string(),
+                MetaVal::String("te     st     ".to_string())
+            )]),
             ..Default::default()
         }
     );
@@ -437,6 +440,27 @@ meta { (
         }",
         Doc {
             errors: vec![DocError::Code(CodeError::Ident(CodeIdentError))],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_code_c12,
+        "code {
+            \"plain\",
+            \"show\",
+            '
+            this is code
+            ',
+            meta { (\"test tuple\", 'yay') }
+        }",
+        Doc {
+            items: vec![DocItem::Code(CodeBlock{
+                language: "plain".to_string(),
+                code: "this is code".to_string(),
+                meta: hmap!([("test tuple".to_string(), MetaVal::Text("yay".to_string()))]),
+                ..Default::default()
+            })],
             ..Default::default()
         }
     );

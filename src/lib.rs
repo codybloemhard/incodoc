@@ -93,7 +93,7 @@ fn parse_meta_tuple(pair: Pair<'_, Rule>) -> Result<MetaTuple, MetaValError> {
     let mut inners = pair.into_inner();
     let string = inners.next().expect("IP: parse_meta_tuple: no string;");
     let meta_val = inners.next().expect("IP: parse_meta_tuple: no meta_val;");
-    let string = parse_string(string).map_err(MetaValError::String)?;
+    let string = parse_string(string);
     let meta_val = parse_meta_val(meta_val)?;
     Ok((string, meta_val))
 }
@@ -110,13 +110,12 @@ pub enum MetaVal {
 pub enum MetaValError {
     Int(ParseIntError),
     Date(DateError),
-    String(StringLBError),
 }
 
 fn parse_meta_val(pair: Pair<'_, Rule>) -> Result<MetaVal, MetaValError> {
     Ok(match pair.as_rule() {
         Rule::string => {
-            MetaVal::String(parse_string(pair).map_err(MetaValError::String)?)
+            MetaVal::String(parse_string(pair))
         },
         Rule::text => {
             MetaVal::Text(parse_text(pair))
@@ -152,7 +151,6 @@ pub enum CodeModeHint {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CodeError {
     Ident(CodeIdentError),
-    LineBreak(StringLBError),
     Meta(MetaValError),
 }
 
@@ -167,8 +165,8 @@ fn parse_code(pair: Pair<'_, Rule>) -> Result<CodeBlock, CodeError> {
     } else {
         Meta::default()
     };
-    let language = parse_string(lang_raw).map_err(CodeError::LineBreak)?;
-    let mode = parse_code_mode(mode_raw).map_err(CodeError::LineBreak)?;
+    let language = parse_string(lang_raw);
+    let mode = parse_code_mode(mode_raw);
     let code = parse_code_text(code_raw).map_err(CodeError::Ident)?;
     Ok(CodeBlock {
         language,
@@ -178,29 +176,20 @@ fn parse_code(pair: Pair<'_, Rule>) -> Result<CodeBlock, CodeError> {
     })
 }
 
-fn parse_code_mode(pair: Pair<'_, Rule>) -> Result<CodeModeHint, StringLBError> {
-    let string = parse_string(pair)?;
-    Ok(match string.as_ref() {
+fn parse_code_mode(pair: Pair<'_, Rule>) -> CodeModeHint {
+    let string = parse_string(pair);
+    match string.as_ref() {
         "choice" => CodeModeHint::Choice,
         "auto" => CodeModeHint::Auto,
         "replace" => CodeModeHint::Replace,
         _ => CodeModeHint::Show,
-    })
-}
-
-#[derive(Clone, Copy, Default, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
-pub struct StringLBError;
-
-fn parse_string(pair: Pair<'_, Rule>) -> Result<String, StringLBError> {
-    let inner = pair.into_inner().next().expect("IP: parse_string: no inner;");
-    let string = inner.as_str().to_string();
-    if string.chars().any(|c| c == '\n' || c == '\r') {
-        Err(StringLBError)
-    } else {
-        Ok(string)
     }
 }
 
+fn parse_string(pair: Pair<'_, Rule>) -> String {
+    let inner = pair.into_inner().next().expect("IP: parse_string: no inner;");
+    inner.as_str().chars().filter(|c| *c != '\n' && *c != '\r').collect()
+}
 
 fn parse_text(pair: Pair<'_, Rule>) -> String {
     let mut iter = pair.into_inner();
