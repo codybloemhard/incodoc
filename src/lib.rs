@@ -43,13 +43,8 @@ pub fn parse(input: &str) -> Result<Doc, String> {
     for inner in pairs {
         match inner.as_rule() {
             Rule::meta => {
-                let (m, es) = parse_meta(inner);
-                for (key, value) in m {
-                    doc.meta.insert(key, value);
-                }
-                for e in es {
-                    doc.errors.push(DocError::Meta(e));
-                }
+                let meta = parse_meta(inner);
+                doc.meta.absorb(meta);
             },
             Rule::text => {
                 doc.items.push(DocItem::Text(parse_text(inner)));
@@ -66,36 +61,10 @@ pub fn parse(input: &str) -> Result<Doc, String> {
     Ok(doc)
 }
 
-pub type Meta = HashMap<String, MetaVal>;
-
-fn parse_meta(pair: Pair<'_, Rule>) -> (Meta, Vec<MetaValError>) {
-    let mut res = HashMap::new();
-    let mut errs = Vec::new();
-    for inner in pair.into_inner() {
-        match inner.as_rule() {
-            Rule::meta_tuple => {
-                match parse_meta_tuple(inner) {
-                    Ok((key, value)) => { res.insert(key, value); },
-                    Err(err) => errs.push(err),
-                }
-            },
-            r => {
-                panic!("IP: parse_meta: illegal rule: {:?};", r);
-            },
-        }
-    }
-    (res, errs)
-}
-
-pub type MetaTuple = (String, MetaVal);
-
-fn parse_meta_tuple(pair: Pair<'_, Rule>) -> Result<MetaTuple, MetaValError> {
-    let mut inners = pair.into_inner();
-    let string = inners.next().expect("IP: parse_meta_tuple: no string;");
-    let meta_val = inners.next().expect("IP: parse_meta_tuple: no meta_val;");
-    let string = parse_string(string);
-    let meta_val = parse_meta_val(meta_val)?;
-    Ok((string, meta_val))
+#[derive(Clone, Default, Debug, Eq, PartialEq)]
+pub struct Meta {
+    map: HashMap<String, MetaVal>,
+    errors: Vec<MetaValError>,
 }
 
 #[derive(Clone, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
@@ -110,6 +79,55 @@ pub enum MetaVal {
 pub enum MetaValError {
     Int(ParseIntError),
     Date(DateError),
+}
+
+impl Meta {
+    pub fn from(map: HashMap<String, MetaVal>, errors: Vec<MetaValError>) -> Self {
+        Self {
+            map,
+            errors,
+        }
+    }
+
+    pub fn absorb(&mut self, other: Self) {
+        for (k, v) in other.map {
+            self.map.insert(k, v);
+        }
+        for err in other.errors {
+            self.errors.push(err);
+        }
+    }
+}
+
+fn parse_meta(pair: Pair<'_, Rule>) -> Meta {
+    let mut map = HashMap::new();
+    let mut errors = Vec::new();
+    for inner in pair.into_inner() {
+        match inner.as_rule() {
+            Rule::meta_tuple => {
+                match parse_meta_tuple(inner) {
+                    Ok((key, value)) => { map.insert(key, value); },
+                    Err(err) => errors.push(err),
+                }
+            },
+            r => {
+                panic!("IP: parse_meta: illegal rule: {:?};", r);
+            },
+        }
+    }
+    Meta {
+        map,
+        errors,
+    }
+}
+
+fn parse_meta_tuple(pair: Pair<'_, Rule>) -> Result<(String, MetaVal), MetaValError> {
+    let mut inners = pair.into_inner();
+    let string = inners.next().expect("IP: parse_meta_tuple: no string;");
+    let meta_val = inners.next().expect("IP: parse_meta_tuple: no meta_val;");
+    let string = parse_string(string);
+    let meta_val = parse_meta_val(meta_val)?;
+    Ok((string, meta_val))
 }
 
 fn parse_meta_val(pair: Pair<'_, Rule>) -> Result<MetaVal, MetaValError> {
@@ -159,12 +177,12 @@ fn parse_code(pair: Pair<'_, Rule>) -> Result<CodeBlock, CodeError> {
     let lang_raw = iter.next().expect("IP: parse_code: no language;");
     let mode_raw = iter.next().expect("IP: parse_code: no mode;");
     let code_raw = iter.next().expect("IP: parse_code: no code;");
-    let meta = if let Some(meta_raw) = iter.next() {
-        let (meta, _errs) = parse_meta(meta_raw);
-        meta
-    } else {
-        Meta::default()
-    };
+    let meta = iter.next().map(parse_meta).unwrap_or_default();
+    // let meta = if let Some(meta_raw) = iter.next() {
+    //     parse_meta(meta_raw)
+    // } else {
+    //     Meta::default()
+    // };
     let language = parse_string(lang_raw);
     let mode = parse_code_mode(mode_raw);
     let code = parse_code_text(code_raw).map_err(CodeError::Ident)?;
