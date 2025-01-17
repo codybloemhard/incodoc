@@ -26,12 +26,12 @@ paragraphs (parts of parts)
 single lines?
 emoji
   user supplies the images
-code generalization?
+code generalization
   language hint
   executeable hint
   could be opened in editor
   could be assigned a renderer by the user (eg. bat)
-background text: bg-text in meta
+background text: in meta
   titles for links
   alt for images
   etc

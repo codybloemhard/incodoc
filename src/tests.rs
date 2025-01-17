@@ -236,6 +236,67 @@ meta { (
     );
 
     test!(
+        t_meta_absorb_c0,
+        "meta { (\"a\", 0), (\"b\", 0) }, meta { (\"c\", 1) }",
+        Doc {
+            meta: meta!([
+                ("a".to_string(), MetaVal::Int(0)),
+                ("b".to_string(), MetaVal::Int(0)),
+                ("c".to_string(), MetaVal::Int(1)),
+            ]),
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_meta_absorb_c1,
+        "meta { (\"a\", 0), (\"b\", 0) }, meta { (\"b\", 1) }",
+        Doc {
+            meta: meta!([
+                ("a".to_string(), MetaVal::Int(0)),
+                ("b".to_string(), MetaVal::Int(1)),
+            ]),
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_meta_absorb_c2,
+        "meta { (\"a\", 0), (\"b\", 2000/13/01) }, meta { (\"b\", 1) }",
+        Doc {
+            meta: Meta::from(
+                HashMap::from([
+                    ("a".to_string(), MetaVal::Int(0)),
+                    ("b".to_string(), MetaVal::Int(1)),
+                ]),
+                vec![MetaValError::Date(DateError::MonthRange(13))]
+            ),
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_meta_absorb_c3,
+        "
+        meta { (\"a\", 0), (\"b\", 2000/13/01), (\"a\", 1) },
+        meta { (\"b\", 2000/13/01), (\"b\", 1), (\"a\", 2) }
+        ",
+        Doc {
+            meta: Meta::from(
+                HashMap::from([
+                    ("a".to_string(), MetaVal::Int(2)),
+                    ("b".to_string(), MetaVal::Int(1)),
+                ]),
+                vec![
+                    MetaValError::Date(DateError::MonthRange(13)),
+                    MetaValError::Date(DateError::MonthRange(13))
+                ]
+            ),
+            ..Default::default()
+        }
+    );
+
+    test!(
         t_code_c0_f0,
         "code { \"plain\", \"show\", '' }",
         Doc {
