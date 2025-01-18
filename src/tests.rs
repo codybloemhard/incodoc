@@ -8,6 +8,13 @@ mod tests {
         }
     }
 
+    macro_rules! hset {
+        ($slice:expr) => {
+            // hhset($slice)
+            HashSet::from_iter($slice.iter().map(|s| s.to_string()))
+        }
+    }
+
     macro_rules! test {
         ($name:ident, $string:expr, $result:expr) => {
             #[test]
@@ -297,6 +304,59 @@ meta { (
     );
 
     test!(
+        t_tags_c0_f0,
+        "tags{\"tag0\", \"tag1\"}",
+        Doc {
+            tags: hset!(["tag0", "tag1"]),
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_tags_c0_f1,
+        "tags {
+            \"tag0\",
+            \"tag1\"
+        },",
+        Doc {
+            tags: hset!(["tag0", "tag1"]),
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_tags_c1,
+        "tags{}",
+        Doc {
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_tags_c2,
+        "
+        tags{\"tag0\"},
+        tags{\"tag1\"},
+        ",
+        Doc {
+            tags: hset!(["tag0", "tag1"]),
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_tags_c3,
+        "
+        tags{\"tag0\"},
+        tags{\"tag0\"},
+        ",
+        Doc {
+            tags: hset!(["tag0"]),
+            ..Default::default()
+        }
+    );
+
+    test!(
         t_code_c0_f0,
         "code { \"plain\", \"show\", '' }",
         Doc {
@@ -523,6 +583,29 @@ meta { (
                 language: "plain".to_string(),
                 code: "this is code".to_string(),
                 meta: meta!([("test tuple".to_string(), MetaVal::Text("yay".to_string()))]),
+                ..Default::default()
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_code_c13,
+        "code {
+            \"plain\",
+            \"show\",
+            '
+            this is code
+            ',
+            meta { (\"test tuple\", 'yay') },
+            tags { \"tag\", \"nother tag\" }
+        }",
+        Doc {
+            items: vec![DocItem::Code(CodeBlock{
+                language: "plain".to_string(),
+                code: "this is code".to_string(),
+                meta: meta!([("test tuple".to_string(), MetaVal::Text("yay".to_string()))]),
+                tags: hset!(["tag", "nother tag"]),
                 ..Default::default()
             })],
             ..Default::default()
