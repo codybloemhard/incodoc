@@ -1,7 +1,9 @@
 mod tests;
 
-use std::num::ParseIntError;
-use std::collections::HashMap;
+use std::{
+    num::ParseIntError,
+    collections::{ HashMap, HashSet },
+};
 
 use pest::{
     Parser,
@@ -16,6 +18,7 @@ pub struct IncodocParser;
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct Doc {
     meta: Meta,
+    tags: Tags,
     errors: Vec<DocError>,
     items: Vec<DocItem>,
 }
@@ -32,6 +35,10 @@ pub enum DocItem {
     Code(CodeBlock),
 }
 
+pub trait Absorb {
+    fn absorb(&mut self, other: Self);
+}
+
 pub fn parse(input: &str) -> Result<Doc, String> {
     let mut doc = Doc::default();
     let pairs = match IncodocParser::parse(Rule::top, input) {
@@ -45,6 +52,10 @@ pub fn parse(input: &str) -> Result<Doc, String> {
             Rule::meta => {
                 let meta = parse_meta(inner);
                 doc.meta.absorb(meta);
+            },
+            Rule::tags => {
+                let tags = parse_tags(inner);
+                doc.tags.absorb(tags);
             },
             Rule::text => {
                 doc.items.push(DocItem::Text(parse_text(inner)));
@@ -88,8 +99,10 @@ impl Meta {
             errors,
         }
     }
+}
 
-    pub fn absorb(&mut self, other: Self) {
+impl Absorb for Meta {
+    fn absorb(&mut self, other: Self) {
         for (k, v) in other.map {
             self.map.insert(k, v);
         }
@@ -150,12 +163,33 @@ fn parse_meta_val(pair: Pair<'_, Rule>) -> Result<MetaVal, MetaValError> {
     })
 }
 
+pub type Tags = HashSet<String>;
+
+impl Absorb for Tags {
+    fn absorb(&mut self, other: Self) {
+        for v in other {
+            self.insert(v);
+        }
+    }
+}
+
+fn parse_tags(pair: Pair<'_, Rule>) -> Tags {
+    let mut res = HashSet::new();
+    for strings in pair.into_inner() {
+        for string in strings.into_inner() {
+            res.insert(parse_string(string));
+        }
+    }
+    res
+}
+
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct CodeBlock {
     pub language: String,
     pub mode: CodeModeHint,
     pub code: String,
     pub meta: Meta,
+    pub tags: Tags,
 }
 
 #[derive(Clone, Copy, Default, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
@@ -178,11 +212,7 @@ fn parse_code(pair: Pair<'_, Rule>) -> Result<CodeBlock, CodeError> {
     let mode_raw = iter.next().expect("IP: parse_code: no mode;");
     let code_raw = iter.next().expect("IP: parse_code: no code;");
     let meta = iter.next().map(parse_meta).unwrap_or_default();
-    // let meta = if let Some(meta_raw) = iter.next() {
-    //     parse_meta(meta_raw)
-    // } else {
-    //     Meta::default()
-    // };
+    let tags = iter.next().map(parse_tags).unwrap_or_default();
     let language = parse_string(lang_raw);
     let mode = parse_code_mode(mode_raw);
     let code = parse_code_text(code_raw).map_err(CodeError::Ident)?;
@@ -190,7 +220,8 @@ fn parse_code(pair: Pair<'_, Rule>) -> Result<CodeBlock, CodeError> {
         language,
         mode,
         code,
-        meta
+        meta,
+        tags,
     })
 }
 
