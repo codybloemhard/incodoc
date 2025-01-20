@@ -17,7 +17,7 @@ pub struct IncodocParser;
 
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct Doc {
-    meta: Meta,
+    meta: Props,
     tags: Tags,
     errors: Vec<DocError>,
     items: Vec<DocItem>,
@@ -25,7 +25,7 @@ pub struct Doc {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum DocError {
-    Meta(MetaValError),
+    Props(PropValError),
     Code(CodeError),
 }
 
@@ -73,13 +73,13 @@ pub fn parse(input: &str) -> Result<Doc, String> {
 }
 
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
-pub struct Meta {
-    map: HashMap<String, MetaVal>,
-    errors: Vec<MetaValError>,
+pub struct Props {
+    map: HashMap<String, PropVal>,
+    errors: Vec<PropValError>,
 }
 
 #[derive(Clone, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
-pub enum MetaVal {
+pub enum PropVal {
     String(String),
     Text(String),
     Int(i64),
@@ -87,13 +87,13 @@ pub enum MetaVal {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub enum MetaValError {
+pub enum PropValError {
     Int(ParseIntError),
     Date(DateError),
 }
 
-impl Meta {
-    pub fn from(map: HashMap<String, MetaVal>, errors: Vec<MetaValError>) -> Self {
+impl Props {
+    pub fn from(map: HashMap<String, PropVal>, errors: Vec<PropValError>) -> Self {
         Self {
             map,
             errors,
@@ -101,7 +101,7 @@ impl Meta {
     }
 }
 
-impl Absorb for Meta {
+impl Absorb for Props {
     fn absorb(&mut self, other: Self) {
         for (k, v) in other.map {
             self.map.insert(k, v);
@@ -112,7 +112,7 @@ impl Absorb for Meta {
     }
 }
 
-fn parse_meta(pair: Pair<'_, Rule>) -> Meta {
+fn parse_meta(pair: Pair<'_, Rule>) -> Props {
     let mut map = HashMap::new();
     let mut errors = Vec::new();
     for inner in pair.into_inner() {
@@ -128,13 +128,13 @@ fn parse_meta(pair: Pair<'_, Rule>) -> Meta {
             },
         }
     }
-    Meta {
+    Props {
         map,
         errors,
     }
 }
 
-fn parse_meta_tuple(pair: Pair<'_, Rule>) -> Result<(String, MetaVal), MetaValError> {
+fn parse_meta_tuple(pair: Pair<'_, Rule>) -> Result<(String, PropVal), PropValError> {
     let mut inners = pair.into_inner();
     let string = inners.next().expect("IP: parse_meta_tuple: no string;");
     let meta_val = inners.next().expect("IP: parse_meta_tuple: no meta_val;");
@@ -143,19 +143,19 @@ fn parse_meta_tuple(pair: Pair<'_, Rule>) -> Result<(String, MetaVal), MetaValEr
     Ok((string, meta_val))
 }
 
-fn parse_meta_val(pair: Pair<'_, Rule>) -> Result<MetaVal, MetaValError> {
+fn parse_meta_val(pair: Pair<'_, Rule>) -> Result<PropVal, PropValError> {
     Ok(match pair.as_rule() {
         Rule::string => {
-            MetaVal::String(parse_string(pair))
+            PropVal::String(parse_string(pair))
         },
         Rule::text => {
-            MetaVal::Text(parse_text(pair))
+            PropVal::Text(parse_text(pair))
         },
         Rule::int => {
-            MetaVal::Int(parse_int(pair).map_err(MetaValError::Int)?)
+            PropVal::Int(parse_int(pair).map_err(PropValError::Int)?)
         },
         Rule::date => {
-            MetaVal::Date(parse_date(pair).map_err(MetaValError::Date)?)
+            PropVal::Date(parse_date(pair).map_err(PropValError::Date)?)
         },
         r => {
             panic!("IP: parse_meta_val: illegal rule: {:?};", r);
@@ -188,7 +188,7 @@ pub struct CodeBlock {
     pub language: String,
     pub mode: CodeModeHint,
     pub code: String,
-    pub meta: Meta,
+    pub meta: Props,
     pub tags: Tags,
 }
 
@@ -203,7 +203,7 @@ pub enum CodeModeHint {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CodeError {
     Ident(CodeIdentError),
-    Meta(MetaValError),
+    Prop(PropValError),
 }
 
 fn parse_code(pair: Pair<'_, Rule>) -> Result<CodeBlock, CodeError> {

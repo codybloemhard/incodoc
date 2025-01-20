@@ -24,8 +24,11 @@ lists
 quotes generalization?
 paragraphs (parts of parts)
 single lines?
-emoji
+common image
+  string -> image
   user supplies the images
+  emoji, stickers, gifs, etc
+  fallback img
 code generalization
   language hint
   executeable hint

@@ -4,7 +4,7 @@ mod tests {
 
     macro_rules! meta {
         ($slice:expr) => {
-            Meta::from(HashMap::from($slice), vec![])
+            Props::from(HashMap::from($slice), vec![])
         }
     }
 
@@ -127,7 +127,7 @@ mod tests {
         t_meta_tuple_string_f0,
         "meta{(\"prop\",\"test\")}",
         Doc {
-            meta: meta!([("prop".to_string(), MetaVal::String("test".to_string()))]),
+            meta: meta!([("prop".to_string(), PropVal::String("test".to_string()))]),
             ..Default::default()
         }
     );
@@ -148,7 +148,7 @@ meta { (
         Doc {
             meta: meta!([(
                 "pr        op".to_string(),
-                MetaVal::String("te     st     ".to_string())
+                PropVal::String("te     st     ".to_string())
             )]),
             ..Default::default()
         }
@@ -158,7 +158,7 @@ meta { (
         t_meta_tuple_int_c0,
         "meta { (\"prop\", 5) }",
         Doc {
-            meta: meta!([("prop".to_string(), MetaVal::Int(5))]),
+            meta: meta!([("prop".to_string(), PropVal::Int(5))]),
             ..Default::default()
         }
     );
@@ -167,7 +167,7 @@ meta { (
         t_meta_tuple_int_c1,
         "meta { (\"prop\", +7) }",
         Doc {
-            meta: meta!([("prop".to_string(), MetaVal::Int(7))]),
+            meta: meta!([("prop".to_string(), PropVal::Int(7))]),
             ..Default::default()
         }
     );
@@ -176,7 +176,7 @@ meta { (
         t_meta_tuple_int_c2,
         "meta { (\"prop\", -1) }",
         Doc {
-            meta: meta!([("prop".to_string(), MetaVal::Int(-1))]),
+            meta: meta!([("prop".to_string(), PropVal::Int(-1))]),
             ..Default::default()
         }
     );
@@ -185,7 +185,7 @@ meta { (
         t_meta_tuple_date_c0,
         "meta { (\"prop\", 2000/01/01) }",
         Doc {
-            meta: meta!([("prop".to_string(), MetaVal::Date(Date::new(2000, 1, 1).unwrap()))]),
+            meta: meta!([("prop".to_string(), PropVal::Date(Date::new(2000, 1, 1).unwrap()))]),
             ..Default::default()
         }
     );
@@ -194,7 +194,7 @@ meta { (
         t_meta_tuple_date_c1,
         "meta { (\"prop\", -3434/01/01) }",
         Doc {
-            meta: meta!([("prop".to_string(), MetaVal::Date(Date::new(-3434, 1, 1).unwrap()))]),
+            meta: meta!([("prop".to_string(), PropVal::Date(Date::new(-3434, 1, 1).unwrap()))]),
             ..Default::default()
         }
     );
@@ -203,9 +203,9 @@ meta { (
         t_meta_tuple_date_c2,
         "meta { (\"prop\", 2000/13/01) }",
         Doc {
-            meta: Meta::from(
+            meta: Props::from(
                 HashMap::default(),
-                vec![MetaValError::Date(DateError::MonthRange(13))]
+                vec![PropValError::Date(DateError::MonthRange(13))]
             ),
             ..Default::default()
         }
@@ -215,7 +215,7 @@ meta { (
         t_meta_tuple_date_c3,
         "meta { (\"prop\", 2000/01/32) }",
         Doc {
-            meta: Meta::from(HashMap::default(), vec![MetaValError::Date(DateError::DayRange(32))]),
+            meta: Props::from(HashMap::default(), vec![PropValError::Date(DateError::DayRange(32))]),
             ..Default::default()
         }
     );
@@ -224,7 +224,7 @@ meta { (
         t_meta_tuple_text_c0,
         "meta { (\"prop\", 'this is text') }",
         Doc {
-            meta: meta!([("prop".to_string(), MetaVal::Text("this is text".to_string()))]),
+            meta: meta!([("prop".to_string(), PropVal::Text("this is text".to_string()))]),
             ..Default::default()
         }
     );
@@ -237,7 +237,7 @@ meta { (
                         this is text
         ') }",
         Doc {
-            meta: meta!([("prop".to_string(), MetaVal::Text("this is text".to_string()))]),
+            meta: meta!([("prop".to_string(), PropVal::Text("this is text".to_string()))]),
             ..Default::default()
         }
     );
@@ -247,9 +247,9 @@ meta { (
         "meta { (\"a\", 0), (\"b\", 0) }, meta { (\"c\", 1) }",
         Doc {
             meta: meta!([
-                ("a".to_string(), MetaVal::Int(0)),
-                ("b".to_string(), MetaVal::Int(0)),
-                ("c".to_string(), MetaVal::Int(1)),
+                ("a".to_string(), PropVal::Int(0)),
+                ("b".to_string(), PropVal::Int(0)),
+                ("c".to_string(), PropVal::Int(1)),
             ]),
             ..Default::default()
         }
@@ -260,8 +260,8 @@ meta { (
         "meta { (\"a\", 0), (\"b\", 0) }, meta { (\"b\", 1) }",
         Doc {
             meta: meta!([
-                ("a".to_string(), MetaVal::Int(0)),
-                ("b".to_string(), MetaVal::Int(1)),
+                ("a".to_string(), PropVal::Int(0)),
+                ("b".to_string(), PropVal::Int(1)),
             ]),
             ..Default::default()
         }
@@ -271,12 +271,12 @@ meta { (
         t_meta_absorb_c2,
         "meta { (\"a\", 0), (\"b\", 2000/13/01) }, meta { (\"b\", 1) }",
         Doc {
-            meta: Meta::from(
+            meta: Props::from(
                 HashMap::from([
-                    ("a".to_string(), MetaVal::Int(0)),
-                    ("b".to_string(), MetaVal::Int(1)),
+                    ("a".to_string(), PropVal::Int(0)),
+                    ("b".to_string(), PropVal::Int(1)),
                 ]),
-                vec![MetaValError::Date(DateError::MonthRange(13))]
+                vec![PropValError::Date(DateError::MonthRange(13))]
             ),
             ..Default::default()
         }
@@ -289,14 +289,14 @@ meta { (
         meta { (\"b\", 2000/13/01), (\"b\", 1), (\"a\", 2) }
         ",
         Doc {
-            meta: Meta::from(
+            meta: Props::from(
                 HashMap::from([
-                    ("a".to_string(), MetaVal::Int(2)),
-                    ("b".to_string(), MetaVal::Int(1)),
+                    ("a".to_string(), PropVal::Int(2)),
+                    ("b".to_string(), PropVal::Int(1)),
                 ]),
                 vec![
-                    MetaValError::Date(DateError::MonthRange(13)),
-                    MetaValError::Date(DateError::MonthRange(13))
+                    PropValError::Date(DateError::MonthRange(13)),
+                    PropValError::Date(DateError::MonthRange(13))
                 ]
             ),
             ..Default::default()
@@ -582,7 +582,7 @@ meta { (
             items: vec![DocItem::Code(CodeBlock{
                 language: "plain".to_string(),
                 code: "this is code".to_string(),
-                meta: meta!([("test tuple".to_string(), MetaVal::Text("yay".to_string()))]),
+                meta: meta!([("test tuple".to_string(), PropVal::Text("yay".to_string()))]),
                 ..Default::default()
             })],
             ..Default::default()
@@ -604,7 +604,7 @@ meta { (
             items: vec![DocItem::Code(CodeBlock{
                 language: "plain".to_string(),
                 code: "this is code".to_string(),
-                meta: meta!([("test tuple".to_string(), MetaVal::Text("yay".to_string()))]),
+                meta: meta!([("test tuple".to_string(), PropVal::Text("yay".to_string()))]),
                 tags: hset!(["tag", "nother tag"]),
                 ..Default::default()
             })],
