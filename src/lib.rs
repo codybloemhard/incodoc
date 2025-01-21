@@ -17,7 +17,7 @@ pub struct IncodocParser;
 
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct Doc {
-    meta: Props,
+    props: Props,
     tags: Tags,
     errors: Vec<DocError>,
     items: Vec<DocItem>,
@@ -49,9 +49,9 @@ pub fn parse(input: &str) -> Result<Doc, String> {
     };
     for inner in pairs {
         match inner.as_rule() {
-            Rule::meta => {
-                let meta = parse_meta(inner);
-                doc.meta.absorb(meta);
+            Rule::props => {
+                let props = parse_props(inner);
+                doc.props.absorb(props);
             },
             Rule::tags => {
                 let tags = parse_tags(inner);
@@ -112,19 +112,19 @@ impl Absorb for Props {
     }
 }
 
-fn parse_meta(pair: Pair<'_, Rule>) -> Props {
+fn parse_props(pair: Pair<'_, Rule>) -> Props {
     let mut map = HashMap::new();
     let mut errors = Vec::new();
     for inner in pair.into_inner() {
         match inner.as_rule() {
-            Rule::meta_tuple => {
-                match parse_meta_tuple(inner) {
+            Rule::prop_tuple => {
+                match parse_prop_tuple(inner) {
                     Ok((key, value)) => { map.insert(key, value); },
                     Err(err) => errors.push(err),
                 }
             },
             r => {
-                panic!("IP: parse_meta: illegal rule: {:?};", r);
+                panic!("IP: parse_props: illegal rule: {:?};", r);
             },
         }
     }
@@ -134,16 +134,16 @@ fn parse_meta(pair: Pair<'_, Rule>) -> Props {
     }
 }
 
-fn parse_meta_tuple(pair: Pair<'_, Rule>) -> Result<(String, PropVal), PropValError> {
+fn parse_prop_tuple(pair: Pair<'_, Rule>) -> Result<(String, PropVal), PropValError> {
     let mut inners = pair.into_inner();
-    let string = inners.next().expect("IP: parse_meta_tuple: no string;");
-    let meta_val = inners.next().expect("IP: parse_meta_tuple: no meta_val;");
+    let string = inners.next().expect("IP: parse_prop_tuple: no string;");
+    let prop_val = inners.next().expect("IP: parse_prop_tuple: no prop_val;");
     let string = parse_string(string);
-    let meta_val = parse_meta_val(meta_val)?;
-    Ok((string, meta_val))
+    let prop_val = parse_prop_val(prop_val)?;
+    Ok((string, prop_val))
 }
 
-fn parse_meta_val(pair: Pair<'_, Rule>) -> Result<PropVal, PropValError> {
+fn parse_prop_val(pair: Pair<'_, Rule>) -> Result<PropVal, PropValError> {
     Ok(match pair.as_rule() {
         Rule::string => {
             PropVal::String(parse_string(pair))
@@ -158,7 +158,7 @@ fn parse_meta_val(pair: Pair<'_, Rule>) -> Result<PropVal, PropValError> {
             PropVal::Date(parse_date(pair).map_err(PropValError::Date)?)
         },
         r => {
-            panic!("IP: parse_meta_val: illegal rule: {:?};", r);
+            panic!("IP: parse_prop_val: illegal rule: {:?};", r);
         },
     })
 }
@@ -188,7 +188,7 @@ pub struct CodeBlock {
     pub language: String,
     pub mode: CodeModeHint,
     pub code: String,
-    pub meta: Props,
+    pub props: Props,
     pub tags: Tags,
 }
 
@@ -211,7 +211,7 @@ fn parse_code(pair: Pair<'_, Rule>) -> Result<CodeBlock, CodeError> {
     let lang_raw = iter.next().expect("IP: parse_code: no language;");
     let mode_raw = iter.next().expect("IP: parse_code: no mode;");
     let code_raw = iter.next().expect("IP: parse_code: no code;");
-    let meta = iter.next().map(parse_meta).unwrap_or_default();
+    let props = iter.next().map(parse_props).unwrap_or_default();
     let tags = iter.next().map(parse_tags).unwrap_or_default();
     let language = parse_string(lang_raw);
     let mode = parse_code_mode(mode_raw);
@@ -220,7 +220,7 @@ fn parse_code(pair: Pair<'_, Rule>) -> Result<CodeBlock, CodeError> {
         language,
         mode,
         code,
-        meta,
+        props,
         tags,
     })
 }

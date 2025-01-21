@@ -2,7 +2,7 @@
 mod tests {
     use crate::*;
 
-    macro_rules! meta {
+    macro_rules! props {
         ($slice:expr) => {
             Props::from(HashMap::from($slice), vec![])
         }
@@ -10,7 +10,6 @@ mod tests {
 
     macro_rules! hset {
         ($slice:expr) => {
-            // hhset($slice)
             HashSet::from_iter($slice.iter().map(|s| s.to_string()))
         }
     }
@@ -96,27 +95,27 @@ mod tests {
     );
 
     test!(
-        t_meta_empty_f0,
-        "meta{}",
+        t_props_empty_f0,
+        "props{}",
         Doc::default()
     );
 
     test!(
-        t_meta_empty_f1,
-        "meta {}",
+        t_props_empty_f1,
+        "props {}",
         Doc::default()
     );
 
     test!(
-        t_meta_empty_f2,
-        "meta {  }, ",
+        t_props_empty_f2,
+        "props {  }, ",
         Doc::default()
     );
 
     test!(
-        t_meta_empty_f3,
+        t_props_empty_f3,
         "
-        meta {
+        props {
 
         },
         ",
@@ -124,18 +123,18 @@ mod tests {
     );
 
     test!(
-        t_meta_tuple_string_f0,
-        "meta{(\"prop\",\"test\")}",
+        t_props_tuple_string_f0,
+        "props{(\"prop\",\"test\")}",
         Doc {
-            meta: meta!([("prop".to_string(), PropVal::String("test".to_string()))]),
+            props: props!([("prop".to_string(), PropVal::String("test".to_string()))]),
             ..Default::default()
         }
     );
 
     test!(
-        t_meta_tuple_string_f1,
+        t_props_tuple_string_f1,
 "
-meta { (
+props { (
     \"
     pr
         op\" ,
@@ -146,7 +145,7 @@ meta { (
 },
 ",
         Doc {
-            meta: meta!([(
+            props: props!([(
                 "pr        op".to_string(),
                 PropVal::String("te     st     ".to_string())
             )]),
@@ -155,55 +154,55 @@ meta { (
     );
 
     test!(
-        t_meta_tuple_int_c0,
-        "meta { (\"prop\", 5) }",
+        t_props,
+        "props { (\"prop\", 5) }",
         Doc {
-            meta: meta!([("prop".to_string(), PropVal::Int(5))]),
+            props: props!([("prop".to_string(), PropVal::Int(5))]),
             ..Default::default()
         }
     );
 
     test!(
-        t_meta_tuple_int_c1,
-        "meta { (\"prop\", +7) }",
+        t_props_tuple_int_c1,
+        "props { (\"prop\", +7) }",
         Doc {
-            meta: meta!([("prop".to_string(), PropVal::Int(7))]),
+            props: props!([("prop".to_string(), PropVal::Int(7))]),
             ..Default::default()
         }
     );
 
     test!(
-        t_meta_tuple_int_c2,
-        "meta { (\"prop\", -1) }",
+        t_props_tuple_int_c2,
+        "props { (\"prop\", -1) }",
         Doc {
-            meta: meta!([("prop".to_string(), PropVal::Int(-1))]),
+            props: props!([("prop".to_string(), PropVal::Int(-1))]),
             ..Default::default()
         }
     );
 
     test!(
-        t_meta_tuple_date_c0,
-        "meta { (\"prop\", 2000/01/01) }",
+        t_props_tuple_date_c0,
+        "props { (\"prop\", 2000/01/01) }",
         Doc {
-            meta: meta!([("prop".to_string(), PropVal::Date(Date::new(2000, 1, 1).unwrap()))]),
+            props: props!([("prop".to_string(), PropVal::Date(Date::new(2000, 1, 1).unwrap()))]),
             ..Default::default()
         }
     );
 
     test!(
-        t_meta_tuple_date_c1,
-        "meta { (\"prop\", -3434/01/01) }",
+        t_props_tuple_date_c1,
+        "props { (\"prop\", -3434/01/01) }",
         Doc {
-            meta: meta!([("prop".to_string(), PropVal::Date(Date::new(-3434, 1, 1).unwrap()))]),
+            props: props!([("prop".to_string(), PropVal::Date(Date::new(-3434, 1, 1).unwrap()))]),
             ..Default::default()
         }
     );
 
     test!(
-        t_meta_tuple_date_c2,
-        "meta { (\"prop\", 2000/13/01) }",
+        t_props_tuple_date_c2,
+        "props { (\"prop\", 2000/13/01) }",
         Doc {
-            meta: Props::from(
+            props: Props::from(
                 HashMap::default(),
                 vec![PropValError::Date(DateError::MonthRange(13))]
             ),
@@ -212,41 +211,41 @@ meta { (
     );
 
     test!(
-        t_meta_tuple_date_c3,
-        "meta { (\"prop\", 2000/01/32) }",
+        t_props_tuple_date_c3,
+        "props { (\"prop\", 2000/01/32) }",
         Doc {
-            meta: Props::from(HashMap::default(), vec![PropValError::Date(DateError::DayRange(32))]),
+            props: Props::from(HashMap::default(), vec![PropValError::Date(DateError::DayRange(32))]),
             ..Default::default()
         }
     );
 
     test!(
-        t_meta_tuple_text_c0,
-        "meta { (\"prop\", 'this is text') }",
+        t_props_tuple_text_c0,
+        "props { (\"prop\", 'this is text') }",
         Doc {
-            meta: meta!([("prop".to_string(), PropVal::Text("this is text".to_string()))]),
+            props: props!([("prop".to_string(), PropVal::Text("this is text".to_string()))]),
             ..Default::default()
         }
     );
 
     test!(
-        t_meta_tuple_text_c1,
+        t_props_tuple_text_c1,
         // looks incorrect because of the escape characters for "
         "
-        meta { (\"prop\", '
+        props { (\"prop\", '
                         this is text
         ') }",
         Doc {
-            meta: meta!([("prop".to_string(), PropVal::Text("this is text".to_string()))]),
+            props: props!([("prop".to_string(), PropVal::Text("this is text".to_string()))]),
             ..Default::default()
         }
     );
 
     test!(
-        t_meta_absorb_c0,
-        "meta { (\"a\", 0), (\"b\", 0) }, meta { (\"c\", 1) }",
+        t_props_absorb_c0,
+        "props { (\"a\", 0), (\"b\", 0) }, props { (\"c\", 1) }",
         Doc {
-            meta: meta!([
+            props: props!([
                 ("a".to_string(), PropVal::Int(0)),
                 ("b".to_string(), PropVal::Int(0)),
                 ("c".to_string(), PropVal::Int(1)),
@@ -256,10 +255,10 @@ meta { (
     );
 
     test!(
-        t_meta_absorb_c1,
-        "meta { (\"a\", 0), (\"b\", 0) }, meta { (\"b\", 1) }",
+        t_props_absorb_c1,
+        "props { (\"a\", 0), (\"b\", 0) }, props { (\"b\", 1) }",
         Doc {
-            meta: meta!([
+            props: props!([
                 ("a".to_string(), PropVal::Int(0)),
                 ("b".to_string(), PropVal::Int(1)),
             ]),
@@ -268,10 +267,10 @@ meta { (
     );
 
     test!(
-        t_meta_absorb_c2,
-        "meta { (\"a\", 0), (\"b\", 2000/13/01) }, meta { (\"b\", 1) }",
+        t_props_absorb_c2,
+        "props { (\"a\", 0), (\"b\", 2000/13/01) }, props { (\"b\", 1) }",
         Doc {
-            meta: Props::from(
+            props: Props::from(
                 HashMap::from([
                     ("a".to_string(), PropVal::Int(0)),
                     ("b".to_string(), PropVal::Int(1)),
@@ -283,13 +282,13 @@ meta { (
     );
 
     test!(
-        t_meta_absorb_c3,
+        t_props_absorb_c3,
         "
-        meta { (\"a\", 0), (\"b\", 2000/13/01), (\"a\", 1) },
-        meta { (\"b\", 2000/13/01), (\"b\", 1), (\"a\", 2) }
+        props { (\"a\", 0), (\"b\", 2000/13/01), (\"a\", 1) },
+        props { (\"b\", 2000/13/01), (\"b\", 1), (\"a\", 2) }
         ",
         Doc {
-            meta: Props::from(
+            props: Props::from(
                 HashMap::from([
                     ("a".to_string(), PropVal::Int(2)),
                     ("b".to_string(), PropVal::Int(1)),
@@ -576,13 +575,13 @@ meta { (
             '
             this is code
             ',
-            meta { (\"test tuple\", 'yay') }
+            props { (\"test tuple\", 'yay') }
         }",
         Doc {
             items: vec![DocItem::Code(CodeBlock{
                 language: "plain".to_string(),
                 code: "this is code".to_string(),
-                meta: meta!([("test tuple".to_string(), PropVal::Text("yay".to_string()))]),
+                props: props!([("test tuple".to_string(), PropVal::Text("yay".to_string()))]),
                 ..Default::default()
             })],
             ..Default::default()
@@ -597,14 +596,14 @@ meta { (
             '
             this is code
             ',
-            meta { (\"test tuple\", 'yay') },
+            props { (\"test tuple\", 'yay') },
             tags { \"tag\", \"nother tag\" }
         }",
         Doc {
             items: vec![DocItem::Code(CodeBlock{
                 language: "plain".to_string(),
                 code: "this is code".to_string(),
-                meta: meta!([("test tuple".to_string(), PropVal::Text("yay".to_string()))]),
+                props: props!([("test tuple".to_string(), PropVal::Text("yay".to_string()))]),
                 tags: hset!(["tag", "nother tag"]),
                 ..Default::default()
             })],

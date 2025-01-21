@@ -1,14 +1,14 @@
 top = _{ SOI ~ (top_structs ~ ",")* ~ top_structs? ~ EOI }
-top_structs = _{ meta | tags | text | code }
+top_structs = _{ props | tags | text | code }
 
-meta = { "meta" ~ "{" ~ meta_inner ~ "}" }
-meta_inner = _{ (meta_tuple ~ ",")* ~ meta_tuple? }
-meta_tuple = { ("(" ~ string ~ "," ~ meta_val ~ ")") }
-meta_val = _{ string | text | date | int }
+props = { "props" ~ "{" ~ props_inner ~ "}" }
+props_inner = _{ (prop_tuple ~ ",")* ~ prop_tuple? }
+prop_tuple = { ("(" ~ string ~ "," ~ prop_val ~ ")") }
+prop_val = _{ string | text | date | int }
 
 tags = { "tags" ~ "{" ~ strings ~ "}" }
 
-code = { "code" ~ "{" ~ string ~ "," ~ string ~ "," ~ code_text ~ ("," ~ meta)? ~ ("," ~ tags)? ~ "}" }
+code = { "code" ~ "{" ~ string ~ "," ~ string ~ "," ~ code_text ~ ("," ~ props)? ~ ("," ~ tags)? ~ "}" }
 code_text = ${ code_txt ~ code_text_inner ~ code_txt }
 code_text_inner = { (!code_txt ~ ANY)* }
 code_txt = { "'" }
