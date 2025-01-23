@@ -10,7 +10,7 @@ I want something like but with the ability to function like a static web page.
 
 features:
 
-metadata
+metadata: props
   key pairs
 navigation
   links lists of lists of links
@@ -34,7 +34,7 @@ code generalization
   executeable hint
   could be opened in editor
   could be assigned a renderer by the user (eg. bat)
-background text: in meta
+background text: in props
   titles for links
   alt for images
   etc
@@ -52,7 +52,7 @@ fonts
 line breaks
 horizontal rules
 
-meta{
+props{
     ("language", "en"),
     ("date", 31/12/9999),
 }
@@ -73,9 +73,9 @@ nav{
 part{
     head{0, 'very important'},
     'One must see this image.',
-    link{'very important image', "image.png", meta{("bg-text", 'Extremely important image.')}},
+    link{'very important image', "image.png", props{("bg-text", 'Extremely important image.')}},
     'Also this one.',
-    link{'another important image', "website.com/image", meta{("type-hint", 'image')}},
+    link{'another important image', "website.com/image", props{("type-hint", 'image')}},
     'For further questions see ',
     link{'questions', "#questions"},
     '.',
@@ -130,7 +130,7 @@ part{
     part{
         'This is will not compile:',
         code{
-            meta{("language", "rust")},
+            props{("language", "rust")},
             '
                 let mut x = 0;
                 let y = &mut x;
@@ -144,7 +144,7 @@ part{
         Only if you want to.
         ',
         code{
-            meta{
+            props{
                 ("language", "typst-formula"),
                 ("ex-hint", "suggested"),
             },
@@ -154,7 +154,7 @@ part{
         },
         'Truth table for X AND Y',
         data{
-            meta{
+            props{
                 ("type-hint", "table"),
                 ("ex-hint", "suggested"),
             },
@@ -171,7 +171,7 @@ part{
         },
         'This is a graph of my happiness:',
         data{
-            meta{
+            props{
                 ("type-hint", "line-graph"),
                 ("ex-hint", "suggested"),
             },
@@ -188,7 +188,7 @@ part{
     },
 }
 part{
-    meta{("type", "footer")},
+    props{("type", "footer")},
     '
     Copyright (c) 1337 me
     ',
@@ -198,7 +198,7 @@ Some markdown like language that would be parsed and turned into the above forma
 For actual writing.
 
 ```md
-$meta language en
+$prop language en
 $nav ""
   $nav "top level"
     - [home](/home)

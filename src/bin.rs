@@ -5,11 +5,12 @@ const TEST: &str = "
         '
             let x = 3;
         ',
-        meta { (\"source\", \"www.code.com/user/repo\") },
+        props { (\"source\", \"www.code.com/user/repo\") },
         tags { \"snippet0\", \"snippet-rust\" }
     },
     tags { \"doc tag\", \"nother one\" },
-    tags { \"ok sorry\" }
+    tags { \"ok sorry\" },
+    'This is a ', em{le, 'light'}, ' emphasis.',
 ";
 
 fn main() {

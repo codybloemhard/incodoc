@@ -1,5 +1,5 @@
 top = _{ SOI ~ (top_structs ~ ",")* ~ top_structs? ~ EOI }
-top_structs = _{ props | tags | text | code }
+top_structs = _{ props | tags | text | emphasis | code }
 
 props = { "props" ~ "{" ~ props_inner ~ "}" }
 props_inner = _{ (prop_tuple ~ ",")* ~ prop_tuple? }
@@ -7,6 +7,9 @@ prop_tuple = { ("(" ~ string ~ "," ~ prop_val ~ ")") }
 prop_val = _{ string | text | date | int }
 
 tags = { "tags" ~ "{" ~ strings ~ "}" }
+
+emphasis = { "em" ~ "{" ~ em_st ~ "," ~ text ~ "}" }
+em_st = { "le" | "me" | "se" | "ld" | "md" | "sd" }
 
 code = { "code" ~ "{" ~ string ~ "," ~ string ~ "," ~ code_text ~ ("," ~ props)? ~ ("," ~ tags)? ~ "}" }
 code_text = ${ code_txt ~ code_text_inner ~ code_txt }

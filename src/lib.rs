@@ -32,6 +32,7 @@ pub enum DocError {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum DocItem {
     Text(String),
+    Emphasis(Emphasis),
     Code(CodeBlock),
 }
 
@@ -59,7 +60,10 @@ pub fn parse(input: &str) -> Result<Doc, String> {
             },
             Rule::text => {
                 doc.items.push(DocItem::Text(parse_text(inner)));
-            }
+            },
+            Rule::emphasis => {
+                doc.items.push(DocItem::Emphasis(parse_emphasis(inner)));
+            },
             Rule::code => {
                 match parse_code(inner) {
                     Ok(code_block) => doc.items.push(DocItem::Code(code_block)),
@@ -181,6 +185,47 @@ fn parse_tags(pair: Pair<'_, Rule>) -> Tags {
         }
     }
     res
+}
+
+#[derive(Clone, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
+pub struct Emphasis {
+    strength: EmStrength,
+    etype: EmType,
+    text: String,
+}
+
+#[derive(Clone, Copy, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
+pub enum EmStrength {
+    Light,
+    Medium,
+    Strong,
+}
+
+#[derive(Clone, Copy, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
+pub enum EmType {
+    Emphasis,
+    Deemphasis,
+}
+
+pub fn parse_emphasis(pair: Pair<'_, Rule>) -> Emphasis {
+    let mut iter = pair.into_inner();
+    let strength_type_raw = iter.next().expect("IP: parse_emphasis: no strength_type").as_str();
+    let text_raw = iter.next().expect("IP: parse_emphasis: no text");
+    let text = parse_string(text_raw);
+    let (strength, etype) = match strength_type_raw {
+        "le" => (EmStrength::Light, EmType::Emphasis),
+        "me" => (EmStrength::Medium, EmType::Emphasis),
+        "se" => (EmStrength::Strong, EmType::Emphasis),
+        "ld" => (EmStrength::Light, EmType::Deemphasis),
+        "md" => (EmStrength::Medium, EmType::Deemphasis),
+        "sd" => (EmStrength::Strong, EmType::Deemphasis),
+        _ => panic!("IP: parse_emphasis: wrong strength_type;")
+    };
+    Emphasis {
+        strength,
+        etype,
+        text,
+    }
 }
 
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
