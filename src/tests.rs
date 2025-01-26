@@ -95,6 +95,75 @@ mod tests {
     );
 
     test!(
+        t_text_c5,
+        "
+        ' pre'
+        ",
+        Doc {
+            items: vec![DocItem::Text(" pre".to_string())],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_text_c6,
+        "
+        '    pre'
+        ",
+        Doc {
+            items: vec![DocItem::Text(" pre".to_string())],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_text_c7,
+        "
+        'post '
+        ",
+        Doc {
+            items: vec![DocItem::Text("post ".to_string())],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_text_c8,
+        "
+        'post        '
+        ",
+        Doc {
+            items: vec![DocItem::Text("post ".to_string())],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_text_c9,
+        "
+        '   prepost        '
+        ",
+        Doc {
+            items: vec![DocItem::Text(" prepost ".to_string())],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_text_c10,
+        "
+        '   pre
+
+
+        '
+        ",
+        Doc {
+            items: vec![DocItem::Text(" pre".to_string())],
+            ..Default::default()
+        }
+    );
+
+    test!(
         t_props_empty_f0,
         "props{}",
         Doc::default()

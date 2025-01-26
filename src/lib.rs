@@ -290,7 +290,8 @@ fn parse_text(pair: Pair<'_, Rule>) -> String {
     let inner = iter.next().expect("IP: parse_text: no inner;");
     let mut res = String::new();
     let mut last_nl = true;
-    let mut last_ws = true;
+    let mut last_ws = false;
+    let mut fresh = true;
     for c in inner.as_str().chars() {
         match c {
             '\n' => {
@@ -298,12 +299,13 @@ fn parse_text(pair: Pair<'_, Rule>) -> String {
                     last_nl = true;
                     res.push('\n');
                 }
+                fresh = false;
             },
             '\r' => {},
             x => {
                 if x.is_whitespace() {
                     if !last_ws {
-                        if !last_nl {
+                        if !last_nl || fresh {
                             res.push(x);
                         }
                         last_ws = true;
@@ -316,15 +318,16 @@ fn parse_text(pair: Pair<'_, Rule>) -> String {
             },
         }
     }
-    loop {
+    // loop {
         if let Some(last) = res.chars().last() {
-            if last == '\n' || last.is_whitespace() {
+            if last == '\n' {
                 res.pop();
-            } else {
-                break;
             }
+            // else {
+            //     break;
+            // }
         }
-    }
+    // }
     res
 }
 
