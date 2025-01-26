@@ -425,6 +425,129 @@ props { (
     );
 
     test!(
+        t_emphasis_c0_f0,
+        "em{le, 'light emphasis'}",
+        Doc {
+            items: vec![DocItem::Emphasis(Emphasis{
+                strength: EmStrength::Light,
+                etype: EmType::Emphasis,
+                text: "light emphasis".to_string(),
+            })],
+            ..Default::default()
+        }
+
+    );
+
+    test!(
+        t_emphasis_c0_f1,
+        " em{
+            le   ,
+            'light emphasis'
+        }",
+        Doc {
+            items: vec![DocItem::Emphasis(Emphasis{
+                strength: EmStrength::Light,
+                etype: EmType::Emphasis,
+                text: "light emphasis".to_string(),
+            })],
+            ..Default::default()
+        }
+
+    );
+
+    test!(
+        t_emphasis_c1,
+        "em{me, 'medium emphasis'}",
+        Doc {
+            items: vec![DocItem::Emphasis(Emphasis{
+                strength: EmStrength::Medium,
+                etype: EmType::Emphasis,
+                text: "medium emphasis".to_string(),
+            })],
+            ..Default::default()
+        }
+
+    );
+
+    test!(
+        t_emphasis_c2,
+        "em{se, 'strong emphasis'}",
+        Doc {
+            items: vec![DocItem::Emphasis(Emphasis{
+                strength: EmStrength::Strong,
+                etype: EmType::Emphasis,
+                text: "strong emphasis".to_string(),
+            })],
+            ..Default::default()
+        }
+
+    );
+
+    test!(
+        t_emphasis_c3,
+        "em{ld, 'light deemphasis'}",
+        Doc {
+            items: vec![DocItem::Emphasis(Emphasis{
+                strength: EmStrength::Light,
+                etype: EmType::Deemphasis,
+                text: "light deemphasis".to_string(),
+            })],
+            ..Default::default()
+        }
+
+    );
+
+    test!(
+        t_emphasis_c4,
+        "em{md, 'medium deemphasis'}",
+        Doc {
+            items: vec![DocItem::Emphasis(Emphasis{
+                strength: EmStrength::Medium,
+                etype: EmType::Deemphasis,
+                text: "medium deemphasis".to_string(),
+            })],
+            ..Default::default()
+        }
+
+    );
+
+    test!(
+        t_emphasis_c5,
+        "em{sd, 'strong deemphasis'}",
+        Doc {
+            items: vec![DocItem::Emphasis(Emphasis{
+                strength: EmStrength::Strong,
+                etype: EmType::Deemphasis,
+                text: "strong deemphasis".to_string(),
+            })],
+            ..Default::default()
+        }
+
+    );
+
+    test!(
+        t_emphasis_c6,
+        "
+        'This is a ',
+        em{le, 'light'},
+        ' emphasis.',
+        ",
+        Doc {
+            items: vec![
+                DocItem::Text("This is a ".to_string()),
+                DocItem::Emphasis(Emphasis{
+                    strength: EmStrength::Light,
+                    etype: EmType::Emphasis,
+                    text: "light".to_string(),
+                }),
+                DocItem::Text(" emphasis.".to_string()),
+            ],
+            ..Default::default()
+        }
+
+    );
+
+    test!(
         t_code_c0_f0,
         "code { \"plain\", \"show\", '' }",
         Doc {
