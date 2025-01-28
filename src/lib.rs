@@ -34,6 +34,7 @@ pub enum DocItem {
     Text(String),
     Emphasis(Emphasis),
     Code(CodeBlock),
+    Par(Paragraph),
 }
 
 pub trait Absorb {
@@ -69,6 +70,9 @@ pub fn parse(input: &str) -> Result<Doc, String> {
                     Ok(code_block) => doc.items.push(DocItem::Code(code_block)),
                     Err(err) => doc.errors.push(DocError::Code(err)),
                 }
+            },
+            Rule::paragraph => {
+                doc.items.push(DocItem::Par(parse_paragraph(inner)));
             },
             _ => {},
         }
@@ -185,6 +189,47 @@ fn parse_tags(pair: Pair<'_, Rule>) -> Tags {
         }
     }
     res
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Paragraph {
+    items: Vec<ParagraphItem>,
+    props: Props,
+    tags: Tags,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum ParagraphItem {
+    Text(String),
+    Em(Emphasis),
+    Code(CodeBlock),
+    CodeError(CodeError),
+    Props(Props),
+    Tags(Tags),
+}
+
+pub fn parse_paragraph(pair: Pair<'_, Rule>) -> Paragraph {
+    let mut items = Vec::new();
+    let mut props = Props::default();
+    let mut tags = Tags::default();
+    for inner in pair.into_inner() {
+        match inner.as_rule() {
+            Rule::text => items.push(ParagraphItem::Text(parse_text(inner))),
+            Rule::emphasis => items.push(ParagraphItem::Em(parse_emphasis(inner))),
+            Rule::code => items.push(match parse_code(inner) {
+                Ok(code) => ParagraphItem::Code(code),
+                Err(error) => ParagraphItem::CodeError(error),
+            }),
+            Rule::props => props.absorb(parse_props(inner)),
+            Rule::tags => tags.absorb(parse_tags(inner)),
+            r => panic!("IP: parse_paragraph: illegal rule: {:?};", r),
+        }
+    }
+    Paragraph {
+        items,
+        props,
+        tags,
+    }
 }
 
 #[derive(Clone, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]

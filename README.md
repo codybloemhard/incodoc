@@ -22,8 +22,9 @@ emphasis (italic, bold)
 lists
   ordered, unordered, checked
 quotes generalization?
-paragraphs (parts of parts)
-single lines?
+paragraphs
+single lines
+  as tag to hint
 common image
   string -> image
   user supplies the images
@@ -42,8 +43,8 @@ tags
   anything can have a tag
   links can link to tags
   citation can cite a tag
-tables
-graphs
+tables and graphs
+  as element? as code that executes?
 
 anti features:
 
