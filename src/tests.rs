@@ -600,10 +600,10 @@ props { (
         t_code_c0_f0,
         "code { \"plain\", \"show\", '' }",
         Doc {
-            items: vec![DocItem::Code(CodeBlock{
+            items: vec![DocItem::Code(Ok(CodeBlock{
                 language: "plain".to_string(),
                 ..Default::default()
-            })],
+            }))],
             ..Default::default()
         }
     );
@@ -616,10 +616,10 @@ props { (
             \"show\",
                 ''}",
         Doc {
-            items: vec![DocItem::Code(CodeBlock{
+            items: vec![DocItem::Code(Ok(CodeBlock{
                 language: "plain".to_string(),
                 ..Default::default()
-            })],
+            }))],
             ..Default::default()
         }
     );
@@ -628,11 +628,11 @@ props { (
         t_code_c1,
         "code { \"plain\", \"choice\", '' }",
         Doc {
-            items: vec![DocItem::Code(CodeBlock{
+            items: vec![DocItem::Code(Ok(CodeBlock{
                 language: "plain".to_string(),
                 mode: CodeModeHint::Choice,
                 ..Default::default()
-            })],
+            }))],
             ..Default::default()
         }
     );
@@ -641,11 +641,11 @@ props { (
         t_code_c2,
         "code { \"plain\", \"auto\", '' }",
         Doc {
-            items: vec![DocItem::Code(CodeBlock{
+            items: vec![DocItem::Code(Ok(CodeBlock{
                 language: "plain".to_string(),
                 mode: CodeModeHint::Auto,
                 ..Default::default()
-            })],
+            }))],
             ..Default::default()
         }
     );
@@ -654,11 +654,11 @@ props { (
         t_code_c3,
         "code { \"plain\", \"replace\", '' }",
         Doc {
-            items: vec![DocItem::Code(CodeBlock{
+            items: vec![DocItem::Code(Ok(CodeBlock{
                 language: "plain".to_string(),
                 mode: CodeModeHint::Replace,
                 ..Default::default()
-            })],
+            }))],
             ..Default::default()
         }
     );
@@ -667,10 +667,10 @@ props { (
         t_code_c4,
         "code { \"plain\", \"not a mode!\", '' }",
         Doc {
-            items: vec![DocItem::Code(CodeBlock{
+            items: vec![DocItem::Code(Ok(CodeBlock{
                 language: "plain".to_string(),
                 ..Default::default()
-            })],
+            }))],
             ..Default::default()
         }
     );
@@ -685,11 +685,11 @@ props { (
             '
         }",
         Doc {
-            items: vec![DocItem::Code(CodeBlock{
+            items: vec![DocItem::Code(Ok(CodeBlock{
                 language: "plain".to_string(),
                 code: "this is code".to_string(),
                 ..Default::default()
-            })],
+            }))],
             ..Default::default()
         }
     );
@@ -703,11 +703,11 @@ props { (
             '
         }",
         Doc {
-            items: vec![DocItem::Code(CodeBlock{
+            items: vec![DocItem::Code(Ok(CodeBlock{
                 language: "plain".to_string(),
                 code: "this is code".to_string(),
                 ..Default::default()
-            })],
+            }))],
             ..Default::default()
         }
     );
@@ -722,11 +722,11 @@ props { (
             '
         }",
         Doc {
-            items: vec![DocItem::Code(CodeBlock{
+            items: vec![DocItem::Code(Ok(CodeBlock{
                 language: "plain".to_string(),
                 code: "    this is code".to_string(),
                 ..Default::default()
-            })],
+            }))],
             ..Default::default()
         }
     );
@@ -742,11 +742,11 @@ props { (
             '
         }",
         Doc {
-            items: vec![DocItem::Code(CodeBlock{
+            items: vec![DocItem::Code(Ok(CodeBlock{
                 language: "plain".to_string(),
                 code: "\n    this is code".to_string(),
                 ..Default::default()
-            })],
+            }))],
             ..Default::default()
         }
     );
@@ -762,11 +762,11 @@ props { (
             '
         }",
         Doc {
-            items: vec![DocItem::Code(CodeBlock{
+            items: vec![DocItem::Code(Ok(CodeBlock{
                 language: "plain".to_string(),
                 code: "this is code\n".to_string(),
                 ..Default::default()
-            })],
+            }))],
             ..Default::default()
         }
     );
@@ -784,11 +784,11 @@ props { (
             '
         }",
         Doc {
-            items: vec![DocItem::Code(CodeBlock{
+            items: vec![DocItem::Code(Ok(CodeBlock{
                 language: "plain".to_string(),
                 code: "\n    this is code\n     more code\n".to_string(),
                 ..Default::default()
-            })],
+            }))],
             ..Default::default()
         }
     );
@@ -803,7 +803,7 @@ props { (
             '
         }",
         Doc {
-            errors: vec![DocError::Code(CodeError::Ident(CodeIdentError))],
+            items: vec![DocItem::Code(Err(CodeIdentError))],
             ..Default::default()
         }
     );
@@ -819,12 +819,12 @@ props { (
             props { (\"test tuple\", 'yay') }
         }",
         Doc {
-            items: vec![DocItem::Code(CodeBlock{
+            items: vec![DocItem::Code(Ok(CodeBlock{
                 language: "plain".to_string(),
                 code: "this is code".to_string(),
                 props: props!([("test tuple".to_string(), PropVal::Text("yay".to_string()))]),
                 ..Default::default()
-            })],
+            }))],
             ..Default::default()
         }
     );
@@ -841,13 +841,13 @@ props { (
             tags { \"tag\", \"nother tag\" }
         }",
         Doc {
-            items: vec![DocItem::Code(CodeBlock{
+            items: vec![DocItem::Code(Ok(CodeBlock{
                 language: "plain".to_string(),
                 code: "this is code".to_string(),
                 props: props!([("test tuple".to_string(), PropVal::Text("yay".to_string()))]),
                 tags: hset!(["tag", "nother tag"]),
                 ..Default::default()
-            })],
+            }))],
             ..Default::default()
         }
     );

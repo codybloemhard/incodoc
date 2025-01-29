@@ -19,21 +19,14 @@ pub struct IncodocParser;
 pub struct Doc {
     props: Props,
     tags: Tags,
-    errors: Vec<DocError>,
     items: Vec<DocItem>,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub enum DocError {
-    Props(PropValError),
-    Code(CodeError),
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum DocItem {
     Text(String),
     Emphasis(Emphasis),
-    Code(CodeBlock),
+    Code(Result<CodeBlock, CodeIdentError>),
     Par(Paragraph),
 }
 
@@ -45,35 +38,16 @@ pub fn parse(input: &str) -> Result<Doc, String> {
     let mut doc = Doc::default();
     let pairs = match IncodocParser::parse(Rule::top, input) {
         Ok(res) => res,
-        Err(e) => {
-            return Err(e.to_string());
-        },
+        Err(e) => return Err(e.to_string()),
     };
     for inner in pairs {
         match inner.as_rule() {
-            Rule::props => {
-                let props = parse_props(inner);
-                doc.props.absorb(props);
-            },
-            Rule::tags => {
-                let tags = parse_tags(inner);
-                doc.tags.absorb(tags);
-            },
-            Rule::text => {
-                doc.items.push(DocItem::Text(parse_text(inner)));
-            },
-            Rule::emphasis => {
-                doc.items.push(DocItem::Emphasis(parse_emphasis(inner)));
-            },
-            Rule::code => {
-                match parse_code(inner) {
-                    Ok(code_block) => doc.items.push(DocItem::Code(code_block)),
-                    Err(err) => doc.errors.push(DocError::Code(err)),
-                }
-            },
-            Rule::paragraph => {
-                doc.items.push(DocItem::Par(parse_paragraph(inner)));
-            },
+            Rule::props => doc.props.absorb(parse_props(inner)),
+            Rule::tags => doc.tags.absorb(parse_tags(inner)),
+            Rule::text => doc.items.push(DocItem::Text(parse_text(inner))),
+            Rule::emphasis => doc.items.push(DocItem::Emphasis(parse_emphasis(inner))),
+            Rule::code => doc.items.push(DocItem::Code(parse_code(inner))),
+            Rule::paragraph => doc.items.push(DocItem::Par(parse_paragraph(inner))),
             _ => {},
         }
     }
@@ -145,23 +119,15 @@ fn parse_prop_tuple(pair: Pair<'_, Rule>) -> (String, PropVal) {
 
 fn parse_prop_val(pair: Pair<'_, Rule>) -> PropVal {
     match pair.as_rule() {
-        Rule::string => {
-            PropVal::String(parse_string(pair))
+        Rule::string => PropVal::String(parse_string(pair)),
+        Rule::text => PropVal::Text(parse_text(pair)),
+        Rule::int => match parse_int(pair) {
+            Ok(int) => PropVal::Int(int),
+            Err(error) => PropVal::Error(PropValError::Int(error)),
         },
-        Rule::text => {
-            PropVal::Text(parse_text(pair))
-        },
-        Rule::int => {
-            match parse_int(pair) {
-                Ok(int) => PropVal::Int(int),
-                Err(error) => PropVal::Error(PropValError::Int(error)),
-            }
-        },
-        Rule::date => {
-            match parse_date(pair) {
-                Ok(date) => PropVal::Date(date),
-                Err(error) => PropVal::Error(PropValError::Date(error)),
-            }
+        Rule::date => match parse_date(pair) {
+            Ok(date) => PropVal::Date(date),
+            Err(error) => PropVal::Error(PropValError::Date(error)),
         },
         r => panic!("IP: parse_prop_val: illegal rule: {:?};", r),
     }
@@ -198,8 +164,7 @@ pub struct Paragraph {
 pub enum ParagraphItem {
     Text(String),
     Em(Emphasis),
-    Code(CodeBlock),
-    CodeError(CodeError),
+    Code(Result<CodeBlock, CodeIdentError>),
     Props(Props),
     Tags(Tags),
 }
@@ -212,10 +177,7 @@ pub fn parse_paragraph(pair: Pair<'_, Rule>) -> Paragraph {
         match inner.as_rule() {
             Rule::text => items.push(ParagraphItem::Text(parse_text(inner))),
             Rule::emphasis => items.push(ParagraphItem::Em(parse_emphasis(inner))),
-            Rule::code => items.push(match parse_code(inner) {
-                Ok(code) => ParagraphItem::Code(code),
-                Err(error) => ParagraphItem::CodeError(error),
-            }),
+            Rule::code => items.push(ParagraphItem::Code(parse_code(inner))),
             Rule::props => props.absorb(parse_props(inner)),
             Rule::tags => tags.absorb(parse_tags(inner)),
             r => panic!("IP: parse_paragraph: illegal rule: {:?};", r),
@@ -286,12 +248,7 @@ pub enum CodeModeHint {
     Replace,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub enum CodeError {
-    Ident(CodeIdentError),
-}
-
-fn parse_code(pair: Pair<'_, Rule>) -> Result<CodeBlock, CodeError> {
+fn parse_code(pair: Pair<'_, Rule>) -> Result<CodeBlock, CodeIdentError> {
     let mut iter = pair.into_inner();
     let lang_raw = iter.next().expect("IP: parse_code: no language;");
     let mode_raw = iter.next().expect("IP: parse_code: no mode;");
@@ -300,7 +257,7 @@ fn parse_code(pair: Pair<'_, Rule>) -> Result<CodeBlock, CodeError> {
     let tags = iter.next().map(parse_tags).unwrap_or_default();
     let language = parse_string(lang_raw);
     let mode = parse_code_mode(mode_raw);
-    let code = parse_code_text(code_raw).map_err(CodeError::Ident)?;
+    let code = parse_code_text(code_raw)?;
     Ok(CodeBlock {
         language,
         mode,
@@ -358,16 +315,11 @@ fn parse_text(pair: Pair<'_, Rule>) -> String {
             },
         }
     }
-    // loop {
-        if let Some(last) = res.chars().last() {
-            if last == '\n' {
-                res.pop();
-            }
-            // else {
-            //     break;
-            // }
+    if let Some(last) = res.chars().last() {
+        if last == '\n' {
+            res.pop();
         }
-    // }
+    }
     res
 }
 
