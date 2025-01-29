@@ -4,7 +4,7 @@ mod tests {
 
     macro_rules! props {
         ($slice:expr) => {
-            Props::from(HashMap::from($slice), vec![])
+            HashMap::from($slice)
         }
     }
 
@@ -223,7 +223,7 @@ props { (
     );
 
     test!(
-        t_props,
+        t_props_tuple_int_c0,
         "props { (\"prop\", 5) }",
         Doc {
             props: props!([("prop".to_string(), PropVal::Int(5))]),
@@ -271,10 +271,9 @@ props { (
         t_props_tuple_date_c2,
         "props { (\"prop\", 2000/13/01) }",
         Doc {
-            props: Props::from(
-                HashMap::default(),
-                vec![PropValError::Date(DateError::MonthRange(13))]
-            ),
+            props: props!([
+                ("prop".to_string(), PropVal::Error(PropValError::Date(DateError::MonthRange(13))))
+            ]),
             ..Default::default()
         }
     );
@@ -283,7 +282,9 @@ props { (
         t_props_tuple_date_c3,
         "props { (\"prop\", 2000/01/32) }",
         Doc {
-            props: Props::from(HashMap::default(), vec![PropValError::Date(DateError::DayRange(32))]),
+            props: props!([
+                ("prop".to_string(), PropVal::Error(PropValError::Date(DateError::DayRange(32))))
+            ]),
             ..Default::default()
         }
     );
@@ -339,13 +340,10 @@ props { (
         t_props_absorb_c2,
         "props { (\"a\", 0), (\"b\", 2000/13/01) }, props { (\"b\", 1) }",
         Doc {
-            props: Props::from(
-                HashMap::from([
-                    ("a".to_string(), PropVal::Int(0)),
-                    ("b".to_string(), PropVal::Int(1)),
-                ]),
-                vec![PropValError::Date(DateError::MonthRange(13))]
-            ),
+            props: props!([
+                ("a".to_string(), PropVal::Int(0)),
+                ("b".to_string(), PropVal::Int(1)),
+            ]),
             ..Default::default()
         }
     );
@@ -353,20 +351,71 @@ props { (
     test!(
         t_props_absorb_c3,
         "
-        props { (\"a\", 0), (\"b\", 2000/13/01), (\"a\", 1) },
-        props { (\"b\", 2000/13/01), (\"b\", 1), (\"a\", 2) }
+        props { (\"a\", 0), (\"b\", 0), (\"a\", 1) },
+        props { (\"b\", 2000/13/01) }
         ",
         Doc {
-            props: Props::from(
-                HashMap::from([
-                    ("a".to_string(), PropVal::Int(2)),
-                    ("b".to_string(), PropVal::Int(1)),
-                ]),
-                vec![
-                    PropValError::Date(DateError::MonthRange(13)),
-                    PropValError::Date(DateError::MonthRange(13))
-                ]
-            ),
+            props: props!([
+                ("a".to_string(), PropVal::Int(1)),
+                ("b".to_string(), PropVal::Int(0)),
+            ]),
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_props_absorb_c4,
+        "
+        props { (\"a\", 0), (\"b\", 2000/13/01), (\"a\", 1) },
+        props { (\"b\", 2000/14/01) }
+        ",
+        Doc {
+            props: props!([
+                ("a".to_string(), PropVal::Int(1)),
+                ("b".to_string(), PropVal::Error(PropValError::Date(DateError::MonthRange(14)))),
+            ]),
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_props_overwrite_c0,
+        "
+        props { (\"a\", 0), (\"b\", 2000/13/01), (\"a\", 1), (\"b\", 2000/14/01) },
+        ",
+        Doc {
+            props: props!([
+                ("a".to_string(), PropVal::Int(1)),
+                ("b".to_string(), PropVal::Error(PropValError::Date(DateError::MonthRange(14)))),
+            ]),
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_props_overwrite_c1,
+        "
+        props { (\"a\", 0), (\"b\", 2000/13/01), (\"a\", 1), (\"b\", 2) },
+        ",
+        Doc {
+            props: props!([
+                ("a".to_string(), PropVal::Int(1)),
+                ("b".to_string(), PropVal::Int(2)),
+            ]),
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_props_overwrite_c2,
+        "
+        props { (\"a\", 0), (\"b\", 0), (\"a\", 1), (\"b\", 2000/15/01) },
+        ",
+        Doc {
+            props: props!([
+                ("a".to_string(), PropVal::Int(1)),
+                ("b".to_string(), PropVal::Int(0)),
+            ]),
             ..Default::default()
         }
     );

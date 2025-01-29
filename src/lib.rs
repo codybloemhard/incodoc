@@ -80,18 +80,21 @@ pub fn parse(input: &str) -> Result<Doc, String> {
     Ok(doc)
 }
 
-#[derive(Clone, Default, Debug, Eq, PartialEq)]
-pub struct Props {
-    map: HashMap<String, PropVal>,
-    errors: Vec<PropValError>,
-}
+pub type Props = HashMap<String, PropVal>;
 
-#[derive(Clone, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum PropVal {
     String(String),
     Text(String),
     Int(i64),
     Date(Date),
+    Error(PropValError),
+}
+
+impl PropVal {
+    fn is_error(&self) -> bool {
+        matches![self, PropVal::Error(_)]
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -100,59 +103,48 @@ pub enum PropValError {
     Date(DateError),
 }
 
-impl Props {
-    pub fn from(map: HashMap<String, PropVal>, errors: Vec<PropValError>) -> Self {
-        Self {
-            map,
-            errors,
+impl Absorb for Props {
+    fn absorb(&mut self, other: Self) {
+        for prop in other {
+            insert_prop(self, prop)
         }
     }
 }
 
-impl Absorb for Props {
-    fn absorb(&mut self, other: Self) {
-        for (k, v) in other.map {
-            self.map.insert(k, v);
+fn insert_prop(props: &mut Props, (k, v): (String, PropVal)) {
+    let mut insert = true;
+    if v.is_error() {
+        if let Some(ov) = props.get(&k) {
+            if !ov.is_error() {
+                insert = false;
+            }
         }
-        for err in other.errors {
-            self.errors.push(err);
-        }
+    }
+    if insert {
+        props.insert(k, v);
     }
 }
 
 fn parse_props(pair: Pair<'_, Rule>) -> Props {
-    let mut map = HashMap::new();
-    let mut errors = Vec::new();
+    let mut props = HashMap::new();
     for inner in pair.into_inner() {
         match inner.as_rule() {
-            Rule::prop_tuple => {
-                match parse_prop_tuple(inner) {
-                    Ok((key, value)) => { map.insert(key, value); },
-                    Err(err) => errors.push(err),
-                }
-            },
-            r => {
-                panic!("IP: parse_props: illegal rule: {:?};", r);
-            },
+            Rule::prop_tuple => insert_prop(&mut props, parse_prop_tuple(inner)),
+            r => panic!("IP: parse_props: illegal rule: {:?};", r),
         }
     }
-    Props {
-        map,
-        errors,
-    }
+    props
 }
 
-fn parse_prop_tuple(pair: Pair<'_, Rule>) -> Result<(String, PropVal), PropValError> {
+fn parse_prop_tuple(pair: Pair<'_, Rule>) -> (String, PropVal) {
     let mut inners = pair.into_inner();
     let string = inners.next().expect("IP: parse_prop_tuple: no string;");
     let prop_val = inners.next().expect("IP: parse_prop_tuple: no prop_val;");
-    let string = parse_string(string);
-    let prop_val = parse_prop_val(prop_val)?;
-    Ok((string, prop_val))
+    (parse_string(string), parse_prop_val(prop_val))
 }
 
-fn parse_prop_val(pair: Pair<'_, Rule>) -> Result<PropVal, PropValError> {
-    Ok(match pair.as_rule() {
+fn parse_prop_val(pair: Pair<'_, Rule>) -> PropVal {
+    match pair.as_rule() {
         Rule::string => {
             PropVal::String(parse_string(pair))
         },
@@ -160,15 +152,19 @@ fn parse_prop_val(pair: Pair<'_, Rule>) -> Result<PropVal, PropValError> {
             PropVal::Text(parse_text(pair))
         },
         Rule::int => {
-            PropVal::Int(parse_int(pair).map_err(PropValError::Int)?)
+            match parse_int(pair) {
+                Ok(int) => PropVal::Int(int),
+                Err(error) => PropVal::Error(PropValError::Int(error)),
+            }
         },
         Rule::date => {
-            PropVal::Date(parse_date(pair).map_err(PropValError::Date)?)
+            match parse_date(pair) {
+                Ok(date) => PropVal::Date(date),
+                Err(error) => PropVal::Error(PropValError::Date(error)),
+            }
         },
-        r => {
-            panic!("IP: parse_prop_val: illegal rule: {:?};", r);
-        },
-    })
+        r => panic!("IP: parse_prop_val: illegal rule: {:?};", r),
+    }
 }
 
 pub type Tags = HashSet<String>;
@@ -293,7 +289,6 @@ pub enum CodeModeHint {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CodeError {
     Ident(CodeIdentError),
-    Prop(PropValError),
 }
 
 fn parse_code(pair: Pair<'_, Rule>) -> Result<CodeBlock, CodeError> {
