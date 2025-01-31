@@ -153,7 +153,7 @@ fn parse_tags(pair: Pair<'_, Rule>) -> Tags {
     res
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct Paragraph {
     items: Vec<ParagraphItem>,
     props: Props,
@@ -165,8 +165,6 @@ pub enum ParagraphItem {
     Text(String),
     Em(Emphasis),
     Code(Result<CodeBlock, CodeIdentError>),
-    Props(Props),
-    Tags(Tags),
 }
 
 pub fn parse_paragraph(pair: Pair<'_, Rule>) -> Paragraph {

@@ -851,4 +851,82 @@ props { (
             ..Default::default()
         }
     );
+
+    test!(
+        t_paragraph_c0,
+        "par { }",
+        Doc {
+            items: vec![DocItem::Par(Paragraph::default())],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_paragraph_c1,
+        "
+        par{
+            'Some text.',
+            'Code that is ',
+            em{se, 'important'},
+            ':',
+            code {
+                \"rust\",
+                \"show\",
+                '
+                    let i = 0;
+                '
+            },
+        },
+        'Outside the paragraph.',
+        ",
+        Doc {
+            items: vec![
+                DocItem::Par(Paragraph {
+                    items: vec![
+                        ParagraphItem::Text("Some text.".to_string()),
+                        ParagraphItem::Text("Code that is ".to_string()),
+                        ParagraphItem::Em(Emphasis {
+                            etype: EmType::Emphasis,
+                            strength: EmStrength::Strong,
+                            text: "important".to_string(),
+                        }),
+                        ParagraphItem::Text(":".to_string()),
+                        ParagraphItem::Code(Ok(CodeBlock {
+                            language: "rust".to_string(),
+                            mode: CodeModeHint::Show,
+                            code: "    let i = 0;".to_string(),
+                            ..Default::default()
+                        })),
+                    ],
+                    ..Default::default()
+                }),
+                DocItem::Text("Outside the paragraph.".to_string()),
+            ],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_paragraph_c2,
+        "par {
+            tags { \"a\", \"b\" },
+            props { (\"a\", 0), (\"b\", 2000/13/01), (\"d\", 2000/13/01) },
+            tags { \"b\", \"c\" },
+            props { (\"b\", 1), (\"c\", 2) },
+            props { (\"d\", 2000/01/01) },
+        }",
+        Doc {
+            items: vec![DocItem::Par(Paragraph{
+                tags: hset!(["a", "b", "c"]),
+                props: props!([
+                    ("a".to_string(), PropVal::Int(0)),
+                    ("b".to_string(), PropVal::Int(1)),
+                    ("c".to_string(), PropVal::Int(2)),
+                    ("d".to_string(), PropVal::Date(Date::new(2000, 1, 1).unwrap()))
+                ]),
+                ..Default::default()
+            })],
+            ..Default::default()
+        }
+    );
 }
