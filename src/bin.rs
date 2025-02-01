@@ -1,4 +1,5 @@
 const TEST: &str = "
+    'test text' { props { (\"test prop\", 0) }, tags { \"test tag\" } },
     par{
         code {
             \"rust\",

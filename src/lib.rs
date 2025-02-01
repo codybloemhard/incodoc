@@ -25,6 +25,7 @@ pub struct Doc {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum DocItem {
     Text(String),
+    MText(TextWithMeta),
     Emphasis(Emphasis),
     Code(Result<CodeBlock, CodeIdentError>),
     Par(Paragraph),
@@ -44,7 +45,14 @@ pub fn parse(input: &str) -> Result<Doc, String> {
         match inner.as_rule() {
             Rule::props => doc.props.absorb(parse_props(inner)),
             Rule::tags => doc.tags.absorb(parse_tags(inner)),
-            Rule::text => doc.items.push(DocItem::Text(parse_text(inner))),
+            Rule::text_item => {
+                let text = parse_text_item(inner);
+                if text.meta_is_empty() {
+                    doc.items.push(DocItem::Text(text.text));
+                } else {
+                    doc.items.push(DocItem::MText(text));
+                }
+            },
             Rule::emphasis => doc.items.push(DocItem::Emphasis(parse_emphasis(inner))),
             Rule::code => doc.items.push(DocItem::Code(parse_code(inner))),
             Rule::paragraph => doc.items.push(DocItem::Par(parse_paragraph(inner))),
@@ -163,6 +171,7 @@ pub struct Paragraph {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ParagraphItem {
     Text(String),
+    MText(TextWithMeta),
     Em(Emphasis),
     Code(Result<CodeBlock, CodeIdentError>),
 }
@@ -173,7 +182,14 @@ pub fn parse_paragraph(pair: Pair<'_, Rule>) -> Paragraph {
     let mut tags = Tags::default();
     for inner in pair.into_inner() {
         match inner.as_rule() {
-            Rule::text => items.push(ParagraphItem::Text(parse_text(inner))),
+            Rule::text_item => {
+                let text = parse_text_item(inner);
+                if text.meta_is_empty() {
+                    items.push(ParagraphItem::Text(text.text));
+                } else {
+                    items.push(ParagraphItem::MText(text));
+                }
+            },
             Rule::emphasis => items.push(ParagraphItem::Em(parse_emphasis(inner))),
             Rule::code => items.push(ParagraphItem::Code(parse_code(inner))),
             Rule::props => props.absorb(parse_props(inner)),
@@ -275,19 +291,47 @@ fn parse_code_mode(pair: Pair<'_, Rule>) -> CodeModeHint {
     }
 }
 
+#[derive(Clone, Default, Debug, Eq, PartialEq)]
+pub struct TextWithMeta {
+    text: String,
+    props: Props,
+    tags: Tags,
+}
+
+impl TextWithMeta {
+    fn meta_is_empty(&self) -> bool {
+        self.props.is_empty() && self.tags.is_empty()
+    }
+}
+
 fn parse_string(pair: Pair<'_, Rule>) -> String {
     let inner = pair.into_inner().next().expect("IP: parse_string: no inner;");
     inner.as_str().chars().filter(|c| *c != '\n' && *c != '\r').collect()
 }
 
 fn parse_text(pair: Pair<'_, Rule>) -> String {
+    parse_text_string(pair.into_inner().next().expect("IP: parse_text: no inner;").as_str())
+}
+
+fn parse_text_item(pair: Pair<'_, Rule>) -> TextWithMeta {
     let mut iter = pair.into_inner();
-    let inner = iter.next().expect("IP: parse_text: no inner;");
+    let string_raw = iter.next().expect("IP: parse_text: no inner;").into_inner().as_str();
+    let text = parse_text_string(string_raw);
+    let props = iter.next().map(parse_props).unwrap_or_default();
+    let tags = iter.next().map(parse_tags).unwrap_or_default();
+    TextWithMeta {
+        text,
+        props,
+        tags,
+    }
+}
+
+fn parse_text_string(string: &str) -> String {
     let mut res = String::new();
     let mut last_nl = true;
     let mut last_ws = false;
     let mut fresh = true;
-    for c in inner.as_str().chars() {
+    for c in string.chars() {
         match c {
             '\n' => {
                 if !last_nl {
