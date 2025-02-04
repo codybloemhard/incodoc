@@ -1,5 +1,8 @@
 const TEST: &str = "
-    'test text' { props { (\"test prop\", 0) }, tags { \"test tag\" } },
+    'test text' {
+        tags { \"test tag\" },
+        props { (\"test prop\", 0) }
+    },
     par{
         code {
             \"rust\",
@@ -7,8 +10,8 @@ const TEST: &str = "
             '
                 let x = 3;
             ',
-            props { (\"source\", \"www.code.com/user/repo\") },
-            tags { \"snippet0\", \"snippet-rust\" }
+            tags { \"snippet0\", \"snippet-rust\" },
+            props { (\"source\", \"www.code.com/user/repo\") }
         },
         tags { \"doc tag\", \"nother one\" },
         tags { \"ok sorry\" },

@@ -17,8 +17,8 @@ pub struct IncodocParser;
 
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct Doc {
-    props: Props,
     tags: Tags,
+    props: Props,
     items: Vec<DocItem>,
 }
 
@@ -32,7 +32,8 @@ pub enum DocItem {
 }
 
 pub trait Absorb {
-    fn absorb(&mut self, other: Self);
+    type Other;
+    fn absorb(&mut self, other: Self::Other);
 }
 
 pub fn parse(input: &str) -> Result<Doc, String> {
@@ -43,8 +44,8 @@ pub fn parse(input: &str) -> Result<Doc, String> {
     };
     for inner in pairs {
         match inner.as_rule() {
-            Rule::props => doc.props.absorb(parse_props(inner)),
             Rule::tags => doc.tags.absorb(parse_tags(inner)),
+            Rule::props => doc.props.absorb(parse_props(inner)),
             Rule::text_item => {
                 let text = parse_text_item(inner);
                 if text.meta_is_empty() {
@@ -60,6 +61,32 @@ pub fn parse(input: &str) -> Result<Doc, String> {
         }
     }
     Ok(doc)
+}
+
+pub type Tags = HashSet<String>;
+
+impl Absorb for Tags {
+    type Other = Option<Self>;
+    fn absorb(&mut self, other: Self::Other) {
+        if let Some(o) = other {
+            for v in o {
+                self.insert(v);
+            }
+        }
+    }
+}
+
+fn parse_tags(pair: Pair<'_, Rule>) -> Option<Tags> {
+    let mut res = HashSet::new();
+    for strings in pair.into_inner() {
+        if matches!(strings.as_rule(), Rule::prop_tuple) {
+            return None;
+        }
+        for string in strings.into_inner() {
+            res.insert(parse_string(string));
+        }
+    }
+    Some(res)
 }
 
 pub type Props = HashMap<String, PropVal>;
@@ -86,7 +113,8 @@ pub enum PropValError {
 }
 
 impl Absorb for Props {
-    fn absorb(&mut self, other: Self) {
+    type Other = Self;
+    fn absorb(&mut self, other: Self::Other) {
         for prop in other {
             insert_prop(self, prop)
         }
@@ -141,31 +169,11 @@ fn parse_prop_val(pair: Pair<'_, Rule>) -> PropVal {
     }
 }
 
-pub type Tags = HashSet<String>;
-
-impl Absorb for Tags {
-    fn absorb(&mut self, other: Self) {
-        for v in other {
-            self.insert(v);
-        }
-    }
-}
-
-fn parse_tags(pair: Pair<'_, Rule>) -> Tags {
-    let mut res = HashSet::new();
-    for strings in pair.into_inner() {
-        for string in strings.into_inner() {
-            res.insert(parse_string(string));
-        }
-    }
-    res
-}
-
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct Paragraph {
     items: Vec<ParagraphItem>,
-    props: Props,
     tags: Tags,
+    props: Props,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -178,8 +186,8 @@ pub enum ParagraphItem {
 
 pub fn parse_paragraph(pair: Pair<'_, Rule>) -> Paragraph {
     let mut items = Vec::new();
-    let mut props = Props::default();
     let mut tags = Tags::default();
+    let mut props = Props::default();
     for inner in pair.into_inner() {
         match inner.as_rule() {
             Rule::text_item => {
@@ -192,15 +200,15 @@ pub fn parse_paragraph(pair: Pair<'_, Rule>) -> Paragraph {
             },
             Rule::emphasis => items.push(ParagraphItem::Em(parse_emphasis(inner))),
             Rule::code => items.push(ParagraphItem::Code(parse_code(inner))),
-            Rule::props => props.absorb(parse_props(inner)),
             Rule::tags => tags.absorb(parse_tags(inner)),
+            Rule::props => props.absorb(parse_props(inner)),
             r => panic!("IP: parse_paragraph: illegal rule: {:?};", r),
         }
     }
     Paragraph {
         items,
-        props,
         tags,
+        props,
     }
 }
 
@@ -250,8 +258,8 @@ pub struct CodeBlock {
     pub language: String,
     pub mode: CodeModeHint,
     pub code: String,
-    pub props: Props,
     pub tags: Tags,
+    pub props: Props,
 }
 
 #[derive(Clone, Copy, Default, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
@@ -267,8 +275,19 @@ fn parse_code(pair: Pair<'_, Rule>) -> Result<CodeBlock, CodeIdentError> {
     let lang_raw = iter.next().expect("IP: parse_code: no language;");
     let mode_raw = iter.next().expect("IP: parse_code: no mode;");
     let code_raw = iter.next().expect("IP: parse_code: no code;");
-    let props = iter.next().map(parse_props).unwrap_or_default();
-    let tags = iter.next().map(parse_tags).unwrap_or_default();
+    let (tags, props) = if let Some(next) = iter.next() {
+        if let Some(tags) = parse_tags(next.clone()) {
+            if let Some(next) = iter.next() {
+                (tags, parse_props(next))
+            } else {
+                (tags, Props::default())
+            }
+        } else {
+            (Tags::default(), parse_props(next))
+        }
+    } else {
+        (Tags::default(), Props::default())
+    };
     let language = parse_string(lang_raw);
     let mode = parse_code_mode(mode_raw);
     let code = parse_code_text(code_raw)?;
@@ -276,8 +295,8 @@ fn parse_code(pair: Pair<'_, Rule>) -> Result<CodeBlock, CodeIdentError> {
         language,
         mode,
         code,
-        props,
         tags,
+        props,
     })
 }
 
@@ -294,13 +313,13 @@ fn parse_code_mode(pair: Pair<'_, Rule>) -> CodeModeHint {
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct TextWithMeta {
     text: String,
-    props: Props,
     tags: Tags,
+    props: Props,
 }
 
 impl TextWithMeta {
     fn meta_is_empty(&self) -> bool {
-        self.props.is_empty() && self.tags.is_empty()
+        self.tags.is_empty() && self.props.is_empty()
     }
 }
 
@@ -317,12 +336,23 @@ fn parse_text_item(pair: Pair<'_, Rule>) -> TextWithMeta {
     let mut iter = pair.into_inner();
     let string_raw = iter.next().expect("IP: parse_text: no inner;").into_inner().as_str();
     let text = parse_text_string(string_raw);
-    let props = iter.next().map(parse_props).unwrap_or_default();
-    let tags = iter.next().map(parse_tags).unwrap_or_default();
+    let (tags, props) = if let Some(next) = iter.next() {
+        if let Some(tags) = parse_tags(next.clone()) {
+            if let Some(next) = iter.next() {
+                (tags, parse_props(next))
+            } else {
+                (tags, Props::default())
+            }
+        } else {
+            (Tags::default(), parse_props(next))
+        }
+    } else {
+        (Tags::default(), Props::default())
+    };
     TextWithMeta {
         text,
-        props,
         tags,
+        props,
     }
 }
 

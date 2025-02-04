@@ -164,6 +164,90 @@ mod tests {
     );
 
     test!(
+        t_text_meta_0,
+        "
+        'text'{ tags { } }
+        ",
+        Doc {
+            items: vec![DocItem::Text("text".to_string())],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_text_meta_1,
+        "
+        'text'{ props { } }
+        ",
+        Doc {
+            items: vec![DocItem::Text("text".to_string())],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_text_meta_2,
+        "
+        'text'{ tags { }, props { } }
+        ",
+        Doc {
+            items: vec![DocItem::Text("text".to_string())],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_text_meta_3,
+        "
+        'text'{ tags { \"a\", \"b\" } }
+        ",
+        Doc {
+            items: vec![DocItem::MText(TextWithMeta{
+                text: "text".to_string(),
+                tags: hset!(["a", "b"]),
+                props: Props::default(),
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_text_meta_4,
+        "
+        'text'{ props { (\"a\", 0), (\"b\", 1), (\"a\", 2) } }
+        ",
+        Doc {
+            items: vec![DocItem::MText(TextWithMeta{
+                text: "text".to_string(),
+                tags: Tags::default(),
+                props: props!([
+                    ("a".to_string(), PropVal::Int(2)),
+                    ("b".to_string(), PropVal::Int(1))]
+                ),
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_text_meta_5,
+        "
+        'text'{ tags { \"a\", \"b\" }, props { (\"a\", 0), (\"b\", 1), (\"a\", 2) } }
+        ",
+        Doc {
+            items: vec![DocItem::MText(TextWithMeta{
+                text: "text".to_string(),
+                tags: hset!(["a", "b"]),
+                props: props!([
+                    ("a".to_string(), PropVal::Int(2)),
+                    ("b".to_string(), PropVal::Int(1))]
+                ),
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
         t_props_empty_f0,
         "props{}",
         Doc::default()
@@ -809,20 +893,19 @@ props { (
     );
 
     test!(
-        t_code_c12,
-        "code {
+        t_code_meta_0,
+        "
+        code {
             \"plain\",
             \"show\",
-            '
-            this is code
-            ',
-            props { (\"test tuple\", 'yay') }
-        }",
+            'this is code',
+            tags { }
+        }
+        ",
         Doc {
             items: vec![DocItem::Code(Ok(CodeBlock{
                 language: "plain".to_string(),
                 code: "this is code".to_string(),
-                props: props!([("test tuple".to_string(), PropVal::Text("yay".to_string()))]),
                 ..Default::default()
             }))],
             ..Default::default()
@@ -830,22 +913,111 @@ props { (
     );
 
     test!(
-        t_code_c13,
-        "code {
+        t_code_meta_1,
+        "
+        code {
             \"plain\",
             \"show\",
-            '
-            this is code
-            ',
-            props { (\"test tuple\", 'yay') },
-            tags { \"tag\", \"nother tag\" }
-        }",
+            'this is code',
+            props { }
+        }
+        ",
         Doc {
             items: vec![DocItem::Code(Ok(CodeBlock{
                 language: "plain".to_string(),
                 code: "this is code".to_string(),
-                props: props!([("test tuple".to_string(), PropVal::Text("yay".to_string()))]),
-                tags: hset!(["tag", "nother tag"]),
+                ..Default::default()
+            }))],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_code_meta_2,
+        "
+        code {
+            \"plain\",
+            \"show\",
+            'this is code',
+            tags { },
+            props { }
+        }
+        ",
+        Doc {
+            items: vec![DocItem::Code(Ok(CodeBlock{
+                language: "plain".to_string(),
+                code: "this is code".to_string(),
+                ..Default::default()
+            }))],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_code_meta_3,
+        "
+        code {
+            \"plain\",
+            \"show\",
+            'this is code',
+            tags { \"a\", \"b\" }
+        }
+        ",
+        Doc {
+            items: vec![DocItem::Code(Ok(CodeBlock{
+                language: "plain".to_string(),
+                code: "this is code".to_string(),
+                tags: hset!(["a", "b"]),
+                ..Default::default()
+            }))],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_code_meta_4,
+        "
+        code {
+            \"plain\",
+            \"show\",
+            'this is code',
+            props { (\"a\", 0), (\"b\", 1), (\"a\", 2) }
+        }
+        ",
+        Doc {
+            items: vec![DocItem::Code(Ok(CodeBlock{
+                language: "plain".to_string(),
+                code: "this is code".to_string(),
+                props: props!([
+                    ("a".to_string(), PropVal::Int(2)),
+                    ("b".to_string(), PropVal::Int(1))]
+                ),
+                ..Default::default()
+            }))],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_code_meta_5,
+        "
+        code {
+            \"plain\",
+            \"show\",
+            'this is code',
+            tags { \"a\", \"b\" },
+            props { (\"a\", 0), (\"b\", 1), (\"a\", 2) }
+        }
+        ",
+        Doc {
+            items: vec![DocItem::Code(Ok(CodeBlock{
+                language: "plain".to_string(),
+                code: "this is code".to_string(),
+                tags: hset!(["a", "b"]),
+                props: props!([
+                    ("a".to_string(), PropVal::Int(2)),
+                    ("b".to_string(), PropVal::Int(1))]
+                ),
                 ..Default::default()
             }))],
             ..Default::default()
