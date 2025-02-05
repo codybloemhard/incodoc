@@ -1101,4 +1101,192 @@ props { (
             ..Default::default()
         }
     );
+
+    test!(
+        t_heading_c0,
+        "head { 0,  }",
+        Doc {
+            items: vec![DocItem::Heading(Heading{
+                level: 0,
+                items: vec![],
+                ..Default::default()
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_heading_c1,
+        "head { 1,  }",
+        Doc {
+            items: vec![DocItem::Heading(Heading{
+                level: 1,
+                items: vec![],
+                ..Default::default()
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_heading_c2,
+        "head { 256,  }",
+        Doc {
+            items: vec![DocItem::Heading(Heading{
+                level: 255,
+                items: vec![],
+                ..Default::default()
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_heading_c3,
+        "head { 9999999999999999999,  }",
+        Doc {
+            items: vec![DocItem::Heading(Heading{
+                level: 255,
+                items: vec![],
+                ..Default::default()
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_heading_c4,
+        "head { 0, 'hello' }",
+        Doc {
+            items: vec![DocItem::Heading(Heading{
+                level: 0,
+                items: vec![HeadingItem::Text("hello".to_string())],
+                ..Default::default()
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_heading_c5,
+        "head { 0, 'hello' { tags { \"tag\" } } }",
+        Doc {
+            items: vec![DocItem::Heading(Heading{
+                level: 0,
+                items: vec![HeadingItem::MText(TextWithMeta {
+                    text: "hello".to_string(),
+                    tags: hset!(["tag"]),
+                    ..Default::default()
+                })],
+                ..Default::default()
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_heading_c6,
+        "head { 0, 'hello' { props { (\"prop\", 0) } } }",
+        Doc {
+            items: vec![DocItem::Heading(Heading{
+                level: 0,
+                items: vec![HeadingItem::MText(TextWithMeta {
+                    text: "hello".to_string(),
+                    props: props!([("prop".to_string(), PropVal::Int(0))]),
+                    ..Default::default()
+                })],
+                ..Default::default()
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_heading_c7,
+        "head { 0, 'hello' { tags { \"tag\" }, props { (\"prop\", 0) } } }",
+        Doc {
+            items: vec![DocItem::Heading(Heading{
+                level: 0,
+                items: vec![HeadingItem::MText(TextWithMeta {
+                    text: "hello".to_string(),
+                    tags: hset!(["tag"]),
+                    props: props!([("prop".to_string(), PropVal::Int(0))]),
+                })],
+                ..Default::default()
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_heading_c8,
+        "head { 0, 'hello' { tags { \"tag\" }, props { (\"prop\", 0) } }, em { md, ' world' } }",
+        Doc {
+            items: vec![DocItem::Heading(Heading{
+                level: 0,
+                items: vec![
+                    HeadingItem::MText(TextWithMeta {
+                        text: "hello".to_string(),
+                        tags: hset!(["tag"]),
+                        props: props!([("prop".to_string(), PropVal::Int(0))]),
+                    }),
+                    HeadingItem::Em(Emphasis {
+                        text: " world".to_string(),
+                        etype: EmType::Deemphasis,
+                        strength: EmStrength::Medium,
+                    })
+                ],
+                ..Default::default()
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_heading_c9,
+        "head { 1, tags { \"a\" }, tags{ \"b\" } }",
+        Doc {
+            items: vec![DocItem::Heading(Heading{
+                level: 1,
+                items: vec![],
+                tags: hset!(["a", "b"]),
+                ..Default::default()
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_heading_c10,
+        "head { 1, props { (\"a\", 0), (\"b\", 0) }, props{ (\"b\", 1) } }",
+        Doc {
+            items: vec![DocItem::Heading(Heading{
+                level: 1,
+                items: vec![],
+                props: props!([
+                    ("a".to_string(), PropVal::Int(0)),
+                    ("b".to_string(), PropVal::Int(1))
+                ]),
+                ..Default::default()
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_heading_c11,
+        "head { 1, props { (\"a\", 0), (\"b\", 0) }, tags { \"tag\" }, props{ (\"b\", 1) } }",
+        Doc {
+            items: vec![DocItem::Heading(Heading{
+                level: 1,
+                items: vec![],
+                tags: hset!(["tag"]),
+                props: props!([
+                    ("a".to_string(), PropVal::Int(0)),
+                    ("b".to_string(), PropVal::Int(1))
+                ]),
+            })],
+            ..Default::default()
+        }
+    );
 }
