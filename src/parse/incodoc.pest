@@ -1,5 +1,5 @@
 top = _{ SOI ~ (top_structs ~ ",")* ~ top_structs? ~ EOI }
-top_structs = _{ tags | props | text_item | emphasis | code | paragraph}
+top_structs = _{ tags | props | text_item | emphasis | code | paragraph | heading }
 
 tags = { "tags" ~ "{" ~ strings ~ "}" }
 
@@ -7,6 +7,9 @@ props = { "props" ~ "{" ~ props_inner ~ "}" }
 props_inner = _{ (prop_tuple ~ ",")* ~ prop_tuple? }
 prop_tuple = { ("(" ~ string ~ "," ~ prop_val ~ ")") }
 prop_val = _{ string | text | date | int }
+
+heading = { "head" ~ "{" ~ uint_capped ~ "," ~ (head_item ~ ",")* ~ head_item? ~ "}" }
+head_item = _{ text_item | emphasis | tags | props }
 
 paragraph = { "par" ~ "{" ~ (par_item ~ ",")* ~ par_item? ~ "}" }
 par_item = _{ text_item | emphasis | code | tags | props }
@@ -29,6 +32,9 @@ strings = { (string ~ ",")* ~ string? }
 string = { str ~ string_inner ~ str }
 string_inner = @{ (!str ~ ANY)+ }
 str = _{ "\"" }
+
+uint = { ASCII_DIGIT+ }
+uint_capped = { ASCII_DIGIT{1, 19} }
 
 int = @{ ("-" | "+")? ~ ASCII_DIGIT+ }
 

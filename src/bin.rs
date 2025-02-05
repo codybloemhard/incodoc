@@ -1,4 +1,5 @@
 const TEST: &str = "
+    head { 0, 'heading with an '{ tags { \"tag\" } }, em{ le, 'emphasis' } },
     'test text' {
         tags { \"test tag\" },
         props { (\"test prop\", 0) }

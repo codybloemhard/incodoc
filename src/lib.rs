@@ -29,6 +29,7 @@ pub enum DocItem {
     Emphasis(Emphasis),
     Code(Result<CodeBlock, CodeIdentError>),
     Par(Paragraph),
+    Heading(Heading),
 }
 
 pub trait Absorb {
@@ -55,6 +56,7 @@ pub fn parse(input: &str) -> Result<Doc, String> {
                 }
             },
             Rule::emphasis => doc.items.push(DocItem::Emphasis(parse_emphasis(inner))),
+            Rule::heading => doc.items.push(DocItem::Heading(parse_heading(inner))),
             Rule::code => doc.items.push(DocItem::Code(parse_code(inner))),
             Rule::paragraph => doc.items.push(DocItem::Par(parse_paragraph(inner))),
             _ => {},
@@ -166,6 +168,53 @@ fn parse_prop_val(pair: Pair<'_, Rule>) -> PropVal {
             Err(error) => PropVal::Error(PropValError::Date(error)),
         },
         r => panic!("IP: parse_prop_val: illegal rule: {:?};", r),
+    }
+}
+
+#[derive(Clone, Default, Debug, Eq, PartialEq)]
+pub struct Heading {
+    level: u8,
+    items: Vec<HeadingItem>,
+    tags: Tags,
+    props: Props,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum HeadingItem {
+    Text(String),
+    MText(TextWithMeta),
+    Em(Emphasis),
+}
+
+pub fn parse_heading(pair: Pair<'_, Rule>) -> Heading {
+    let mut items = Vec::new();
+    let mut tags = Tags::default();
+    let mut props = Props::default();
+    let mut iter = pair.into_inner();
+    let level =
+        parse_uint_capped(iter.next().expect("IP: parse_heading: no strength;"))
+        .min(255) as u8;
+    for inner in iter {
+        match inner.as_rule() {
+            Rule::text_item => {
+                let text = parse_text_item(inner);
+                if text.meta_is_empty() {
+                    items.push(HeadingItem::Text(text.text));
+                } else {
+                    items.push(HeadingItem::MText(text));
+                }
+            },
+            Rule::emphasis => items.push(HeadingItem::Em(parse_emphasis(inner))),
+            Rule::tags => tags.absorb(parse_tags(inner)),
+            Rule::props => props.absorb(parse_props(inner)),
+            r => panic!("IP: parse_heading: illegal rule: {:?};", r),
+        }
+    }
+    Heading {
+        level,
+        items,
+        tags,
+        props,
     }
 }
 
@@ -438,6 +487,14 @@ fn parse_code_text(pair: Pair<'_, Rule>) -> Result<String, CodeIdentError> {
         res.pop();
     }
     Ok(res)
+}
+
+fn _parse_uint(pair: Pair<'_, Rule>) -> Result<u64, ParseIntError> {
+    pair.as_str().parse()
+}
+
+fn parse_uint_capped(pair: Pair<'_, Rule>) -> u64 {
+    pair.as_str().parse().expect("IP: parse_uint_capped: uint with more than 19 numbers;")
 }
 
 fn parse_int(pair: Pair<'_, Rule>) -> Result<i64, ParseIntError> {
