@@ -30,6 +30,7 @@ pub enum DocItem {
     Code(Result<CodeBlock, CodeIdentError>),
     Par(Paragraph),
     Heading(Heading),
+    List(List),
 }
 
 pub trait Absorb {
@@ -59,6 +60,7 @@ pub fn parse(input: &str) -> Result<Doc, String> {
             Rule::heading => doc.items.push(DocItem::Heading(parse_heading(inner))),
             Rule::code => doc.items.push(DocItem::Code(parse_code(inner))),
             Rule::paragraph => doc.items.push(DocItem::Par(parse_paragraph(inner))),
+            Rule::list => doc.items.push(DocItem::List(parse_list(inner))),
             _ => {},
         }
     }
@@ -299,6 +301,67 @@ pub fn parse_emphasis(pair: Pair<'_, Rule>) -> Emphasis {
         strength,
         etype,
         text,
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct List {
+    ltype: ListType,
+    items: Vec<ListItem>,
+    tags: Tags,
+    props: Props,
+}
+
+#[derive(Clone, Copy, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
+pub enum ListType {
+    Distinct,
+    Identical,
+    Checked,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum ListItem {
+    Text(String),
+    MText(TextWithMeta),
+    Em(Emphasis),
+    Code(Result<CodeBlock, CodeIdentError>),
+    List(List),
+}
+
+pub fn parse_list(pair: Pair<'_, Rule>) -> List {
+    let mut items = Vec::new();
+    let mut tags = Tags::default();
+    let mut props = Props::default();
+    let mut iter = pair.into_inner();
+    let ltype = match iter.next().expect("IP: parse_list: no type;").as_str() {
+        "dl" => ListType::Distinct,
+        "il" => ListType::Identical,
+        "cl" => ListType::Checked,
+        _ => panic!("IP: parse_list: impossble list type;"),
+    };
+    for inner in iter {
+        match inner.as_rule() {
+            Rule::text_item => {
+                let text = parse_text_item(inner);
+                if text.meta_is_empty() {
+                    items.push(ListItem::Text(text.text));
+                } else {
+                    items.push(ListItem::MText(text));
+                }
+            },
+            Rule::emphasis => items.push(ListItem::Em(parse_emphasis(inner))),
+            Rule::code => items.push(ListItem::Code(parse_code(inner))),
+            Rule::list => items.push(ListItem::List(parse_list(inner))),
+            Rule::tags => tags.absorb(parse_tags(inner)),
+            Rule::props => props.absorb(parse_props(inner)),
+            r => panic!("IP: parse_heading: illegal rule: {:?};", r),
+        }
+    }
+    List {
+        ltype,
+        items,
+        tags,
+        props,
     }
 }
 
