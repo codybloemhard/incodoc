@@ -304,7 +304,7 @@ pub fn parse_emphasis(pair: Pair<'_, Rule>) -> Emphasis {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct List {
     ltype: ListType,
     items: Vec<ListItem>,
@@ -312,10 +312,10 @@ pub struct List {
     props: Props,
 }
 
-#[derive(Clone, Copy, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Clone, Copy, Default, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub enum ListType {
     Distinct,
-    Identical,
+    #[default] Identical,
     Checked,
 }
 

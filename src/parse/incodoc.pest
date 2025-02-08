@@ -17,7 +17,7 @@ par_item = _{ text_item | emphasis | code | tags | props }
 emphasis = { "em" ~ "{" ~ em_st ~ "," ~ text ~ "}" }
 em_st = { "le" | "me" | "se" | "ld" | "md" | "sd" }
 
-list = { "list" ~ "{" ~ list_type ~ "," ~ (list_item ~ ",")* ~ list_item? ~ ("," ~ tags)? ~ ("," ~ props)? ~ "}" }
+list = { "list" ~ "{" ~ list_type ~ "," ~ (list_item ~ ",")* ~ list_item? ~ "}" }
 list_type = { "dl" | "il" | "cl" }
 list_item = _{ text_item | emphasis | code | list | tags | props }
 

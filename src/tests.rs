@@ -1289,4 +1289,165 @@ props { (
             ..Default::default()
         }
     );
+
+    test!(
+        t_list_c0,
+        "list { dl, 'test' }",
+        Doc {
+            items: vec![
+                DocItem::List(List{
+                    items: vec![ListItem::Text("test".to_string())],
+                    ltype: ListType::Distinct,
+                    ..Default::default()
+                })
+            ],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_list_c1,
+        "list { il, 'test' }",
+        Doc {
+            items: vec![
+                DocItem::List(List{
+                    items: vec![ListItem::Text("test".to_string())],
+                    ltype: ListType::Identical,
+                    ..Default::default()
+                })
+            ],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_list_c2,
+        "list { cl, 'test' }",
+        Doc {
+            items: vec![
+                DocItem::List(List{
+                    items: vec![ListItem::Text("test".to_string())],
+                    ltype: ListType::Checked,
+                    ..Default::default()
+                })
+            ],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_list_c3,
+        "list { cl, 'test' { tags { \"tag\" }, props { (\"prop\", 0) } } }",
+        Doc {
+            items: vec![
+                DocItem::List(List{
+                    items: vec![ListItem::MText(TextWithMeta {
+                        text: "test".to_string(),
+                        tags: hset!(["tag"]),
+                        props: props!([("prop".to_string(), PropVal::Int(0))]),
+                    })],
+                    ltype: ListType::Checked,
+                    ..Default::default()
+                })
+            ],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_list_c4,
+        "list { cl, em{ le, 'em' } }",
+        Doc {
+            items: vec![
+                DocItem::List(List{
+                    items: vec![ListItem::Em(Emphasis {
+                        text: "em".to_string(),
+                        etype: EmType::Emphasis,
+                        strength: EmStrength::Light,
+                    })],
+                    ltype: ListType::Checked,
+                    ..Default::default()
+                })
+            ],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_list_c5,
+        "list { cl, code { \"rust\", \"show\", 'let rust = true;' } }",
+        Doc {
+            items: vec![
+                DocItem::List(List{
+                    items: vec![ListItem::Code(Ok(CodeBlock {
+                        language: "rust".to_string(),
+                        mode: CodeModeHint::Show,
+                        code: "let rust = true;".to_string(),
+                        ..Default::default()
+                    }))],
+                    ltype: ListType::Checked,
+                    ..Default::default()
+                })
+            ],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_list_c6,
+        "list { il, '0', list { dl, '1', list { cl, '2' } } }",
+        Doc {
+            items: vec![
+                DocItem::List(List {
+                    ltype: ListType::Identical,
+                    items: vec![
+                        ListItem::Text("0".to_string()),
+                        ListItem::List(List {
+                            ltype: ListType::Distinct,
+                            items: vec![
+                                ListItem::Text("1".to_string()),
+                                ListItem::List(List {
+                                    ltype: ListType::Checked,
+                                    items: vec![
+                                        ListItem::Text("2".to_string()),
+                                    ],
+                                    ..Default::default()
+                                }),
+                            ],
+                            ..Default::default()
+                        }),
+                    ],
+                    ..Default::default()
+                })
+            ],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_list_c7,
+        "
+        list {
+            il,
+            'item',
+            props { (\"a\", 0), (\"b\", 0) },
+            tags { \"a\" },
+            props { (\"c\", 2), (\"b\", 1) },
+            tags { \"b\" }
+        }
+        ",
+        Doc {
+            items: vec![DocItem::List(List {
+                ltype: ListType::Identical,
+                items: vec![ListItem::Text("item".to_string())],
+                tags: hset!(["a", "b"]),
+                props: props!([
+                    ("a".to_string(), PropVal::Int(0)),
+                    ("b".to_string(), PropVal::Int(1)),
+                    ("c".to_string(), PropVal::Int(2)),
+                ]),
+            })],
+            ..Default::default()
+        }
+    );
 }
