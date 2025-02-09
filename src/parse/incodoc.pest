@@ -12,7 +12,7 @@ heading = { "head" ~ "{" ~ uint_capped ~ "," ~ (head_item ~ ",")* ~ head_item? ~
 head_item = _{ text_item | emphasis | tags | props }
 
 paragraph = { "par" ~ "{" ~ (par_item ~ ",")* ~ par_item? ~ "}" }
-par_item = _{ text_item | emphasis | code | tags | props }
+par_item = _{ text_item | emphasis | code | list | tags | props }
 
 emphasis = { "em" ~ "{" ~ em_st ~ "," ~ text ~ "}" }
 em_st = { "le" | "me" | "se" | "ld" | "md" | "sd" }

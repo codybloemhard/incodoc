@@ -1048,6 +1048,7 @@ props { (
                     let i = 0;
                 '
             },
+            list { il, 'item' }
         },
         'Outside the paragraph.',
         ",
@@ -1069,6 +1070,11 @@ props { (
                             code: "    let i = 0;".to_string(),
                             ..Default::default()
                         })),
+                        ParagraphItem::List(List {
+                            ltype: ListType::Identical,
+                            items: vec![ListItem::Text("item".to_string())],
+                            ..Default::default()
+                        })
                     ],
                     ..Default::default()
                 }),

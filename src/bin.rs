@@ -1,4 +1,5 @@
 const TEST: &str = "
+    par { list { dl, 'item' } },
     head { 0, 'heading with an '{ tags { \"tag\" } }, em{ le, 'emphasis' } },
     list { il,
     'test text' {

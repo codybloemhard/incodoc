@@ -233,6 +233,7 @@ pub enum ParagraphItem {
     MText(TextWithMeta),
     Em(Emphasis),
     Code(Result<CodeBlock, CodeIdentError>),
+    List(List),
 }
 
 pub fn parse_paragraph(pair: Pair<'_, Rule>) -> Paragraph {
@@ -251,6 +252,7 @@ pub fn parse_paragraph(pair: Pair<'_, Rule>) -> Paragraph {
             },
             Rule::emphasis => items.push(ParagraphItem::Em(parse_emphasis(inner))),
             Rule::code => items.push(ParagraphItem::Code(parse_code(inner))),
+            Rule::list => items.push(ParagraphItem::List(parse_list(inner))),
             Rule::tags => tags.absorb(parse_tags(inner)),
             Rule::props => props.absorb(parse_props(inner)),
             r => panic!("IP: parse_paragraph: illegal rule: {:?};", r),
