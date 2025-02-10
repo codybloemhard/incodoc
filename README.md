@@ -10,8 +10,9 @@ I want something like but with the ability to function like a static web page.
 
 features:
 
-metadata: props
-  key pairs
+metadata
+  tags: string
+  props: key pairs
 navigation
   links lists of lists of links
 headings/containers

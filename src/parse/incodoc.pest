@@ -1,5 +1,5 @@
 top = _{ SOI ~ (top_structs ~ ",")* ~ top_structs? ~ EOI }
-top_structs = _{ tags | props | text_item | emphasis | code | paragraph | heading | list }
+top_structs = _{ tags | props | text_item | emphasis | code | paragraph | heading | list | section }
 
 tags = { "tags" ~ "{" ~ strings ~ "}" }
 
@@ -7,6 +7,9 @@ props = { "props" ~ "{" ~ props_inner ~ "}" }
 props_inner = _{ (prop_tuple ~ ",")* ~ prop_tuple? }
 prop_tuple = { ("(" ~ string ~ "," ~ prop_val ~ ")") }
 prop_val = _{ string | text | date | int }
+
+section = { "section" ~ "{" ~ heading ~ "," ~ (section_item ~ ",")* ~ section_item? ~ "}" }
+section_item = _{ paragraph | section | tags | props }
 
 heading = { "head" ~ "{" ~ uint_capped ~ "," ~ (head_item ~ ",")* ~ head_item? ~ "}" }
 head_item = _{ text_item | emphasis | tags | props }

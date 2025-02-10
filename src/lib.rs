@@ -31,6 +31,7 @@ pub enum DocItem {
     Par(Paragraph),
     Heading(Heading),
     List(List),
+    Section(Section),
 }
 
 pub trait Absorb {
@@ -61,6 +62,7 @@ pub fn parse(input: &str) -> Result<Doc, String> {
             Rule::code => doc.items.push(DocItem::Code(parse_code(inner))),
             Rule::paragraph => doc.items.push(DocItem::Par(parse_paragraph(inner))),
             Rule::list => doc.items.push(DocItem::List(parse_list(inner))),
+            Rule::section => doc.items.push(DocItem::Section(parse_section(inner))),
             _ => {},
         }
     }
@@ -170,6 +172,44 @@ fn parse_prop_val(pair: Pair<'_, Rule>) -> PropVal {
             Err(error) => PropVal::Error(PropValError::Date(error)),
         },
         r => panic!("IP: parse_prop_val: illegal rule: {:?};", r),
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Section {
+    heading: Heading,
+    items: Vec<SectionItem>,
+    tags: Tags,
+    props: Props,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum SectionItem {
+    Par(Paragraph),
+    Section(Section),
+}
+
+pub fn parse_section(pair: Pair<'_, Rule>) -> Section {
+    let mut iter = pair.into_inner();
+    let heading = parse_heading(iter.next().expect("IP: parse_section: no heading"));
+    let mut items = Vec::new();
+    let mut tags = Tags::default();
+    let mut props = Props::default();
+    for inner in iter {
+        match inner.as_rule() {
+            Rule::paragraph => items.push(SectionItem::Par(parse_paragraph(inner))),
+            Rule::section => items.push(SectionItem::Section(parse_section(inner))),
+            Rule::tags => tags.absorb(parse_tags(inner)),
+            Rule::props => props.absorb(parse_props(inner)),
+            r => panic!("IP: parse_section: illegal rule: {:?};", r),
+        }
+    }
+
+    Section {
+        heading,
+        items,
+        tags,
+        props,
     }
 }
 
