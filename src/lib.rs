@@ -175,7 +175,7 @@ fn parse_prop_val(pair: Pair<'_, Rule>) -> PropVal {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct Section {
     heading: Heading,
     items: Vec<SectionItem>,
