@@ -1,5 +1,5 @@
 top = _{ SOI ~ (top_structs ~ ",")* ~ top_structs? ~ EOI }
-top_structs = _{ tags | props | text_item | emphasis | code | paragraph | heading | list | section }
+top_structs = _{ tags | props | text_item | emphasis | code | paragraph | heading | list | section | link}
 
 tags = { "tags" ~ "{" ~ strings ~ "}" }
 
@@ -15,14 +15,17 @@ heading = { "head" ~ "{" ~ uint_capped ~ "," ~ (head_item ~ ",")* ~ head_item? ~
 head_item = _{ text_item | emphasis | tags | props }
 
 paragraph = { "par" ~ "{" ~ (par_item ~ ",")* ~ par_item? ~ "}" }
-par_item = _{ text_item | emphasis | code | list | tags | props }
+par_item = _{ text_item | emphasis | code | list | link | tags | props }
 
 emphasis = { "em" ~ "{" ~ em_st ~ "," ~ text ~ "}" }
 em_st = { "le" | "me" | "se" | "ld" | "md" | "sd" }
 
 list = { "list" ~ "{" ~ list_type ~ "," ~ (list_item ~ ",")* ~ list_item? ~ "}" }
 list_type = { "dl" | "il" | "cl" }
-list_item = _{ text_item | emphasis | code | list | tags | props }
+list_item = _{ text_item | emphasis | code | list | link | tags | props }
+
+link = { "link" ~ "{" ~ (link_item ~ ",")+  ~ string ~ ("," ~ tags)? ~ ("," ~ props)? ~ "}" }
+link_item = _{ text_item | emphasis }
 
 code = { "code" ~ "{" ~ string ~ "," ~ string ~ "," ~ code_text ~ ("," ~ tags)? ~ ("," ~ props)? ~ "}" }
 code_text = ${ code_txt ~ code_text_inner ~ code_txt }

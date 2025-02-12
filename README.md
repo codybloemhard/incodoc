@@ -15,7 +15,7 @@ metadata
   props: key pairs
 navigation
   links lists of lists of links
-headings/containers
+headings/sections
 text
 links (point in text, heading, local file, web url, email, ...)
   link type hint: img, vid, pdf

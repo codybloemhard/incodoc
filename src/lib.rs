@@ -32,6 +32,7 @@ pub enum DocItem {
     Heading(Heading),
     List(List),
     Section(Section),
+    Link(Link),
 }
 
 pub trait Absorb {
@@ -63,6 +64,7 @@ pub fn parse(input: &str) -> Result<Doc, String> {
             Rule::paragraph => doc.items.push(DocItem::Par(parse_paragraph(inner))),
             Rule::list => doc.items.push(DocItem::List(parse_list(inner))),
             Rule::section => doc.items.push(DocItem::Section(parse_section(inner))),
+            Rule::link => doc.items.push(DocItem::Link(parse_link(inner))),
             _ => {},
         }
     }
@@ -274,6 +276,7 @@ pub enum ParagraphItem {
     Em(Emphasis),
     Code(Result<CodeBlock, CodeIdentError>),
     List(List),
+    Link(Link),
 }
 
 pub fn parse_paragraph(pair: Pair<'_, Rule>) -> Paragraph {
@@ -293,6 +296,7 @@ pub fn parse_paragraph(pair: Pair<'_, Rule>) -> Paragraph {
             Rule::emphasis => items.push(ParagraphItem::Em(parse_emphasis(inner))),
             Rule::code => items.push(ParagraphItem::Code(parse_code(inner))),
             Rule::list => items.push(ParagraphItem::List(parse_list(inner))),
+            Rule::link => items.push(ParagraphItem::Link(parse_link(inner))),
             Rule::tags => tags.absorb(parse_tags(inner)),
             Rule::props => props.absorb(parse_props(inner)),
             r => panic!("IP: parse_paragraph: illegal rule: {:?};", r),
@@ -367,6 +371,7 @@ pub enum ListItem {
     MText(TextWithMeta),
     Em(Emphasis),
     Code(Result<CodeBlock, CodeIdentError>),
+    Link(Link),
     List(List),
 }
 
@@ -394,6 +399,7 @@ pub fn parse_list(pair: Pair<'_, Rule>) -> List {
             Rule::emphasis => items.push(ListItem::Em(parse_emphasis(inner))),
             Rule::code => items.push(ListItem::Code(parse_code(inner))),
             Rule::list => items.push(ListItem::List(parse_list(inner))),
+            Rule::link => items.push(ListItem::Link(parse_link(inner))),
             Rule::tags => tags.absorb(parse_tags(inner)),
             Rule::props => props.absorb(parse_props(inner)),
             r => panic!("IP: parse_heading: illegal rule: {:?};", r),
@@ -401,6 +407,51 @@ pub fn parse_list(pair: Pair<'_, Rule>) -> List {
     }
     List {
         ltype,
+        items,
+        tags,
+        props,
+    }
+}
+
+#[derive(Clone, Default, Debug, Eq, PartialEq)]
+pub struct Link {
+    pub url: String,
+    pub items: Vec<LinkItem>,
+    pub tags: Tags,
+    pub props: Props,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum LinkItem {
+    Text(String),
+    MText(TextWithMeta),
+    Em(Emphasis),
+}
+
+fn parse_link(pair: Pair<'_, Rule>) -> Link {
+    let mut url = String::new();
+    let mut items = Vec::new();
+    let mut tags = Tags::default();
+    let mut props = Props::default();
+    for inner in pair.into_inner() {
+        match inner.as_rule() {
+            Rule::text_item => {
+                let text = parse_text_item(inner);
+                if text.meta_is_empty() {
+                    items.push(LinkItem::Text(text.text));
+                } else {
+                    items.push(LinkItem::MText(text));
+                }
+            },
+            Rule::emphasis => items.push(LinkItem::Em(parse_emphasis(inner))),
+            Rule::string => url = parse_string(inner),
+            Rule::tags => tags.absorb(parse_tags(inner)),
+            Rule::props => props.absorb(parse_props(inner)),
+            r => panic!("IP: parse_link: illegal rule: {:?};", r),
+        }
+    }
+    Link {
+        url,
         items,
         tags,
         props,
