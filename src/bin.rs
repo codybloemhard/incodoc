@@ -1,4 +1,8 @@
 const TEST: &str = "
+    nav {
+        snav { \"A\", link { 'a', \"link\" }, link { 'b', \"link\" } },
+        snav { \"B\", link { 'c', \"link\" }, snav { \"C\", link { 'd', \"link\" } } }
+    },
     par { list { dl, 'item' }, link { 'link', \"mailto:e@mail.com\" } },
     head { 0, 'heading with an '{ tags { \"tag\" } }, em{ le, 'emphasis' } },
     list {

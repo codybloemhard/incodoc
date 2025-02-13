@@ -33,6 +33,7 @@ pub enum DocItem {
     List(List),
     Section(Section),
     Link(Link),
+    Nav(Nav),
 }
 
 pub trait Absorb {
@@ -65,6 +66,7 @@ pub fn parse(input: &str) -> Result<Doc, String> {
             Rule::list => doc.items.push(DocItem::List(parse_list(inner))),
             Rule::section => doc.items.push(DocItem::Section(parse_section(inner))),
             Rule::link => doc.items.push(DocItem::Link(parse_link(inner))),
+            Rule::nav => doc.items.push(DocItem::Nav(parse_nav(inner))),
             _ => {},
         }
     }
@@ -408,6 +410,50 @@ pub fn parse_list(pair: Pair<'_, Rule>) -> List {
     List {
         ltype,
         items,
+        tags,
+        props,
+    }
+}
+
+pub type Nav = Vec<SNav>;
+
+#[derive(Clone, Default, Debug, Eq, PartialEq)]
+pub struct SNav {
+    description: String,
+    subs: Vec<SNav>,
+    links: Vec<Link>,
+    tags: Tags,
+    props: Props,
+}
+
+fn parse_nav(pair: Pair<'_, Rule>) -> Nav {
+    let mut res = Vec::new();
+    for inner in pair.into_inner() {
+        res.push(parse_snav(inner));
+    }
+    res
+}
+
+fn parse_snav(pair: Pair<'_, Rule>) -> SNav {
+    let mut iter = pair.into_inner();
+    let mut tags = Tags::default();
+    let mut props = Props::default();
+    let mut subs = Vec::new();
+    let mut links = Vec::new();
+    let description = parse_string(iter.next().expect("IP: parse_snav: no description;"));
+    for inner in iter {
+        match inner.as_rule() {
+            Rule::snav => subs.push(parse_snav(inner)),
+            Rule::link => links.push(parse_link(inner)),
+            Rule::tags => tags.absorb(parse_tags(inner)),
+            Rule::props => props.absorb(parse_props(inner)),
+            r => panic!("IP: parse_snav: illegal rule: {:?};", r),
+        }
+    }
+    SNav {
+        description,
+        subs,
+        links,
         tags,
         props,
     }
