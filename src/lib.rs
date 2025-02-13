@@ -402,7 +402,7 @@ pub fn parse_list(pair: Pair<'_, Rule>) -> List {
             Rule::link => items.push(ListItem::Link(parse_link(inner))),
             Rule::tags => tags.absorb(parse_tags(inner)),
             Rule::props => props.absorb(parse_props(inner)),
-            r => panic!("IP: parse_heading: illegal rule: {:?};", r),
+            r => panic!("IP: parse_list: illegal rule: {:?};", r),
         }
     }
     List {
@@ -477,25 +477,18 @@ pub enum CodeModeHint {
 
 fn parse_code(pair: Pair<'_, Rule>) -> Result<CodeBlock, CodeIdentError> {
     let mut iter = pair.into_inner();
-    let lang_raw = iter.next().expect("IP: parse_code: no language;");
-    let mode_raw = iter.next().expect("IP: parse_code: no mode;");
-    let code_raw = iter.next().expect("IP: parse_code: no code;");
-    let (tags, props) = if let Some(next) = iter.next() {
-        if let Some(tags) = parse_tags(next.clone()) {
-            if let Some(next) = iter.next() {
-                (tags, parse_props(next))
-            } else {
-                (tags, Props::default())
-            }
-        } else {
-            (Tags::default(), parse_props(next))
+    let mut tags = Tags::default();
+    let mut props = Props::default();
+    let language = parse_string(iter.next().expect("IP: parse_code: no language;"));
+    let mode = parse_code_mode(iter.next().expect("IP: parse_code: no mode;"));
+    let code = parse_code_text(iter.next().expect("IP: parse_code: no code;"))?;
+    for inner in iter {
+        match inner.as_rule() {
+            Rule::tags => tags.absorb(parse_tags(inner)),
+            Rule::props => props.absorb(parse_props(inner)),
+            r => panic!("IP: parse_code: loop: illegal rule: {:?};", r),
         }
-    } else {
-        (Tags::default(), Props::default())
-    };
-    let language = parse_string(lang_raw);
-    let mode = parse_code_mode(mode_raw);
-    let code = parse_code_text(code_raw)?;
+    }
     Ok(CodeBlock {
         language,
         mode,

@@ -1574,4 +1574,109 @@ props { (
             ..Default::default()
         }
     );
+
+    test!(
+        t_link_c0,
+        "link { 'link', \"url\" }",
+        Doc {
+            items: vec![
+                DocItem::Link(Link {
+                    url: "url".to_string(),
+                    items: vec![LinkItem::Text("link".to_string())],
+                    ..Default::default()
+                })
+            ],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_link_c1,
+        "link { 'link' { tags { \"tag\" } }, \"url\" }",
+        Doc {
+            items: vec![
+                DocItem::Link(Link {
+                    url: "url".to_string(),
+                    items: vec![LinkItem::MText(TextWithMeta {
+                        text: "link".to_string(),
+                        tags: hset!(["tag"]),
+                        ..Default::default()
+                    })],
+                    ..Default::default()
+                })
+            ],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_link_c2,
+        "link { em { le, 'em' }, \"url\" }",
+        Doc {
+            items: vec![
+                DocItem::Link(Link {
+                    url: "url".to_string(),
+                    items: vec![LinkItem::Em(Emphasis {
+                        text: "em".to_string(),
+                        etype: EmType::Emphasis,
+                        strength: EmStrength::Light,
+                    })],
+                    ..Default::default()
+                })
+            ],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_link_c3,
+        "link { 'link', \"url\", tags { \"tag\" } }",
+        Doc {
+            items: vec![
+                DocItem::Link(Link {
+                    url: "url".to_string(),
+                    items: vec![LinkItem::Text("link".to_string())],
+                    tags: hset!(["tag"]),
+                    ..Default::default()
+                })
+            ],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_link_c4,
+        "link { 'link', \"url\", props { (\"prop\", 0) } }",
+        Doc {
+            items: vec![
+                DocItem::Link(Link {
+                    url: "url".to_string(),
+                    items: vec![LinkItem::Text("link".to_string())],
+                    props: props!([
+                        ("prop".to_string(), PropVal::Int(0)),
+                    ]),
+                    ..Default::default()
+                })
+            ],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_link_c5,
+        "link { 'link', \"url\", tags { \"tag\" }, props { (\"prop\", 0) } }",
+        Doc {
+            items: vec![
+                DocItem::Link(Link {
+                    url: "url".to_string(),
+                    items: vec![LinkItem::Text("link".to_string())],
+                    tags: hset!(["tag"]),
+                    props: props!([
+                        ("prop".to_string(), PropVal::Int(0)),
+                    ]),
+                })
+            ],
+            ..Default::default()
+        }
+    );
 }
