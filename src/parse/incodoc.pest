@@ -27,8 +27,9 @@ list_item = _{ text_item | emphasis | code | list | link | tags | props }
 nav = { "nav" ~ "{" ~ (snav ~ ",")* ~ snav? ~ "}" }
 snav = { "snav" ~ "{" ~ string ~ ("," ~ (link | snav))* ~ ("," ~ tags)? ~ ("," ~ props)? ~ "}" }
 
-link = { "link" ~ "{" ~ (link_item ~ ",")+  ~ string ~ ("," ~ tags)? ~ ("," ~ props)? ~ "}" }
-link_item = _{ text_item | emphasis }
+// link = { "link" ~ "{" ~ (link_item ~ ",")+  ~ string ~ ("," ~ tags)? ~ ("," ~ props)? ~ "}" }
+link = { "link" ~ "{" ~ string ~ ("," ~ link_item)+ ~ ("," ~ tags)? ~ ("," ~ props)? ~ "}" }
+link_item = _{ string | emphasis }
 
 code = { "code" ~ "{" ~ string ~ "," ~ string ~ "," ~ code_text ~ ("," ~ tags)? ~ ("," ~ props)? ~ "}" }
 code_text = ${ code_txt ~ code_text_inner ~ code_txt }

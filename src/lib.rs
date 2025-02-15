@@ -469,28 +469,20 @@ pub struct Link {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum LinkItem {
-    Text(String),
-    MText(TextWithMeta),
+    String(String),
     Em(Emphasis),
 }
 
 fn parse_link(pair: Pair<'_, Rule>) -> Link {
-    let mut url = String::new();
     let mut items = Vec::new();
     let mut tags = Tags::default();
     let mut props = Props::default();
-    for inner in pair.into_inner() {
+    let mut iter = pair.into_inner();
+    let url = parse_string(iter.next().expect("IP: parse_link: no url;"));
+    for inner in iter.by_ref() {
         match inner.as_rule() {
-            Rule::text_item => {
-                let text = parse_text_item(inner);
-                if text.meta_is_empty() {
-                    items.push(LinkItem::Text(text.text));
-                } else {
-                    items.push(LinkItem::MText(text));
-                }
-            },
             Rule::emphasis => items.push(LinkItem::Em(parse_emphasis(inner))),
-            Rule::string => url = parse_string(inner),
+            Rule::string => items.push(LinkItem::String(parse_string(inner))),
             Rule::tags => tags.absorb(parse_tags(inner)),
             Rule::props => props.absorb(parse_props(inner)),
             r => panic!("IP: parse_link: illegal rule: {:?};", r),

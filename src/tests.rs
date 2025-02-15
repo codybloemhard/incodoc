@@ -1577,12 +1577,12 @@ props { (
 
     test!(
         t_link_c0,
-        "link { 'link', \"url\" }",
+        "link { \"url\", \"link\" }",
         Doc {
             items: vec![
                 DocItem::Link(Link {
                     url: "url".to_string(),
-                    items: vec![LinkItem::Text("link".to_string())],
+                    items: vec![LinkItem::String("link".to_string())],
                     ..Default::default()
                 })
             ],
@@ -1592,16 +1592,19 @@ props { (
 
     test!(
         t_link_c1,
-        "link { 'link' { tags { \"tag\" } }, \"url\" }",
+        "link { \"url\", em { le, \"em\" }, \"string\" }",
         Doc {
             items: vec![
                 DocItem::Link(Link {
                     url: "url".to_string(),
-                    items: vec![LinkItem::MText(TextWithMeta {
-                        text: "link".to_string(),
-                        tags: hset!(["tag"]),
-                        ..Default::default()
-                    })],
+                    items: vec![
+                        LinkItem::Em(Emphasis {
+                            text: "em".to_string(),
+                            etype: EmType::Emphasis,
+                            strength: EmStrength::Light,
+                        }),
+                        LinkItem::String("string".to_string()),
+                    ],
                     ..Default::default()
                 })
             ],
@@ -1611,31 +1614,12 @@ props { (
 
     test!(
         t_link_c2,
-        "link { em { le, \"em\" }, \"url\" }",
+        "link { \"url\", \"link\", tags { \"tag\" } }",
         Doc {
             items: vec![
                 DocItem::Link(Link {
                     url: "url".to_string(),
-                    items: vec![LinkItem::Em(Emphasis {
-                        text: "em".to_string(),
-                        etype: EmType::Emphasis,
-                        strength: EmStrength::Light,
-                    })],
-                    ..Default::default()
-                })
-            ],
-            ..Default::default()
-        }
-    );
-
-    test!(
-        t_link_c3,
-        "link { 'link', \"url\", tags { \"tag\" } }",
-        Doc {
-            items: vec![
-                DocItem::Link(Link {
-                    url: "url".to_string(),
-                    items: vec![LinkItem::Text("link".to_string())],
+                    items: vec![LinkItem::String("link".to_string())],
                     tags: hset!(["tag"]),
                     ..Default::default()
                 })
@@ -1645,13 +1629,13 @@ props { (
     );
 
     test!(
-        t_link_c4,
-        "link { 'link', \"url\", props { (\"prop\", 0) } }",
+        t_link_c3,
+        "link { \"url\", \"link\", props { (\"prop\", 0) } }",
         Doc {
             items: vec![
                 DocItem::Link(Link {
                     url: "url".to_string(),
-                    items: vec![LinkItem::Text("link".to_string())],
+                    items: vec![LinkItem::String("link".to_string())],
                     props: props!([
                         ("prop".to_string(), PropVal::Int(0)),
                     ]),
@@ -1663,13 +1647,13 @@ props { (
     );
 
     test!(
-        t_link_c5,
-        "link { 'link', \"url\", tags { \"tag\" }, props { (\"prop\", 0) } }",
+        t_link_c4,
+        "link { \"url\", \"link\", tags { \"tag\" }, props { (\"prop\", 0) } }",
         Doc {
             items: vec![
                 DocItem::Link(Link {
                     url: "url".to_string(),
-                    items: vec![LinkItem::Text("link".to_string())],
+                    items: vec![LinkItem::String("link".to_string())],
                     tags: hset!(["tag"]),
                     props: props!([
                         ("prop".to_string(), PropVal::Int(0)),
@@ -1686,8 +1670,8 @@ props { (
         nav {
             snav {
                 \"desc\",
-                link { 'linka', \"urla\" },
-                link { 'linkb', \"urlb\" }
+                link { \"urla\", \"linka\" },
+                link { \"urlb\", \"linkb\" }
             }
         }
         ",
@@ -1700,14 +1684,14 @@ props { (
                             Link {
                                 url: "urla".to_string(),
                                 items: vec![
-                                    LinkItem::Text("linka".to_string())
+                                    LinkItem::String("linka".to_string())
                                 ],
                                 ..Default::default()
                             },
                             Link {
                                 url: "urlb".to_string(),
                                 items: vec![
-                                    LinkItem::Text("linkb".to_string())
+                                    LinkItem::String("linkb".to_string())
                                 ],
                                 ..Default::default()
                             }
@@ -1726,11 +1710,11 @@ props { (
         nav {
             snav {
                 \"desca\",
-                link { 'linka', \"urla\" }
+                link { \"urla\", \"linka\" }
             },
             snav {
                 \"descb\",
-                link { 'linkb', \"urlb\" }
+                link { \"urlb\", \"linkb\" }
             }
         }
         ",
@@ -1743,7 +1727,7 @@ props { (
                             Link {
                                 url: "urla".to_string(),
                                 items: vec![
-                                    LinkItem::Text("linka".to_string())
+                                    LinkItem::String("linka".to_string())
                                 ],
                                 ..Default::default()
                             },
@@ -1756,7 +1740,7 @@ props { (
                             Link {
                                 url: "urlb".to_string(),
                                 items: vec![
-                                    LinkItem::Text("linkb".to_string())
+                                    LinkItem::String("linkb".to_string())
                                 ],
                                 ..Default::default()
                             },
@@ -1777,13 +1761,13 @@ props { (
                 \"descx\",
                 snav {
                     \"desca\",
-                    link { 'linka', \"urla\" }
+                    link { \"urla\", \"linka\" }
                 },
                 snav {
                     \"descb\",
-                    link { 'linkb', \"urlb\" }
+                    link { \"urlb\", \"linkb\" }
                 },
-                link { 'linkc', \"urlc\" }
+                link { \"urlc\", \"linkc\" }
             },
         }
         ",
@@ -1799,7 +1783,7 @@ props { (
                                     Link {
                                         url: "urla".to_string(),
                                         items: vec![
-                                            LinkItem::Text("linka".to_string())
+                                            LinkItem::String("linka".to_string())
                                         ],
                                         ..Default::default()
                                     },
@@ -1812,7 +1796,7 @@ props { (
                                     Link {
                                         url: "urlb".to_string(),
                                         items: vec![
-                                            LinkItem::Text("linkb".to_string())
+                                            LinkItem::String("linkb".to_string())
                                         ],
                                         ..Default::default()
                                     },
@@ -1824,7 +1808,7 @@ props { (
                             Link {
                                 url: "urlc".to_string(),
                                 items: vec![
-                                    LinkItem::Text("linkc".to_string())
+                                    LinkItem::String("linkc".to_string())
                                 ],
                                 ..Default::default()
                             },
@@ -1843,7 +1827,7 @@ props { (
         nav {
             snav {
                 \"desc\",
-                link { 'linka', \"urla\" },
+                link { \"urla\", \"linka\" },
                 tags { \"tag\" }
             }
         }
@@ -1857,7 +1841,7 @@ props { (
                             Link {
                                 url: "urla".to_string(),
                                 items: vec![
-                                    LinkItem::Text("linka".to_string())
+                                    LinkItem::String("linka".to_string())
                                 ],
                                 ..Default::default()
                             },
@@ -1877,7 +1861,7 @@ props { (
         nav {
             snav {
                 \"desc\",
-                link { 'linka', \"urla\" },
+                link { \"urla\", \"linka\" },
                 props { (\"prop\", 0) }
             }
         }
@@ -1891,7 +1875,7 @@ props { (
                             Link {
                                 url: "urla".to_string(),
                                 items: vec![
-                                    LinkItem::Text("linka".to_string())
+                                    LinkItem::String("linka".to_string())
                                 ],
                                 ..Default::default()
                             },
@@ -1913,7 +1897,7 @@ props { (
         nav {
             snav {
                 \"desc\",
-                link { 'linka', \"urla\" },
+                link { \"urla\", \"linka\" },
                 tags { \"tag\" },
                 props { (\"prop\", 0) }
             }
@@ -1928,7 +1912,7 @@ props { (
                             Link {
                                 url: "urla".to_string(),
                                 items: vec![
-                                    LinkItem::Text("linka".to_string())
+                                    LinkItem::String("linka".to_string())
                                 ],
                                 ..Default::default()
                             },

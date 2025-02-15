@@ -1,9 +1,9 @@
 const TEST: &str = "
     nav {
-        snav { \"A\", link { 'a', \"link\" }, link { 'b', \"link\" } },
-        snav { \"B\", link { 'c', \"link\" }, snav { \"C\", link { 'd', \"link\" } } }
+        snav { \"A\", link { \"link\", \"a\" }, link { \"link\", \"b\" } },
+        snav { \"B\", link { \"link\", \"c\" }, snav { \"C\", link { \"link\", \"d\" } } }
     },
-    par { list { dl, 'item' }, link { 'link', \"mailto:e@mail.com\" } },
+    par { list { dl, 'item' }, link { \"mailto:e@mail.com\", \"link\" } },
     head { 0, 'heading with an '{ tags { \"tag\" } }, em{ le, \"emphasis\" } },
     list {
         il,
@@ -22,7 +22,7 @@ const TEST: &str = "
         },
         'This is a ', em{le, \"light\"}, ' emphasis.',
         list { dl, 'item', 'item', 'item' },
-        link { 'link', \"file\" },
+        link { \"file\", \"link\" },
         tags { \"doc tag\", \"nother one\" },
         props { (\"prop\", 0) }
     },
@@ -42,7 +42,7 @@ const TEST: &str = "
             }
         }
     },
-    link { 'show', em { le, \"em\" }, 'yay', \"www\", props { (\"prop\", 0) } }
+    link { \"www\", \"show\", em { le, \"em\" }, \"yay\", props { (\"prop\", 0) } }
 ";
 
 fn main() {
