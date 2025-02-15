@@ -4,7 +4,7 @@ const TEST: &str = "
         snav { \"B\", link { 'c', \"link\" }, snav { \"C\", link { 'd', \"link\" } } }
     },
     par { list { dl, 'item' }, link { 'link', \"mailto:e@mail.com\" } },
-    head { 0, 'heading with an '{ tags { \"tag\" } }, em{ le, 'emphasis' } },
+    head { 0, 'heading with an '{ tags { \"tag\" } }, em{ le, \"emphasis\" } },
     list {
         il,
         'test text' {
@@ -20,7 +20,7 @@ const TEST: &str = "
             tags { \"snippet0\", \"snippet-rust\" },
             props { (\"source\", \"www.code.com/user/repo\") }
         },
-        'This is a ', em{le, 'light'}, ' emphasis.',
+        'This is a ', em{le, \"light\"}, ' emphasis.',
         list { dl, 'item', 'item', 'item' },
         link { 'link', \"file\" },
         tags { \"doc tag\", \"nother one\" },
@@ -42,7 +42,7 @@ const TEST: &str = "
             }
         }
     },
-    link { 'show', em { le, 'em' }, 'yay', \"www\", props { (\"prop\", 0) } }
+    link { 'show', em { le, \"em\" }, 'yay', \"www\", props { (\"prop\", 0) } }
 ";
 
 fn main() {

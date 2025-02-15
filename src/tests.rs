@@ -299,7 +299,7 @@ props { (
 ",
         Doc {
             props: props!([(
-                "pr        op".to_string(),
+                "    pr        op".to_string(),
                 PropVal::String("te     st     ".to_string())
             )]),
             ..Default::default()
@@ -559,7 +559,7 @@ props { (
 
     test!(
         t_emphasis_c0_f0,
-        "em{le, 'light emphasis'}",
+        "em{le, \"light emphasis\"}",
         Doc {
             items: vec![DocItem::Emphasis(Emphasis{
                 strength: EmStrength::Light,
@@ -575,7 +575,7 @@ props { (
         t_emphasis_c0_f1,
         " em{
             le   ,
-            'light emphasis'
+            \"light emphasis\"
         }",
         Doc {
             items: vec![DocItem::Emphasis(Emphasis{
@@ -590,7 +590,7 @@ props { (
 
     test!(
         t_emphasis_c1,
-        "em{me, 'medium emphasis'}",
+        "em{me, \"medium emphasis\"}",
         Doc {
             items: vec![DocItem::Emphasis(Emphasis{
                 strength: EmStrength::Medium,
@@ -604,7 +604,7 @@ props { (
 
     test!(
         t_emphasis_c2,
-        "em{se, 'strong emphasis'}",
+        "em{se, \"strong emphasis\"}",
         Doc {
             items: vec![DocItem::Emphasis(Emphasis{
                 strength: EmStrength::Strong,
@@ -618,7 +618,7 @@ props { (
 
     test!(
         t_emphasis_c3,
-        "em{ld, 'light deemphasis'}",
+        "em{ld, \"light deemphasis\"}",
         Doc {
             items: vec![DocItem::Emphasis(Emphasis{
                 strength: EmStrength::Light,
@@ -632,7 +632,7 @@ props { (
 
     test!(
         t_emphasis_c4,
-        "em{md, 'medium deemphasis'}",
+        "em{md, \"medium deemphasis\"}",
         Doc {
             items: vec![DocItem::Emphasis(Emphasis{
                 strength: EmStrength::Medium,
@@ -646,7 +646,7 @@ props { (
 
     test!(
         t_emphasis_c5,
-        "em{sd, 'strong deemphasis'}",
+        "em{sd, \"strong deemphasis\"}",
         Doc {
             items: vec![DocItem::Emphasis(Emphasis{
                 strength: EmStrength::Strong,
@@ -662,7 +662,7 @@ props { (
         t_emphasis_c6,
         "
         'This is a ',
-        em{le, 'light'},
+        em{le, \"light\"},
         ' emphasis.',
         ",
         Doc {
@@ -1039,7 +1039,7 @@ props { (
         par{
             'Some text.',
             'Code that is ',
-            em{se, 'important'},
+            em{se, \"important\"},
             ':',
             code {
                 \"rust\",
@@ -1226,7 +1226,7 @@ props { (
 
     test!(
         t_heading_c8,
-        "head { 0, 'hello' { tags { \"tag\" }, props { (\"prop\", 0) } }, em { md, ' world' } }",
+        "head { 0, 'hello' { tags { \"tag\" }, props { (\"prop\", 0) } }, em { md, \" world\" } }",
         Doc {
             items: vec![DocItem::Heading(Heading{
                 level: 0,
@@ -1362,7 +1362,7 @@ props { (
 
     test!(
         t_list_c4,
-        "list { cl, em{ le, 'em' } }",
+        "list { cl, em{ le, \"em\" } }",
         Doc {
             items: vec![
                 DocItem::List(List{
@@ -1611,7 +1611,7 @@ props { (
 
     test!(
         t_link_c2,
-        "link { em { le, 'em' }, \"url\" }",
+        "link { em { le, \"em\" }, \"url\" }",
         Doc {
             items: vec![
                 DocItem::Link(Link {

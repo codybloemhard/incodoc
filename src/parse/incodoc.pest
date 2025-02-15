@@ -17,7 +17,7 @@ head_item = _{ text_item | emphasis | tags | props }
 paragraph = { "par" ~ "{" ~ (par_item ~ ",")* ~ par_item? ~ "}" }
 par_item = _{ text_item | emphasis | code | list | link | tags | props }
 
-emphasis = { "em" ~ "{" ~ em_st ~ "," ~ text ~ "}" }
+emphasis = { "em" ~ "{" ~ em_st ~ "," ~ string ~ "}" }
 em_st = { "le" | "me" | "se" | "ld" | "md" | "sd" }
 
 list = { "list" ~ "{" ~ list_type ~ "," ~ (list_item ~ ",")* ~ list_item? ~ "}" }
@@ -42,8 +42,8 @@ text_inner = { (!txt ~ ANY)* }
 txt = _{ "'" }
 
 strings = { (string ~ ",")* ~ string? }
-string = { str ~ string_inner ~ str }
-string_inner = @{ (!str ~ ANY)+ }
+string = ${ str ~ string_inner ~ str }
+string_inner = { (!str ~ ANY)+ }
 str = _{ "\"" }
 
 uint = { ASCII_DIGIT+ }
