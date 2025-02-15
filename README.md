@@ -8,7 +8,7 @@ The renderer, thus the user, chooses the font, colours, layout, etc.
 Markdown is successful incorporeal document.
 I want something like but with the ability to function like a static web page.
 
-- allow trailing comma
+- tags n props
 - list and par body unify
 - naming refact
 - split up

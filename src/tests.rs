@@ -505,6 +505,15 @@ props { (
     );
 
     test!(
+        t_props_trailing_comma,
+        "props{ (\"a\", 0), }",
+        Doc {
+            props: props!([("a".to_string(), PropVal::Int(0))]),
+            ..Default::default()
+        }
+    );
+
+    test!(
         t_tags_c0_f0,
         "tags{\"tag0\", \"tag1\"}",
         Doc {
@@ -518,6 +527,18 @@ props { (
         "tags {
             \"tag0\",
             \"tag1\"
+        },",
+        Doc {
+            tags: hset!(["tag0", "tag1"]),
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_tags_c0_f2,
+        "tags {
+            \"tag0\",
+            \"tag1\",
         },",
         Doc {
             tags: hset!(["tag0", "tag1"]),
@@ -1025,10 +1046,17 @@ props { (
     );
 
     test!(
-        t_paragraph_c0,
-        "par { }",
+        t_paragraph_trailing_comma,
+        "par { 'text', }",
         Doc {
-            items: vec![DocItem::Par(Paragraph::default())],
+            items: vec![
+                DocItem::Par(Paragraph {
+                    items: vec![
+                        ParagraphItem::Text("text".to_string()),
+                    ],
+                    ..Default::default()
+                }),
+            ],
             ..Default::default()
         }
     );
@@ -1110,11 +1138,11 @@ props { (
 
     test!(
         t_heading_c0,
-        "head { 0,  }",
+        "head { 0, 'h' }",
         Doc {
             items: vec![DocItem::Heading(Heading{
                 level: 0,
-                items: vec![],
+                items: vec![HeadingItem::Text("h".to_string())],
                 ..Default::default()
             })],
             ..Default::default()
@@ -1123,11 +1151,11 @@ props { (
 
     test!(
         t_heading_c1,
-        "head { 1,  }",
+        "head { 1, 'h' }",
         Doc {
             items: vec![DocItem::Heading(Heading{
                 level: 1,
-                items: vec![],
+                items: vec![HeadingItem::Text("h".to_string())],
                 ..Default::default()
             })],
             ..Default::default()
@@ -1136,11 +1164,11 @@ props { (
 
     test!(
         t_heading_c2,
-        "head { 256,  }",
+        "head { 256, 'h' }",
         Doc {
             items: vec![DocItem::Heading(Heading{
                 level: 255,
-                items: vec![],
+                items: vec![HeadingItem::Text("h".to_string())],
                 ..Default::default()
             })],
             ..Default::default()
@@ -1149,11 +1177,11 @@ props { (
 
     test!(
         t_heading_c3,
-        "head { 9999999999999999999,  }",
+        "head { 9999999999999999999, 'h' }",
         Doc {
             items: vec![DocItem::Heading(Heading{
                 level: 255,
-                items: vec![],
+                items: vec![HeadingItem::Text("h".to_string())],
                 ..Default::default()
             })],
             ..Default::default()
@@ -1299,6 +1327,21 @@ props { (
     test!(
         t_list_c0,
         "list { dl, 'test' }",
+        Doc {
+            items: vec![
+                DocItem::List(List{
+                    items: vec![ListItem::Text("test".to_string())],
+                    ltype: ListType::Distinct,
+                    ..Default::default()
+                })
+            ],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_list_c0_trailing_comma,
+        "list { dl, 'test', }",
         Doc {
             items: vec![
                 DocItem::List(List{
@@ -1458,7 +1501,40 @@ props { (
     );
 
     test!(
-        t_section_c0,
+        t_section_c0_f0,
+        "
+        section {
+            head { 0, 'heading' },
+            par { 'paragraph' }
+        }
+        ",
+        Doc {
+            items: vec![
+                DocItem::Section(Section {
+                    heading: Heading {
+                        level: 0,
+                        items: vec![
+                            HeadingItem::Text("heading".to_string()),
+                        ],
+                        ..Default::default()
+                    },
+                    items: vec![
+                        SectionItem::Par(Paragraph {
+                            items: vec![
+                                ParagraphItem::Text("paragraph".to_string()),
+                            ],
+                            ..Default::default()
+                        })
+                    ],
+                    ..Default::default()
+                }),
+            ],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_section_c0_trailing_comma,
         "
         section {
             head { 0, 'heading' },
@@ -1716,6 +1792,55 @@ props { (
                 \"descb\",
                 link { \"urlb\", \"linkb\" }
             }
+        }
+        ",
+        Doc {
+            items: vec![
+                DocItem::Nav(vec![
+                    SNav {
+                        description: "desca".to_string(),
+                        links: vec![
+                            Link {
+                                url: "urla".to_string(),
+                                items: vec![
+                                    LinkItem::String("linka".to_string())
+                                ],
+                                ..Default::default()
+                            },
+                        ],
+                        ..Default::default()
+                    },
+                    SNav {
+                        description: "descb".to_string(),
+                        links: vec![
+                            Link {
+                                url: "urlb".to_string(),
+                                items: vec![
+                                    LinkItem::String("linkb".to_string())
+                                ],
+                                ..Default::default()
+                            },
+                        ],
+                        ..Default::default()
+                    }
+                ])
+            ],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_nav_c1_trailing_comma,
+        "
+        nav {
+            snav {
+                \"desca\",
+                link { \"urla\", \"linka\" },
+            },
+            snav {
+                \"descb\",
+                link { \"urlb\", \"linkb\" },
+            },
         }
         ",
         Doc {
