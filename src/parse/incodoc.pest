@@ -14,7 +14,7 @@ section = { "section" ~ "{" ~ heading ~ ("," ~ section_item)+ ~ ","? ~ "}" }
 section_item = _{ paragraph | section | tags | props }
 
 heading = { "head" ~ "{" ~ uint_capped ~ ("," ~ head_item)+ ~ ","? ~ "}" }
-head_item = _{ text_item | emphasis | tags | props }
+head_item = _{ string | emphasis | tags | props }
 
 paragraph = { "par" ~ "{" ~ par_item ~ ("," ~ par_item)* ~ ","? ~ "}" }
 par_item = _{ text_item | emphasis | code | list | link | tags | props }

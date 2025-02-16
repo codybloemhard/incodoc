@@ -1138,11 +1138,11 @@ props { (
 
     test!(
         t_heading_c0,
-        "head { 0, 'h' }",
+        "head { 0, \"h\" }",
         Doc {
             items: vec![DocItem::Heading(Heading{
                 level: 0,
-                items: vec![HeadingItem::Text("h".to_string())],
+                items: vec![HeadingItem::String("h".to_string())],
                 ..Default::default()
             })],
             ..Default::default()
@@ -1151,11 +1151,11 @@ props { (
 
     test!(
         t_heading_c1,
-        "head { 1, 'h' }",
+        "head { 1, \"h\" }",
         Doc {
             items: vec![DocItem::Heading(Heading{
                 level: 1,
-                items: vec![HeadingItem::Text("h".to_string())],
+                items: vec![HeadingItem::String("h".to_string())],
                 ..Default::default()
             })],
             ..Default::default()
@@ -1164,11 +1164,11 @@ props { (
 
     test!(
         t_heading_c2,
-        "head { 256, 'h' }",
+        "head { 256, \"h\" }",
         Doc {
             items: vec![DocItem::Heading(Heading{
                 level: 255,
-                items: vec![HeadingItem::Text("h".to_string())],
+                items: vec![HeadingItem::String("h".to_string())],
                 ..Default::default()
             })],
             ..Default::default()
@@ -1177,11 +1177,11 @@ props { (
 
     test!(
         t_heading_c3,
-        "head { 9999999999999999999, 'h' }",
+        "head { 9999999999999999999, \"h\" }",
         Doc {
             items: vec![DocItem::Heading(Heading{
                 level: 255,
-                items: vec![HeadingItem::Text("h".to_string())],
+                items: vec![HeadingItem::String("h".to_string())],
                 ..Default::default()
             })],
             ..Default::default()
@@ -1190,11 +1190,11 @@ props { (
 
     test!(
         t_heading_c4,
-        "head { 0, 'hello' }",
+        "head { 0, \"hello\" }",
         Doc {
             items: vec![DocItem::Heading(Heading{
                 level: 0,
-                items: vec![HeadingItem::Text("hello".to_string())],
+                items: vec![HeadingItem::String("hello".to_string())],
                 ..Default::default()
             })],
             ..Default::default()
@@ -1203,67 +1203,12 @@ props { (
 
     test!(
         t_heading_c5,
-        "head { 0, 'hello' { tags { \"tag\" } } }",
-        Doc {
-            items: vec![DocItem::Heading(Heading{
-                level: 0,
-                items: vec![HeadingItem::MText(TextWithMeta {
-                    text: "hello".to_string(),
-                    tags: hset!(["tag"]),
-                    ..Default::default()
-                })],
-                ..Default::default()
-            })],
-            ..Default::default()
-        }
-    );
-
-    test!(
-        t_heading_c6,
-        "head { 0, 'hello' { props { (\"prop\", 0) } } }",
-        Doc {
-            items: vec![DocItem::Heading(Heading{
-                level: 0,
-                items: vec![HeadingItem::MText(TextWithMeta {
-                    text: "hello".to_string(),
-                    props: props!([("prop".to_string(), PropVal::Int(0))]),
-                    ..Default::default()
-                })],
-                ..Default::default()
-            })],
-            ..Default::default()
-        }
-    );
-
-    test!(
-        t_heading_c7,
-        "head { 0, 'hello' { tags { \"tag\" }, props { (\"prop\", 0) } } }",
-        Doc {
-            items: vec![DocItem::Heading(Heading{
-                level: 0,
-                items: vec![HeadingItem::MText(TextWithMeta {
-                    text: "hello".to_string(),
-                    tags: hset!(["tag"]),
-                    props: props!([("prop".to_string(), PropVal::Int(0))]),
-                })],
-                ..Default::default()
-            })],
-            ..Default::default()
-        }
-    );
-
-    test!(
-        t_heading_c8,
-        "head { 0, 'hello' { tags { \"tag\" }, props { (\"prop\", 0) } }, em { md, \" world\" } }",
+        "head { 0, \"hello\", em { md, \" world\" } }",
         Doc {
             items: vec![DocItem::Heading(Heading{
                 level: 0,
                 items: vec![
-                    HeadingItem::MText(TextWithMeta {
-                        text: "hello".to_string(),
-                        tags: hset!(["tag"]),
-                        props: props!([("prop".to_string(), PropVal::Int(0))]),
-                    }),
+                    HeadingItem::String("hello".to_string()),
                     HeadingItem::Em(Emphasis {
                         text: " world".to_string(),
                         etype: EmType::Deemphasis,
@@ -1277,7 +1222,7 @@ props { (
     );
 
     test!(
-        t_heading_c9,
+        t_heading_c6,
         "head { 1, tags { \"a\" }, tags{ \"b\" } }",
         Doc {
             items: vec![DocItem::Heading(Heading{
@@ -1291,7 +1236,7 @@ props { (
     );
 
     test!(
-        t_heading_c10,
+        t_heading_c7,
         "head { 1, props { (\"a\", 0), (\"b\", 0) }, props{ (\"b\", 1) } }",
         Doc {
             items: vec![DocItem::Heading(Heading{
@@ -1308,7 +1253,7 @@ props { (
     );
 
     test!(
-        t_heading_c11,
+        t_heading_c8,
         "head { 1, props { (\"a\", 0), (\"b\", 0) }, tags { \"tag\" }, props{ (\"b\", 1) } }",
         Doc {
             items: vec![DocItem::Heading(Heading{
@@ -1504,7 +1449,7 @@ props { (
         t_section_c0_f0,
         "
         section {
-            head { 0, 'heading' },
+            head { 0, \"heading\" },
             par { 'paragraph' }
         }
         ",
@@ -1514,7 +1459,7 @@ props { (
                     heading: Heading {
                         level: 0,
                         items: vec![
-                            HeadingItem::Text("heading".to_string()),
+                            HeadingItem::String("heading".to_string()),
                         ],
                         ..Default::default()
                     },
@@ -1537,7 +1482,7 @@ props { (
         t_section_c0_trailing_comma,
         "
         section {
-            head { 0, 'heading' },
+            head { 0, \"heading\" },
             par { 'paragraph' },
         }
         ",
@@ -1547,7 +1492,7 @@ props { (
                     heading: Heading {
                         level: 0,
                         items: vec![
-                            HeadingItem::Text("heading".to_string()),
+                            HeadingItem::String("heading".to_string()),
                         ],
                         ..Default::default()
                     },
@@ -1570,8 +1515,8 @@ props { (
         t_section_c1,
         "
         section {
-            head { 0, 'heading' },
-            section { head { 1, 'heading' }, par { 'paragraph' } },
+            head { 0, \"heading\" },
+            section { head { 1, \"heading\" }, par { 'paragraph' } },
         }
         ",
         Doc {
@@ -1580,7 +1525,7 @@ props { (
                     heading: Heading {
                         level: 0,
                         items: vec![
-                            HeadingItem::Text("heading".to_string()),
+                            HeadingItem::String("heading".to_string()),
                         ],
                         ..Default::default()
                     },
@@ -1589,7 +1534,7 @@ props { (
                             heading: Heading {
                                 level: 1,
                                 items: vec![
-                                    HeadingItem::Text("heading".to_string()),
+                                    HeadingItem::String("heading".to_string()),
                                 ],
                                 ..Default::default()
                             },
@@ -1613,7 +1558,7 @@ props { (
         t_section_c2,
         "
         section {
-            head { 0, 'heading' },
+            head { 0, \"heading\" },
             par { 'paragraph' },
             props { (\"a\", 0), (\"b\", 0) },
             tags { \"a\" },
@@ -1627,7 +1572,7 @@ props { (
                     heading: Heading {
                         level: 0,
                         items: vec![
-                            HeadingItem::Text("heading".to_string()),
+                            HeadingItem::String("heading".to_string()),
                         ],
                         ..Default::default()
                     },

@@ -4,7 +4,7 @@ const TEST: &str = "
         snav { \"B\", link { \"link\", \"c\" }, snav { \"C\", link { \"link\", \"d\" } } }
     },
     par { list { dl, 'item' }, link { \"mailto:e@mail.com\", \"link\" } },
-    head { 0, 'heading with an '{ tags { \"tag\" } }, em{ le, \"emphasis\" } },
+    head { 0, \"heading with an \", em{ le, \"emphasis\" } },
     list {
         il,
         'test text' {
@@ -27,17 +27,17 @@ const TEST: &str = "
         props { (\"prop\", 0) }
     },
     section {
-        head { 0, 'heading' },
+        head { 0, \"heading\" },
         par { 'paragraph' },
         section {
-            head { 1, 'heading' },
+            head { 1, \"heading\" },
             par { 'paragraph' }
         },
         section {
-            head { 1, 'heading' },
+            head { 1, \"heading\" },
             par { 'paragraph' },
             section {
-                head { 2, 'heading' },
+                head { 2, \"heading\" },
                 par { 'paragraph' }
             }
         }

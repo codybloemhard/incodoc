@@ -227,8 +227,7 @@ pub struct Heading {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum HeadingItem {
-    Text(String),
-    MText(TextWithMeta),
+    String(String),
     Em(Emphasis),
 }
 
@@ -242,14 +241,7 @@ pub fn parse_heading(pair: Pair<'_, Rule>) -> Heading {
         .min(255) as u8;
     for inner in iter {
         match inner.as_rule() {
-            Rule::text_item => {
-                let text = parse_text_item(inner);
-                if text.meta_is_empty() {
-                    items.push(HeadingItem::Text(text.text));
-                } else {
-                    items.push(HeadingItem::MText(text));
-                }
-            },
+            Rule::string => items.push(HeadingItem::String(parse_string(inner))),
             Rule::emphasis => items.push(HeadingItem::Em(parse_emphasis(inner))),
             Rule::tags => tags.absorb(parse_tags(inner)),
             Rule::props => props.absorb(parse_props(inner)),
