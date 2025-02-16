@@ -303,22 +303,26 @@ pub fn parse_paragraph(pair: Pair<'_, Rule>) -> Paragraph {
     }
 }
 
-#[derive(Clone, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct Emphasis {
     strength: EmStrength,
     etype: EmType,
     text: String,
+    tags: Tags,
+    props: Props,
 }
 
-#[derive(Clone, Copy, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Clone, Copy, Default, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub enum EmStrength {
+    #[default]
     Light,
     Medium,
     Strong,
 }
 
-#[derive(Clone, Copy, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Clone, Copy, Default, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub enum EmType {
+    #[default]
     Emphasis,
     Deemphasis,
 }
@@ -337,10 +341,21 @@ pub fn parse_emphasis(pair: Pair<'_, Rule>) -> Emphasis {
         "sd" => (EmStrength::Strong, EmType::Deemphasis),
         _ => panic!("IP: parse_emphasis: wrong strength_type;")
     };
+    let mut tags = Tags::default();
+    let mut props = Props::default();
+    for inner in iter.by_ref() {
+        match inner.as_rule() {
+            Rule::tags => tags.absorb(parse_tags(inner)),
+            Rule::props => props.absorb(parse_props(inner)),
+            r => panic!("IP: parse_emphasis: loop: illegal rule: {:?};", r),
+        }
+    }
     Emphasis {
         strength,
         etype,
         text,
+        tags,
+        props,
     }
 }
 

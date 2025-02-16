@@ -19,7 +19,7 @@ head_item = _{ string | emphasis | tags | props }
 paragraph = { "par" ~ "{" ~ par_item ~ ("," ~ par_item)* ~ ","? ~ "}" }
 par_item = _{ text_item | emphasis | code | list | link | tags | props }
 
-emphasis = { "em" ~ "{" ~ em_st ~ "," ~ string ~ "}" }
+emphasis = { "em" ~ "{" ~ em_st ~ "," ~ string ~ tp_postfix ~ "}" }
 em_st = { "le" | "me" | "se" | "ld" | "md" | "sd" }
 
 list = { "list" ~ "{" ~ list_type ~ ("," ~ list_item)+ ~ ","? ~ "}" }
@@ -33,10 +33,12 @@ snav_item = _{ link | snav | tags | props }
 link = { "link" ~ "{" ~ string ~ ("," ~ link_item)+ ~ ","? ~ "}" }
 link_item = _{ string | emphasis | tags | props }
 
-code = { "code" ~ "{" ~ string ~ "," ~ string ~ "," ~ code_text ~ ("," ~ tags)? ~ ("," ~ props)? ~ "}" }
+code = { "code" ~ "{" ~ string ~ "," ~ string ~ "," ~ code_text ~ tp_postfix ~ "}" }
 code_text = ${ code_txt ~ code_text_inner ~ code_txt }
 code_text_inner = { (!code_txt ~ ANY)* }
 code_txt = { "'" }
+
+tp_postfix = _{ ("," ~ tags)? ~ ("," ~ props)? ~ ","? }
 
 text_item = { text ~ text_meta? }
 text = ${ txt ~ text_inner ~ txt }

@@ -164,7 +164,7 @@ mod tests {
     );
 
     test!(
-        t_text_meta_0,
+        t_text_meta0,
         "
         'text'{ tags { } }
         ",
@@ -175,7 +175,7 @@ mod tests {
     );
 
     test!(
-        t_text_meta_1,
+        t_text_meta1,
         "
         'text'{ props { } }
         ",
@@ -186,7 +186,7 @@ mod tests {
     );
 
     test!(
-        t_text_meta_2,
+        t_text_meta2,
         "
         'text'{ tags { }, props { } }
         ",
@@ -197,7 +197,7 @@ mod tests {
     );
 
     test!(
-        t_text_meta_3,
+        t_text_meta3,
         "
         'text'{ tags { \"a\", \"b\" } }
         ",
@@ -212,7 +212,7 @@ mod tests {
     );
 
     test!(
-        t_text_meta_4,
+        t_text_meta4,
         "
         'text'{ props { (\"a\", 0), (\"b\", 1), (\"a\", 2) } }
         ",
@@ -230,7 +230,7 @@ mod tests {
     );
 
     test!(
-        t_text_meta_5,
+        t_text_meta5,
         "
         'text'{ tags { \"a\", \"b\" }, props { (\"a\", 0), (\"b\", 1), (\"a\", 2) } }
         ",
@@ -586,6 +586,7 @@ props { (
                 strength: EmStrength::Light,
                 etype: EmType::Emphasis,
                 text: "light emphasis".to_string(),
+                ..Default::default()
             })],
             ..Default::default()
         }
@@ -603,6 +604,7 @@ props { (
                 strength: EmStrength::Light,
                 etype: EmType::Emphasis,
                 text: "light emphasis".to_string(),
+                ..Default::default()
             })],
             ..Default::default()
         }
@@ -617,6 +619,7 @@ props { (
                 strength: EmStrength::Medium,
                 etype: EmType::Emphasis,
                 text: "medium emphasis".to_string(),
+                ..Default::default()
             })],
             ..Default::default()
         }
@@ -631,6 +634,7 @@ props { (
                 strength: EmStrength::Strong,
                 etype: EmType::Emphasis,
                 text: "strong emphasis".to_string(),
+                ..Default::default()
             })],
             ..Default::default()
         }
@@ -645,6 +649,7 @@ props { (
                 strength: EmStrength::Light,
                 etype: EmType::Deemphasis,
                 text: "light deemphasis".to_string(),
+                ..Default::default()
             })],
             ..Default::default()
         }
@@ -659,6 +664,7 @@ props { (
                 strength: EmStrength::Medium,
                 etype: EmType::Deemphasis,
                 text: "medium deemphasis".to_string(),
+                ..Default::default()
             })],
             ..Default::default()
         }
@@ -673,6 +679,7 @@ props { (
                 strength: EmStrength::Strong,
                 etype: EmType::Deemphasis,
                 text: "strong deemphasis".to_string(),
+                ..Default::default()
             })],
             ..Default::default()
         }
@@ -693,8 +700,88 @@ props { (
                     strength: EmStrength::Light,
                     etype: EmType::Emphasis,
                     text: "light".to_string(),
+                    ..Default::default()
                 }),
                 DocItem::Text(" emphasis.".to_string()),
+            ],
+            ..Default::default()
+        }
+
+    );
+
+    test!(
+        t_emphasis_c7,
+        "
+        em{
+            le,
+            \"light\",
+            tags { \"a\", \"b\" },
+        }
+        ",
+        Doc {
+            items: vec![
+                DocItem::Emphasis(Emphasis{
+                    strength: EmStrength::Light,
+                    etype: EmType::Emphasis,
+                    text: "light".to_string(),
+                    tags: hset!(["a", "b"]),
+                    ..Default::default()
+                }),
+            ],
+            ..Default::default()
+        }
+
+    );
+
+    test!(
+        t_emphasis_c8,
+        "
+        em{
+            le,
+            \"light\",
+            props { (\"a\", 0), (\"b\", 1) },
+        }
+        ",
+        Doc {
+            items: vec![
+                DocItem::Emphasis(Emphasis{
+                    strength: EmStrength::Light,
+                    etype: EmType::Emphasis,
+                    text: "light".to_string(),
+                    props: props!([
+                        ("a".to_string(), PropVal::Int(0)),
+                        ("b".to_string(), PropVal::Int(1)),
+                    ]),
+                    ..Default::default()
+                }),
+            ],
+            ..Default::default()
+        }
+
+    );
+
+    test!(
+        t_emphasis_c9,
+        "
+        em{
+            le,
+            \"light\",
+            tags { \"a\", \"b\" },
+            props { (\"a\", 0), (\"b\", 1) },
+        }
+        ",
+        Doc {
+            items: vec![
+                DocItem::Emphasis(Emphasis{
+                    strength: EmStrength::Light,
+                    etype: EmType::Emphasis,
+                    text: "light".to_string(),
+                    tags: hset!(["a", "b"]),
+                    props: props!([
+                        ("a".to_string(), PropVal::Int(0)),
+                        ("b".to_string(), PropVal::Int(1)),
+                    ]),
+                }),
             ],
             ..Default::default()
         }
@@ -914,68 +1001,7 @@ props { (
     );
 
     test!(
-        t_code_meta_0,
-        "
-        code {
-            \"plain\",
-            \"show\",
-            'this is code',
-            tags { }
-        }
-        ",
-        Doc {
-            items: vec![DocItem::Code(Ok(CodeBlock{
-                language: "plain".to_string(),
-                code: "this is code".to_string(),
-                ..Default::default()
-            }))],
-            ..Default::default()
-        }
-    );
-
-    test!(
-        t_code_meta_1,
-        "
-        code {
-            \"plain\",
-            \"show\",
-            'this is code',
-            props { }
-        }
-        ",
-        Doc {
-            items: vec![DocItem::Code(Ok(CodeBlock{
-                language: "plain".to_string(),
-                code: "this is code".to_string(),
-                ..Default::default()
-            }))],
-            ..Default::default()
-        }
-    );
-
-    test!(
-        t_code_meta_2,
-        "
-        code {
-            \"plain\",
-            \"show\",
-            'this is code',
-            tags { },
-            props { }
-        }
-        ",
-        Doc {
-            items: vec![DocItem::Code(Ok(CodeBlock{
-                language: "plain".to_string(),
-                code: "this is code".to_string(),
-                ..Default::default()
-            }))],
-            ..Default::default()
-        }
-    );
-
-    test!(
-        t_code_meta_3,
+        t_code_meta0,
         "
         code {
             \"plain\",
@@ -996,7 +1022,7 @@ props { (
     );
 
     test!(
-        t_code_meta_4,
+        t_code_meta1,
         "
         code {
             \"plain\",
@@ -1020,7 +1046,7 @@ props { (
     );
 
     test!(
-        t_code_meta_5,
+        t_code_meta2,
         "
         code {
             \"plain\",
@@ -1046,23 +1072,52 @@ props { (
     );
 
     test!(
-        t_paragraph_trailing_comma,
-        "par { 'text', }",
+        t_code_trailing_comma0,
+        "
+        code {
+            \"plain\",
+            \"show\",
+            'this is code',
+        }
+        ",
         Doc {
-            items: vec![
-                DocItem::Par(Paragraph {
-                    items: vec![
-                        ParagraphItem::Text("text".to_string()),
-                    ],
-                    ..Default::default()
-                }),
-            ],
+            items: vec![DocItem::Code(Ok(CodeBlock{
+                language: "plain".to_string(),
+                code: "this is code".to_string(),
+                ..Default::default()
+            }))],
             ..Default::default()
         }
     );
 
     test!(
-        t_paragraph_c1,
+        t_code_trailing_comma1,
+        "
+        code {
+            \"plain\",
+            \"show\",
+            'this is code',
+            tags { \"a\", \"b\" },
+            props { (\"a\", 0), (\"b\", 1), (\"a\", 2) },
+        }
+        ",
+        Doc {
+            items: vec![DocItem::Code(Ok(CodeBlock{
+                language: "plain".to_string(),
+                code: "this is code".to_string(),
+                tags: hset!(["a", "b"]),
+                props: props!([
+                    ("a".to_string(), PropVal::Int(2)),
+                    ("b".to_string(), PropVal::Int(1))]
+                ),
+                ..Default::default()
+            }))],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_paragraph,
         "
         par{
             'Some text.',
@@ -1090,6 +1145,7 @@ props { (
                             etype: EmType::Emphasis,
                             strength: EmStrength::Strong,
                             text: "important".to_string(),
+                            ..Default::default()
                         }),
                         ParagraphItem::Text(":".to_string()),
                         ParagraphItem::Code(Ok(CodeBlock {
@@ -1113,7 +1169,7 @@ props { (
     );
 
     test!(
-        t_paragraph_c2,
+        t_paragraph_meta,
         "par {
             tags { \"a\", \"b\" },
             props { (\"a\", 0), (\"b\", 2000/13/01), (\"d\", 2000/13/01) },
@@ -1132,6 +1188,22 @@ props { (
                 ]),
                 ..Default::default()
             })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_paragraph_trailing_comma,
+        "par { 'text', }",
+        Doc {
+            items: vec![
+                DocItem::Par(Paragraph {
+                    items: vec![
+                        ParagraphItem::Text("text".to_string()),
+                    ],
+                    ..Default::default()
+                }),
+            ],
             ..Default::default()
         }
     );
@@ -1213,6 +1285,7 @@ props { (
                         text: " world".to_string(),
                         etype: EmType::Deemphasis,
                         strength: EmStrength::Medium,
+                        ..Default::default()
                     })
                 ],
                 ..Default::default()
@@ -1222,7 +1295,7 @@ props { (
     );
 
     test!(
-        t_heading_c6,
+        t_heading_meta0,
         "head { 1, tags { \"a\" }, tags{ \"b\" } }",
         Doc {
             items: vec![DocItem::Heading(Heading{
@@ -1236,7 +1309,7 @@ props { (
     );
 
     test!(
-        t_heading_c7,
+        t_heading_meta1,
         "head { 1, props { (\"a\", 0), (\"b\", 0) }, props{ (\"b\", 1) } }",
         Doc {
             items: vec![DocItem::Heading(Heading{
@@ -1253,7 +1326,7 @@ props { (
     );
 
     test!(
-        t_heading_c8,
+        t_heading_meta2,
         "head { 1, props { (\"a\", 0), (\"b\", 0) }, tags { \"tag\" }, props{ (\"b\", 1) } }",
         Doc {
             items: vec![DocItem::Heading(Heading{
@@ -1358,6 +1431,7 @@ props { (
                         text: "em".to_string(),
                         etype: EmType::Emphasis,
                         strength: EmStrength::Light,
+                        ..Default::default()
                     })],
                     ltype: ListType::Checked,
                     ..Default::default()
@@ -1419,7 +1493,7 @@ props { (
     );
 
     test!(
-        t_list_c7,
+        t_list_meta,
         "
         list {
             il,
@@ -1555,7 +1629,7 @@ props { (
     );
 
     test!(
-        t_section_c2,
+        t_section_meta,
         "
         section {
             head { 0, \"heading\" },
@@ -1623,6 +1697,7 @@ props { (
                             text: "em".to_string(),
                             etype: EmType::Emphasis,
                             strength: EmStrength::Light,
+                            ..Default::default()
                         }),
                         LinkItem::String("string".to_string()),
                     ],
@@ -1634,7 +1709,7 @@ props { (
     );
 
     test!(
-        t_link_c2,
+        t_link_meta0,
         "link { \"url\", \"link\", tags { \"tag\" } }",
         Doc {
             items: vec![
@@ -1650,7 +1725,7 @@ props { (
     );
 
     test!(
-        t_link_c3,
+        t_link_meta1,
         "link { \"url\", \"link\", props { (\"prop\", 0) } }",
         Doc {
             items: vec![
@@ -1668,7 +1743,7 @@ props { (
     );
 
     test!(
-        t_link_c4,
+        t_link_meta2,
         "link { \"url\", \"link\", tags { \"tag\" }, props { (\"prop\", 0) } }",
         Doc {
             items: vec![
@@ -1926,7 +2001,7 @@ props { (
     );
 
     test!(
-        t_nav_c4,
+        t_nav_meta0,
         "
         nav {
             snav {
@@ -1962,7 +2037,7 @@ props { (
     );
 
     test!(
-        t_nav_c5,
+        t_nav_meta1,
         "
         nav {
             snav {
