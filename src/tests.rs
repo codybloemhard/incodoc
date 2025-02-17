@@ -1137,7 +1137,7 @@ props { (
         ",
         Doc {
             items: vec![
-                DocItem::Par(Paragraph {
+                DocItem::Paragraph(Paragraph {
                     items: vec![
                         ParagraphItem::Text("Some text.".to_string()),
                         ParagraphItem::Text("Code that is ".to_string()),
@@ -1156,7 +1156,7 @@ props { (
                         })),
                         ParagraphItem::List(List {
                             ltype: ListType::Identical,
-                            items: vec![ListItem::Text("item".to_string())],
+                            items: vec![ParagraphItem::Text("item".to_string())],
                             ..Default::default()
                         })
                     ],
@@ -1178,7 +1178,7 @@ props { (
             props { (\"d\", 2000/01/01) },
         }",
         Doc {
-            items: vec![DocItem::Par(Paragraph{
+            items: vec![DocItem::Paragraph(Paragraph{
                 tags: hset!(["a", "b", "c"]),
                 props: props!([
                     ("a".to_string(), PropVal::Int(0)),
@@ -1197,7 +1197,7 @@ props { (
         "par { 'text', }",
         Doc {
             items: vec![
-                DocItem::Par(Paragraph {
+                DocItem::Paragraph(Paragraph {
                     items: vec![
                         ParagraphItem::Text("text".to_string()),
                     ],
@@ -1348,7 +1348,7 @@ props { (
         Doc {
             items: vec![
                 DocItem::List(List{
-                    items: vec![ListItem::Text("test".to_string())],
+                    items: vec![ParagraphItem::Text("test".to_string())],
                     ltype: ListType::Distinct,
                     ..Default::default()
                 })
@@ -1363,7 +1363,7 @@ props { (
         Doc {
             items: vec![
                 DocItem::List(List{
-                    items: vec![ListItem::Text("test".to_string())],
+                    items: vec![ParagraphItem::Text("test".to_string())],
                     ltype: ListType::Distinct,
                     ..Default::default()
                 })
@@ -1378,7 +1378,7 @@ props { (
         Doc {
             items: vec![
                 DocItem::List(List{
-                    items: vec![ListItem::Text("test".to_string())],
+                    items: vec![ParagraphItem::Text("test".to_string())],
                     ltype: ListType::Identical,
                     ..Default::default()
                 })
@@ -1393,7 +1393,7 @@ props { (
         Doc {
             items: vec![
                 DocItem::List(List{
-                    items: vec![ListItem::Text("test".to_string())],
+                    items: vec![ParagraphItem::Text("test".to_string())],
                     ltype: ListType::Checked,
                     ..Default::default()
                 })
@@ -1408,7 +1408,7 @@ props { (
         Doc {
             items: vec![
                 DocItem::List(List{
-                    items: vec![ListItem::MText(TextWithMeta {
+                    items: vec![ParagraphItem::MText(TextWithMeta {
                         text: "test".to_string(),
                         tags: hset!(["tag"]),
                         props: props!([("prop".to_string(), PropVal::Int(0))]),
@@ -1427,7 +1427,7 @@ props { (
         Doc {
             items: vec![
                 DocItem::List(List{
-                    items: vec![ListItem::Em(Emphasis {
+                    items: vec![ParagraphItem::Em(Emphasis {
                         text: "em".to_string(),
                         etype: EmType::Emphasis,
                         strength: EmStrength::Light,
@@ -1447,7 +1447,7 @@ props { (
         Doc {
             items: vec![
                 DocItem::List(List{
-                    items: vec![ListItem::Code(Ok(CodeBlock {
+                    items: vec![ParagraphItem::Code(Ok(CodeBlock {
                         language: "rust".to_string(),
                         mode: CodeModeHint::Show,
                         code: "let rust = true;".to_string(),
@@ -1469,15 +1469,15 @@ props { (
                 DocItem::List(List {
                     ltype: ListType::Identical,
                     items: vec![
-                        ListItem::Text("0".to_string()),
-                        ListItem::List(List {
+                        ParagraphItem::Text("0".to_string()),
+                        ParagraphItem::List(List {
                             ltype: ListType::Distinct,
                             items: vec![
-                                ListItem::Text("1".to_string()),
-                                ListItem::List(List {
+                                ParagraphItem::Text("1".to_string()),
+                                ParagraphItem::List(List {
                                     ltype: ListType::Checked,
                                     items: vec![
-                                        ListItem::Text("2".to_string()),
+                                        ParagraphItem::Text("2".to_string()),
                                     ],
                                     ..Default::default()
                                 }),
@@ -1507,7 +1507,7 @@ props { (
         Doc {
             items: vec![DocItem::List(List {
                 ltype: ListType::Identical,
-                items: vec![ListItem::Text("item".to_string())],
+                items: vec![ParagraphItem::Text("item".to_string())],
                 tags: hset!(["a", "b"]),
                 props: props!([
                     ("a".to_string(), PropVal::Int(0)),
@@ -1538,7 +1538,7 @@ props { (
                         ..Default::default()
                     },
                     items: vec![
-                        SectionItem::Par(Paragraph {
+                        SectionItem::Paragraph(Paragraph {
                             items: vec![
                                 ParagraphItem::Text("paragraph".to_string()),
                             ],
@@ -1571,7 +1571,7 @@ props { (
                         ..Default::default()
                     },
                     items: vec![
-                        SectionItem::Par(Paragraph {
+                        SectionItem::Paragraph(Paragraph {
                             items: vec![
                                 ParagraphItem::Text("paragraph".to_string()),
                             ],
@@ -1612,7 +1612,7 @@ props { (
                                 ],
                                 ..Default::default()
                             },
-                            items: vec![SectionItem::Par(Paragraph {
+                            items: vec![SectionItem::Paragraph(Paragraph {
                                 items: vec![
                                     ParagraphItem::Text("paragraph".to_string()),
                                 ],
@@ -1651,7 +1651,7 @@ props { (
                         ..Default::default()
                     },
                     items: vec![
-                        SectionItem::Par(Paragraph {
+                        SectionItem::Paragraph(Paragraph {
                             items: vec![
                                 ParagraphItem::Text("paragraph".to_string()),
                             ],

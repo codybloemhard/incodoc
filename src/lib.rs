@@ -28,7 +28,7 @@ pub enum DocItem {
     MText(TextWithMeta),
     Emphasis(Emphasis),
     Code(Result<CodeBlock, CodeIdentError>),
-    Par(Paragraph),
+    Paragraph(Paragraph),
     Heading(Heading),
     List(List),
     Section(Section),
@@ -62,7 +62,7 @@ pub fn parse(input: &str) -> Result<Doc, String> {
             Rule::emphasis => doc.items.push(DocItem::Emphasis(parse_emphasis(inner))),
             Rule::heading => doc.items.push(DocItem::Heading(parse_heading(inner))),
             Rule::code => doc.items.push(DocItem::Code(parse_code(inner))),
-            Rule::paragraph => doc.items.push(DocItem::Par(parse_paragraph(inner))),
+            Rule::paragraph => doc.items.push(DocItem::Paragraph(parse_paragraph(inner))),
             Rule::list => doc.items.push(DocItem::List(parse_list(inner))),
             Rule::section => doc.items.push(DocItem::Section(parse_section(inner))),
             Rule::link => doc.items.push(DocItem::Link(parse_link(inner))),
@@ -189,7 +189,7 @@ pub struct Section {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum SectionItem {
-    Par(Paragraph),
+    Paragraph(Paragraph),
     Section(Section),
 }
 
@@ -201,7 +201,7 @@ pub fn parse_section(pair: Pair<'_, Rule>) -> Section {
     let mut props = Props::default();
     for inner in iter {
         match inner.as_rule() {
-            Rule::paragraph => items.push(SectionItem::Par(parse_paragraph(inner))),
+            Rule::paragraph => items.push(SectionItem::Paragraph(parse_paragraph(inner))),
             Rule::section => items.push(SectionItem::Section(parse_section(inner))),
             Rule::tags => tags.absorb(parse_tags(inner)),
             Rule::props => props.absorb(parse_props(inner)),
@@ -362,7 +362,7 @@ pub fn parse_emphasis(pair: Pair<'_, Rule>) -> Emphasis {
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct List {
     ltype: ListType,
-    items: Vec<ListItem>,
+    items: Vec<ParagraphItem>,
     tags: Tags,
     props: Props,
 }
@@ -372,16 +372,6 @@ pub enum ListType {
     Distinct,
     #[default] Identical,
     Checked,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub enum ListItem {
-    Text(String),
-    MText(TextWithMeta),
-    Em(Emphasis),
-    Code(Result<CodeBlock, CodeIdentError>),
-    Link(Link),
-    List(List),
 }
 
 pub fn parse_list(pair: Pair<'_, Rule>) -> List {
@@ -400,15 +390,15 @@ pub fn parse_list(pair: Pair<'_, Rule>) -> List {
             Rule::text_item => {
                 let text = parse_text_item(inner);
                 if text.meta_is_empty() {
-                    items.push(ListItem::Text(text.text));
+                    items.push(ParagraphItem::Text(text.text));
                 } else {
-                    items.push(ListItem::MText(text));
+                    items.push(ParagraphItem::MText(text));
                 }
             },
-            Rule::emphasis => items.push(ListItem::Em(parse_emphasis(inner))),
-            Rule::code => items.push(ListItem::Code(parse_code(inner))),
-            Rule::list => items.push(ListItem::List(parse_list(inner))),
-            Rule::link => items.push(ListItem::Link(parse_link(inner))),
+            Rule::emphasis => items.push(ParagraphItem::Em(parse_emphasis(inner))),
+            Rule::code => items.push(ParagraphItem::Code(parse_code(inner))),
+            Rule::list => items.push(ParagraphItem::List(parse_list(inner))),
+            Rule::link => items.push(ParagraphItem::Link(parse_link(inner))),
             Rule::tags => tags.absorb(parse_tags(inner)),
             Rule::props => props.absorb(parse_props(inner)),
             r => panic!("IP: parse_list: illegal rule: {:?};", r),
