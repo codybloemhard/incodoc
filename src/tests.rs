@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod tests {
     use crate::*;
+    use crate::parsing::*;
 
     macro_rules! props {
         ($slice:expr) => {

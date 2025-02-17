@@ -1,3 +1,5 @@
+use incodoc::parsing::parse;
+
 const TEST: &str = "
     nav {
         snav { \"A\", link { \"link\", \"a\" }, link { \"link\", \"b\" } },
@@ -46,7 +48,7 @@ const TEST: &str = "
 ";
 
 fn main() {
-    match incodoc::parse(TEST) {
+    match parse(TEST) {
         Ok(res) => println!("{:#?}", res),
         Err(err) => println!("{}", err),
     }
