@@ -1,6 +1,20 @@
-use incodoc::parsing::parse;
+use incodoc::{
+    parsing::parse,
+    output::doc_out,
+};
 
 const TEST: &str = "
+    tags { \"yay\" },
+    props {
+        (\"a\", \"hi\"),
+        (\"b\", 'text?
+        oh ok.'),
+        (\"c\", 26),
+        (\"d\", 2000/01/11),
+    },
+    'oof' {
+        tags { \"auw\" }
+    },
     nav {
         snav { \"A\", link { \"link\", \"a\" }, link { \"link\", \"b\" } },
         snav { \"B\", link { \"link\", \"c\" }, snav { \"C\", link { \"link\", \"d\" } } }
@@ -48,8 +62,14 @@ const TEST: &str = "
 ";
 
 fn main() {
-    match parse(TEST) {
-        Ok(res) => println!("{:#?}", res),
+    let res = parse(TEST);
+    match res {
+        Ok(res) => {
+            // println!("{:#?}", res);
+            let mut output = String::new();
+            doc_out(&res, &mut output);
+            println!("{}", output);
+        },
         Err(err) => println!("{}", err),
     }
 }

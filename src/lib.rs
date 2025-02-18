@@ -1,5 +1,6 @@
 mod tests;
 pub mod parsing;
+pub mod output;
 
 use std::{
     num::ParseIntError,
