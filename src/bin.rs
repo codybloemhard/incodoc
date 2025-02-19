@@ -59,6 +59,9 @@ const TEST: &str = "
         }
     },
     link { \"www\", \"show\", em { le, \"em\" }, \"yay\", props { (\"prop\", 0) } },
+    'This is a ',
+    em{le, \"light\"},
+    ' emphasis.',
 ";
 
 fn main() {

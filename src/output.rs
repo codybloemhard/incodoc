@@ -25,6 +25,11 @@ fn text_out(string: &str, spaces: usize, output: &mut String) {
     output.push('\'');
 }
 
+fn text_item_out(text: &str, spaces: usize, output: &mut String) {
+    text_out(text, spaces, output);
+    output.push_str(",\n");
+}
+
 fn code_text_out(code: &str, spaces: usize, output: &mut String) {
     str_out("'\n", spaces, output);
     str_out(code, spaces, output);
@@ -191,10 +196,7 @@ fn snav_out(snav: &SNav, spaces: usize, output: &mut String) {
 fn par_items_out(items: &[ParagraphItem], spaces: usize, output: &mut String) {
     for item in items {
         match item {
-            ParagraphItem::Text(text) => {
-                text_out(text, spaces, output);
-                output.push_str(",\n");
-            },
+            ParagraphItem::Text(text) => text_item_out(text, spaces, output),
             ParagraphItem::MText(mtext) => mtext_out(mtext, spaces, output),
             ParagraphItem::Em(em) => emphasis_out(em, spaces, output),
             ParagraphItem::Link(link) => link_out(link, spaces, output),
@@ -248,7 +250,7 @@ pub fn doc_out(doc: &Doc, output: &mut String) {
     props_out(&doc.props, 0, output);
     for item in &doc.items {
         match item {
-            DocItem::Text(text) => text_out(text, 0, output),
+            DocItem::Text(text) => text_item_out(text, 0, output),
             DocItem::MText(mtext) => mtext_out(mtext, 0, output),
             DocItem::Emphasis(em) => emphasis_out(em, 0, output),
             DocItem::Code(Ok(code)) => code_out(code, 0, output),
