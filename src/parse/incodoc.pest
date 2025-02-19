@@ -41,7 +41,7 @@ tp_postfix = _{ ("," ~ tags)? ~ ("," ~ props)? ~ ","? }
 
 text_item = { text ~ text_meta? }
 text = ${ txt ~ text_inner ~ txt }
-text_meta = _{ "{" ~ ((tags ~ "," ~ props) | tags | props) ~ "}" }
+text_meta = _{ "{" ~ ((tags ~ "," ~ props) | tags | props) ~ ","? ~ "}" }
 text_inner = { (!txt ~ ANY)* }
 txt = _{ "'" }
 

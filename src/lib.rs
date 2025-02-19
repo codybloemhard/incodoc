@@ -18,6 +18,10 @@ pub trait Absorb {
     fn absorb(&mut self, other: Self::Other);
 }
 
+pub trait RemoveErrors {
+    fn remove_errors(&mut self);
+}
+
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct Doc {
     tags: Tags,
@@ -31,12 +35,39 @@ pub enum DocItem {
     MText(TextWithMeta),
     Emphasis(Emphasis),
     Code(Result<CodeBlock, CodeIdentError>),
-    Paragraph(Paragraph),
     Heading(Heading),
-    List(List),
-    Section(Section),
     Link(Link),
     Nav(Nav),
+    List(List),
+    Paragraph(Paragraph),
+    Section(Section),
+}
+
+impl RemoveErrors for Doc {
+    fn remove_errors(&mut self) {
+        self.props.remove_errors();
+        self.items.retain(|i| !matches!(i, DocItem::Code(Err(_))));
+        for item in &mut self.items {
+            item.remove_errors();
+        }
+    }
+}
+
+impl RemoveErrors for DocItem {
+    fn remove_errors(&mut self) {
+        match self {
+            DocItem::MText(mtext) => mtext.remove_errors(),
+            DocItem::Emphasis(em) => em.remove_errors(),
+            DocItem::Code(Ok(code)) => code.remove_errors(),
+            DocItem::Heading(head) => head.remove_errors(),
+            DocItem::Link(link) => link.remove_errors(),
+            DocItem::Nav(nav) => nav.remove_errors(),
+            DocItem::List(list) => list.remove_errors(),
+            DocItem::Paragraph(par) => par.remove_errors(),
+            DocItem::Section(section) => section.remove_errors(),
+            _ => {},
+        }
+    }
 }
 
 pub type Tags = HashSet<String>;
@@ -63,16 +94,16 @@ pub enum PropVal {
     Error(PropValError),
 }
 
-impl PropVal {
-    fn is_error(&self) -> bool {
-        matches![self, PropVal::Error(_)]
-    }
-}
-
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum PropValError {
     Int(ParseIntError),
     Date(DateError),
+}
+
+impl PropVal {
+    fn is_error(&self) -> bool {
+        matches![self, PropVal::Error(_)]
+    }
 }
 
 impl Absorb for Props {
@@ -81,6 +112,12 @@ impl Absorb for Props {
         for prop in other {
             insert_prop(self, prop)
         }
+    }
+}
+
+impl RemoveErrors for Props {
+    fn remove_errors(&mut self) {
+        self.retain(|_, v| !v.is_error());
     }
 }
 
@@ -112,6 +149,24 @@ pub enum SectionItem {
     Section(Section),
 }
 
+impl RemoveErrors for Section {
+    fn remove_errors(&mut self) {
+        self.props.remove_errors();
+        for item in &mut self.items {
+            item.remove_errors();
+        }
+    }
+}
+
+impl RemoveErrors for SectionItem {
+    fn remove_errors(&mut self) {
+        match self {
+            Self::Paragraph(par) => par.remove_errors(),
+            Self::Section(section) => section.remove_errors(),
+        }
+    }
+}
+
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct Heading {
     level: u8,
@@ -124,6 +179,23 @@ pub struct Heading {
 pub enum HeadingItem {
     String(String),
     Em(Emphasis),
+}
+
+impl RemoveErrors for Heading {
+    fn remove_errors(&mut self) {
+        self.props.remove_errors();
+        for item in &mut self.items {
+            item.remove_errors();
+        }
+    }
+}
+
+impl RemoveErrors for HeadingItem {
+    fn remove_errors(&mut self) {
+        if let Self::Em(em) = self {
+            em.remove_errors();
+        }
+    }
 }
 
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
@@ -139,8 +211,30 @@ pub enum ParagraphItem {
     MText(TextWithMeta),
     Em(Emphasis),
     Code(Result<CodeBlock, CodeIdentError>),
-    List(List),
     Link(Link),
+    List(List),
+}
+
+impl RemoveErrors for Paragraph {
+    fn remove_errors(&mut self) {
+        self.props.remove_errors();
+        for item in &mut self.items {
+            item.remove_errors();
+        }
+    }
+}
+
+impl RemoveErrors for ParagraphItem {
+    fn remove_errors(&mut self) {
+        match self {
+            Self::MText(mtext) => mtext.remove_errors(),
+            Self::Em(em) => em.remove_errors(),
+            Self::Code(Ok(code)) => code.remove_errors(),
+            Self::Link(link) => link.remove_errors(),
+            Self::List(list) => list.remove_errors(),
+            _ => (),
+        }
+    }
 }
 
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
@@ -167,6 +261,12 @@ pub enum EmType {
     Deemphasis,
 }
 
+impl RemoveErrors for Emphasis {
+    fn remove_errors(&mut self) {
+        self.props.remove_errors();
+    }
+}
+
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct List {
     ltype: ListType,
@@ -182,6 +282,15 @@ pub enum ListType {
     Checked,
 }
 
+impl RemoveErrors for List {
+    fn remove_errors(&mut self) {
+        self.props.remove_errors();
+        for item in &mut self.items {
+            item.remove_errors();
+        }
+    }
+}
+
 pub type Nav = Vec<SNav>;
 
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
@@ -193,6 +302,26 @@ pub struct SNav {
     props: Props,
 }
 
+impl RemoveErrors for Nav {
+    fn remove_errors(&mut self) {
+        for snav in self {
+            snav.remove_errors();
+        }
+    }
+}
+
+impl RemoveErrors for SNav {
+    fn remove_errors(&mut self) {
+        self.props.remove_errors();
+        for link in &mut self.links {
+            link.remove_errors();
+        }
+        for sub in &mut self.subs {
+            sub.remove_errors();
+        }
+    }
+}
+
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct Link {
     pub url: String,
@@ -201,10 +330,27 @@ pub struct Link {
     pub props: Props,
 }
 
+impl RemoveErrors for Link {
+    fn remove_errors(&mut self) {
+        self.props.remove_errors();
+        for item in &mut self.items {
+            item.remove_errors();
+        }
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum LinkItem {
     String(String),
     Em(Emphasis),
+}
+
+impl RemoveErrors for LinkItem {
+    fn remove_errors(&mut self) {
+        if let Self::Em(em) = self {
+            em.remove_errors();
+        }
+    }
 }
 
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
@@ -214,6 +360,12 @@ pub struct CodeBlock {
     pub code: String,
     pub tags: Tags,
     pub props: Props,
+}
+
+impl RemoveErrors for CodeBlock {
+    fn remove_errors(&mut self) {
+        self.props.remove_errors();
+    }
 }
 
 #[derive(Clone, Copy, Default, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
@@ -234,6 +386,12 @@ pub struct TextWithMeta {
 impl TextWithMeta {
     fn meta_is_empty(&self) -> bool {
         self.tags.is_empty() && self.props.is_empty()
+    }
+}
+
+impl RemoveErrors for TextWithMeta {
+    fn remove_errors(&mut self) {
+        self.props.remove_errors();
     }
 }
 
