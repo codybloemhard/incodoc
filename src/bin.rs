@@ -62,6 +62,16 @@ const TEST: &str = "
     'This is a ',
     em{le, \"light\"},
     ' emphasis.',
+    par {
+        code {
+            \"plain\",
+            \"show\",
+            '
+                this is code
+
+            '
+        },
+    },
 ";
 
 fn main() {

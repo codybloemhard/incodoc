@@ -32,7 +32,13 @@ fn text_item_out(text: &str, spaces: usize, output: &mut String) {
 
 fn code_text_out(code: &str, spaces: usize, output: &mut String) {
     str_out("'\n", spaces, output);
-    str_out(code, spaces, output);
+    spaces_out(spaces, output);
+    for c in code.chars() {
+        output.push(c);
+        if c == '\n' {
+            spaces_out(spaces, output);
+        }
+    }
     output.push('\n');
     str_out("',\n", spaces, output);
 }
