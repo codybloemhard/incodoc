@@ -113,8 +113,8 @@ fn emphasis_out(em: &Emphasis, spaces: usize, output: &mut String) {
     output.push_str(",\n");
     string_out(&em.text, spaces + 4, output);
     output.push_str(",\n");
-    tags_out(&em.tags, spaces, output);
-    props_out(&em.props, spaces, output);
+    tags_out(&em.tags, spaces + 4, output);
+    props_out(&em.props, spaces + 4, output);
     str_out("},\n", spaces, output);
 }
 
