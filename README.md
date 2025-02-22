@@ -1,240 +1,139 @@
 # incodoc
 
-Incorporeal document experiment.
-A document type that doesn't dictate appearance.
+Incorporeal document format.
+- document type that doesn't dictate appearance
+- should be able to function like a static web page
+- the consumer chooses how to render the document
+- not meant to write directly but should be human readable and writable
+- meant as a middle layer
+  - documents written in formats easy for humans
+  - converted to incodoc
+  - served to consumers as an incodoc
+  - either converted or rendered to best serve the consumer
+- alternative to static site generators
+  - emphasis on the consumer needs
+
+## Quick example.
+
+``` incodoc
+props {
+    ("date", 9999/12/31),
+    ("language", "en"),
+},
+nav {
+    snav {
+        "top level",
+        link {
+            "/home",
+            "home",
+        },
+        link {
+            "/about",
+            "about",
+        },
+        link {
+            "/now",
+            "now",
+        },
+        link {
+            "/blog/index",
+            "blog",
+        },
+    },
+    snav {
+        "other articles",
+        link {
+            "./cheese",
+            "I like cheese",
+        },
+        link {
+            "./sosig",
+            "Sosig is happiness",
+        },
+    },
+},
+head {
+    0,
+    "very important",
+},
+par {
+    'One must see this image.',
+    link {
+        "image.png",
+        "very important image",
+        props {
+            ("bg-text", 'Extremely important image.'),
+        },
+    },
+    'Also this one.',
+    link {
+        "website.com/image",
+        "another important image",
+        props {
+            ("type-hint", 'image'),
+        },
+    },
+    'For further questions see ',
+    link {
+        "#questions",
+        "questions",
+    },
+    '.',
+},
+head {
+    1,
+    "questions",
+    tags {
+        "#questions",
+    },
+},
+par {
+    'Why is this important?
+Because it is.
+For even further questions email me at ',
+    link {
+        "email@address.com",
+        "email@address.com",
+    },
+    '.',
+},
+par {
+    'This is will not compile:',
+    code {
+        "rust",
+        "show",
+        '
+            let mut x = 0;
+            let y = &mut x;
+            let z = &mut x;
+            *y = 1;
+        ',
+    },
+    'Your viewer may try to run it, only if they wants to.
+This is a piece of code that suggest to be ran and its result inserted into this document.
+Only if you want to.',
+    code {
+        "typst-formula",
+        "replace",
+        '
+            x -> y
+        ',
+    },
+},
+par {
+    'Copyright (c) 1337 me',
+    props {
+        ("type", "footer"),
+    },
+},
+```
+
+## Existing document formats
+
 Could be HTML but in practice it is deeply involved with style.
 Markdown is an incorporeal document.
 The renderer, thus the user, chooses the font, colours, layout, etc.
-Markdown is successful incorporeal document.
-I want something like but with the ability to function like a static web page.
-
-- readme
-
-features:
-
-metadata
-  tags: string
-  props: key pairs
-navigation
-  links lists of lists of links
-headings/sections
-text
-links (point in text, heading, local file, web url, email, ...)
-  link type hint: img, vid, pdf
-emphasis (italic, bold)
-lists
-  ordered, unordered, checked
-quotes generalization?
-paragraphs
-single lines
-  as tag to hint
-common image
-  string -> image
-  user supplies the images
-  emoji, stickers, gifs, etc
-  fallback img
-code generalization
-  language hint
-  executeable hint
-  could be opened in editor
-  could be assigned a renderer by the user (eg. bat)
-background text: in props
-  titles for links
-  alt for images
-  etc
-tags
-  anything can have a tag
-  links can link to tags
-  citation can cite a tag
-tables and graphs
-  as element? as code that executes?
-
-anti features:
-
-colours
-fonts
-line breaks
-horizontal rules
-
-props{
-    ("language", "en"),
-    ("date", 31/12/9999),
-}
-nav{
-    snav{
-        "top level",
-        link{'home', "/home"},
-        link{'about', "/about"},
-        link{'now', "/now"},
-        link{'blog', "/blog/index"},
-    },
-    snav{
-        "other articles",
-        link{'I like cheese', "./cheese"},
-        link{'Sosig is happiness', "./sosig"},
-    },
-}
-part{
-    head{0, 'very important'},
-    'One must see this image.',
-    link{'very important image', "image.png", props{("bg-text", 'Extremely important image.')}},
-    'Also this one.',
-    link{'another important image', "website.com/image", props{("type-hint", 'image')}},
-    'For further questions see ',
-    link{'questions', "#questions"},
-    '.',
-    head{1, 'questions', tag{"#questions"}},
-    '
-    Why is this important?
-    Because it is.
-    For even further questions email me at ',
-    link{"email@address.com"},
-    '.',
-}
-part{
-    head{0, 'demo'}
-    'This is a ',
-    em{0, 'light'},
-    ' emphasis.
-    This is a ',
-    em{1, 'medium'},
-    ' emphasis.
-    This is a ',
-    em{2, 'strong'},
-    ' emphasis.',
-    'This is a ',
-    em{-1, 'light'},
-    ' de-emphasis.
-    This is a ',
-    em{-2, 'medium'},
-    ' de-emphasis.
-    This is a ',
-    em{-3, 'strong'},
-    ' de-emphasis.',
-    'This is a list: ',
-    ulist{
-        item{'hello'},
-        item{em{2, 'HELLO'}},
-    },
-    'This is a weird list: ',
-    olist{
-        item{'1'},
-        item{'0'},
-        item{'2'},
-    },
-    part{
-        'This is a paragraph.',
-        'I will cite something',
-        cite{"@test-citation"},
-    },
-    part{
-        'This is yet another paragraph, with an emoji: ',
-        emoji{"laughing", tag{"@test-citation"}},
-    },
-    part{
-        'This is will not compile:',
-        code{
-            props{("language", "rust")},
-            '
-                let mut x = 0;
-                let y = &mut x;
-                let z = &mut x;
-                *y = 1;
-            ',
-        },
-        '
-        Your viewer may try to run it, only if it wants to.
-        This is a piece of code that suggest to be ran and its result inserted into this document.
-        Only if you want to.
-        ',
-        code{
-            props{
-                ("language", "typst-formula"),
-                ("ex-hint", "suggested"),
-            },
-            '
-                x -> y
-            ',
-        },
-        'Truth table for X AND Y',
-        data{
-            props{
-                ("type-hint", "table"),
-                ("ex-hint", "suggested"),
-            },
-            [
-                [
-                    ['T', F],
-                    ['T', F],
-                ],
-                [
-                    ['T', 'F'],
-                    ['F', 'F'],
-                ],
-            ],
-        },
-        'This is a graph of my happiness:',
-        data{
-            props{
-                ("type-hint", "line-graph"),
-                ("ex-hint", "suggested"),
-            },
-            [
-                [
-                    'year',
-                    'happiness',
-                ],
-                [
-                    (0, 100), (1, 90.5), (2, 72.3), (3, 45.9), (4, 17.6), (5, 0.3),
-                ],
-            ],
-        },
-    },
-}
-part{
-    props{("type", "footer")},
-    '
-    Copyright (c) 1337 me
-    ',
-}
-
-Some markdown like language that would be parsed and turned into the above format.
-For actual writing.
-
-```md
-$prop language en
-$nav ""
-  $nav "top level"
-    - [home](/home)
-    - [about](/about)
-    - [now](/now)
-    - [blog](/blog/index)
-  $nav "other articles"
-    - [I like cheese](cheese)
-    - [Sosig is happiness](sosig)
-
-# very important
-
-One must see this image.
-
-![very important image](image.png)
-
-Also this one.
-
-![another important image](website.com/image.jpg)
-
-For further questions see [questions](##questions)
-
-## questions
-
-Why is this important?
-Because it is.
-For even further questions email me at <email@address.com>.
-
-$footer
-
-Copyright(C) some dude 
-```
+Markdown is a successful incorporeal document.
 
 ## License
 
@@ -243,3 +142,4 @@ This readme under CC BY 4.0:
 
 This work © 2024 by Cody Bloemhard is licensed under CC BY 4.0.
 To view a copy of this license, visit https://creativecommons.org/licenses/by/4.0/
+
