@@ -56,6 +56,8 @@ anti features:
 
 colours
 fonts
+spacing
+layout
 
 are these anti features?
 

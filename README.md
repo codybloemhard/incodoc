@@ -8,12 +8,12 @@ Incorporeal document format.
 - meant as a middle layer
   - documents written in formats easy for humans
   - converted to incodoc
-  - served to consumers as an incodoc
+  - served to consumers as an incodoc or incodoc compatible document
   - either converted or rendered to best serve the consumer
 - alternative to static site generators
   - emphasis on the consumer needs
 
-## Quick example.
+## Quick example
 
 ``` incodoc
 props {
@@ -127,6 +127,88 @@ par {
     },
 },
 ```
+
+## Why
+
+### Situation
+
+You browse the web. Many things are mostly text based with simple media inserted:
+
+- blogs
+- documentation
+- government information
+- books
+- personal websites
+- emails
+
+By only supporting a few basic things you get most of the way:
+
+- text
+- links
+- emphasised text
+- headings
+- lists
+- simple structure
+  - paragraphs
+  - sections
+- images
+
+Most of these come with their own aesthetics:
+
+- fonts, font sizes
+- colour themes
+- margins, padding and other spacing
+
+Most also dictate how you interact with them:
+
+- how links behave when you click
+- how the menu works (eg. auto expand sub menu vs click to expand)
+
+### Problem
+
+All of these variations are not at all serving the consumer.
+The documents are often designed to be internally consistent.
+But the user likely experiences multiple of these documents at once.
+All with different authors and designs.
+Simply, it is a mess with no consistency.
+The consumer may wish to render all these documents in a consistent way but this is very difficult.
+
+Slightly different interactions slow down the user.
+This websites menu works like this, that one like that.
+Even though they all do exactly the same.
+It takes a second to adjust.
+The user would like to consistently interact with similar constructs.
+
+The user may be severely impeded by the design but could otherwise consume the document properly:
+
+- a font that is hard to read for the consumer
+- a colour scheme may be difficult for a colour blind consumer
+- images that download and show by default on a slow connection
+- accessibility tools may struggle when design and content are entangled
+
+In the end, the spaghetti like entanglement of content and style/design limits the consumer.
+The consumer it limited in reading the document in a way that serves them best.
+The author has forced a particular way of consuming the document onto the consumer.
+
+### Existing solutions
+
+Solutions are half baked or buggy work arounds.
+
+- Dark Reader browser extension can change the colour theme of websites
+  - it works well most of the time but sometimes very poorly
+  - it is an uphill battle for the extension devs and end users
+  - sites that don't play along nicely are a real pain to use
+- you can force a font in your browser
+  - text is rendered in the font of your choosing
+  - this breaks a surprising amount of websites
+    - seemingly simple sites don't render correctly anymore
+    - previously invisibly text shows up and makes the site unreadable
+- you can try inverting the render of pdf files
+  - mostly gets you a dark theme
+  - breaks with images
+  - doesn't work when authors refer to colours in the document
+
+It is difficult to change small design elements to serve the consumer more effectively.
 
 ## Existing document formats
 
