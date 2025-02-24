@@ -51,7 +51,7 @@ string_inner = { (!str ~ ANY)+ }
 str = _{ "\"" }
 
 uint = { ASCII_DIGIT+ }
-uint_capped = { ASCII_DIGIT{1, 19} }
+uint_capped = ${ ASCII_DIGIT{1, 19} }
 
 int = @{ ("-" | "+")? ~ ASCII_DIGIT+ }
 
@@ -63,3 +63,6 @@ month = { ASCII_DIGIT{2} }
 day = { ASCII_DIGIT{2} }
 
 WHITESPACE = _{ WHITE_SPACE }
+COMMENT = _ { multi_line_comment | single_line_comment }
+multi_line_comment = { "/*" ~ (!"*/" ~ ANY)* ~ "*/" }
+single_line_comment = { "//" ~ (!"\n" ~ ANY)* }

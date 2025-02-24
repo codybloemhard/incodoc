@@ -34,8 +34,38 @@ mod tests {
     }
 
     test!(
-        t_empty_f0,
+        t_empty,
         "",
+        Doc::default()
+    );
+
+    test!(
+        t_empty_comment0,
+        "// comment",
+        Doc::default()
+    );
+
+    test!(
+        t_empty_comment1,
+        "
+        /* comment */
+        ",
+        Doc::default()
+    );
+
+    test!(
+        t_empty_comment2,
+        "
+        //
+        ",
+        Doc::default()
+    );
+
+    test!(
+        t_empty_comment3,
+        "
+        /**/
+        ",
         Doc::default()
     );
 
@@ -253,6 +283,78 @@ mod tests {
                     ("b".to_string(), PropVal::Int(1))]
                 ),
             })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_text_comment0,
+        "
+        // comment
+        'text' // comment
+        // comment
+        ",
+        Doc {
+            items: vec![DocItem::Text("text".to_string())],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_text_comment1,
+        "
+        /* comment */
+        /* comment */ 'text' /* comment */
+        /* comment */
+        ",
+        Doc {
+            items: vec![DocItem::Text("text".to_string())],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_text_comment2,
+        "
+        // comment
+        'text' {
+            // comment
+            tags { /* comment */\"a\", \"b\" }, // comment
+            /* comment */
+            props {
+                /*comment*/(/*comment*/\"a\"/*comment*/,/*comment*/0/*comment*/),
+                (\"b\", 1),
+            /* comment */}// comment
+            // comment
+        /* comment */}
+        // comment
+        ",
+        Doc {
+            items: vec![DocItem::MText(TextWithMeta{
+                text: "text".to_string(),
+                tags: hset!(["a", "b"]),
+                props: props!([
+                    ("a".to_string(), PropVal::Int(0)),
+                    ("b".to_string(), PropVal::Int(1))]
+                ),
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_text_comment3,
+        "
+        /* comment */
+        /* comment */ '//comment' /* comment */,
+        /* comment */ '/*comment*/' /* comment */
+        /* comment */
+        ",
+        Doc {
+            items: vec![
+                DocItem::Text("//comment".to_string()),
+                DocItem::Text("/*comment*/".to_string()),
+            ],
             ..Default::default()
         }
     );
@@ -524,6 +626,19 @@ props { (
     );
 
     test!(
+        t_props_comment,
+        "
+        // comment
+        /*comment*/props/*comment*/{/*comment*/(/*comment*/\"//comment\"/*comment*/,/*comment*/0/*coment*/)/*comment*/}//comment
+        /*comment*/
+        ",
+        Doc {
+            props: props!([("//comment".to_string(), PropVal::Int(0))]),
+            ..Default::default()
+        }
+    );
+
+    test!(
         t_tags_c0_f0,
         "tags{\"tag0\", \"tag1\"}",
         Doc {
@@ -584,6 +699,19 @@ props { (
         ",
         Doc {
             tags: hset!(["tag0"]),
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_tags_comment,
+        "
+        /* comment */
+        /*comment*/tags/*comment*/{/*comment*/\"a\"/*comment*/,/*comment*/\"b\"/*comment*/}/*comment*/,//comment
+        // comment
+        ",
+        Doc {
+            tags: hset!(["a", "b"]),
             ..Default::default()
         }
     );
@@ -793,6 +921,21 @@ props { (
                     ]),
                 }),
             ],
+            ..Default::default()
+        }
+
+    );
+
+    test!(
+        t_emphasis_comment,
+        "/*c*/em/*c*/{/*c*/le/*c*/,/*c*/\"le\"/*c*/,/*c*/tags{}/*c*/,/*c*/props{}/*c*/}//c",
+        Doc {
+            items: vec![DocItem::Emphasis(Emphasis{
+                strength: EmStrength::Light,
+                etype: EmType::Emphasis,
+                text: "le".to_string(),
+                ..Default::default()
+            })],
             ..Default::default()
         }
 
@@ -1127,6 +1270,25 @@ props { (
     );
 
     test!(
+        t_code_comment,
+        "/*c*/code/*c*/{//c
+            /*c*/\"plain\"/*c*/,//c
+            /*c*/\"show\"/*c*/,/*c*///c
+            /*c*/'
+                 // comment
+                 '//c
+        /*c*/}/*c*/",
+        Doc {
+            items: vec![DocItem::Code(Ok(CodeBlock{
+                language: "plain".to_string(),
+                code: "// comment".to_string(),
+                ..Default::default()
+            }))],
+            ..Default::default()
+        }
+    );
+
+    test!(
         t_paragraph,
         "
         par{
@@ -1210,6 +1372,23 @@ props { (
                 DocItem::Paragraph(Paragraph {
                     items: vec![
                         ParagraphItem::Text("text".to_string()),
+                    ],
+                    ..Default::default()
+                }),
+            ],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_paragraph_comment,
+        "/*c*/par/*c*/{/*c*/'/*c*/'/*c*/,/*c*/'//c'/*c*/,/*c*/}/*c*/",
+        Doc {
+            items: vec![
+                DocItem::Paragraph(Paragraph {
+                    items: vec![
+                        ParagraphItem::Text("/*c*/".to_string()),
+                        ParagraphItem::Text("//c".to_string()),
                     ],
                     ..Default::default()
                 }),
@@ -1347,6 +1526,22 @@ props { (
                     ("a".to_string(), PropVal::Int(0)),
                     ("b".to_string(), PropVal::Int(1))
                 ]),
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_heading_comment,
+        "/*c*/head /*c*/ {/*c*/0/*c*/,/**/\"a\"/*c*/,/*c*/\"b\"/*c*/}//c",
+        Doc {
+            items: vec![DocItem::Heading(Heading{
+                level: 0,
+                items: vec![
+                    HeadingItem::String("a".to_string()),
+                    HeadingItem::String("b".to_string()),
+                ],
+                ..Default::default()
             })],
             ..Default::default()
         }
@@ -1530,6 +1725,24 @@ props { (
     );
 
     test!(
+        t_list_comment,
+        "/*c*/list/*c*/{/*c*/dl/*c*/,/*c*/'a'/*c*/,/*c*/'b'/*c*/,/*c*/}//c",
+        Doc {
+            items: vec![
+                DocItem::List(List{
+                    items: vec![
+                        ParagraphItem::Text("a".to_string()),
+                        ParagraphItem::Text("b".to_string()),
+                    ],
+                    ltype: ListType::Distinct,
+                    ..Default::default()
+                })
+            ],
+            ..Default::default()
+        }
+    );
+
+    test!(
         t_section_c0_f0,
         "
         section {
@@ -1681,8 +1894,56 @@ props { (
     );
 
     test!(
+        t_section_comment,
+        "
+        /*c*/section/*c*/{//c
+            /*c*/head/*c*/{/*c*/0/*c*/,/*c*/\"h\"/*c*/,/*c*/}/*c*/,//c
+            /*c*/par/*c*/{/*c*/'p'/*c*/}//c
+        /*c*/}//c
+        ",
+        Doc {
+            items: vec![
+                DocItem::Section(Section {
+                    heading: Heading {
+                        level: 0,
+                        items: vec![
+                            HeadingItem::String("h".to_string()),
+                        ],
+                        ..Default::default()
+                    },
+                    items: vec![
+                        SectionItem::Paragraph(Paragraph {
+                            items: vec![
+                                ParagraphItem::Text("p".to_string()),
+                            ],
+                            ..Default::default()
+                        })
+                    ],
+                    ..Default::default()
+                }),
+            ],
+            ..Default::default()
+        }
+    );
+
+    test!(
         t_link_c0,
         "link { \"url\", \"link\" }",
+        Doc {
+            items: vec![
+                DocItem::Link(Link {
+                    url: "url".to_string(),
+                    items: vec![LinkItem::String("link".to_string())],
+                    ..Default::default()
+                })
+            ],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_link_c0_comment,
+        "/*c*/link/*c*/{/*c*/\"url\"/*c*/,/*c*/\"link\"/*c*/}//c",
         Doc {
             items: vec![
                 DocItem::Link(Link {
@@ -1780,6 +2041,46 @@ props { (
                 link { \"urlb\", \"linkb\" }
             }
         }
+        ",
+        Doc {
+            items: vec![
+                DocItem::Nav(vec![
+                    SNav {
+                        description: "desc".to_string(),
+                        links: vec![
+                            Link {
+                                url: "urla".to_string(),
+                                items: vec![
+                                    LinkItem::String("linka".to_string())
+                                ],
+                                ..Default::default()
+                            },
+                            Link {
+                                url: "urlb".to_string(),
+                                items: vec![
+                                    LinkItem::String("linkb".to_string())
+                                ],
+                                ..Default::default()
+                            }
+                        ],
+                        ..Default::default()
+                    }
+                ])
+            ],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_nav_c0_comment,
+        "
+        /*c*/nav/*c*/{//c
+            /*c*/snav/*c*/{//c
+                /*c*/\"desc\"/*c*/,
+                /*c*/link/*c*/{/*c*/\"urla\"/*c*/,/*c*/\"linka\"/*c*/}/*c*/,//c
+                /*c*/link/*c*/{/*c*/\"urlb\"/*c*/,/*c*/\"linkb\"/*c*/}/*c*/,//c
+            /*c*/}/*c*/
+        /*c*/}//c
         ",
         Doc {
             items: vec![
