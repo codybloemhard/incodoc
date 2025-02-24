@@ -828,11 +828,11 @@ props { (
 
     test!(
         t_code_c1,
-        "code { \"plain\", \"choice\", '' }",
+        "code { \"plain\", \"runnable\", '' }",
         Doc {
             items: vec![DocItem::Code(Ok(CodeBlock{
                 language: "plain".to_string(),
-                mode: CodeModeHint::Choice,
+                mode: CodeModeHint::Runnable,
                 ..Default::default()
             }))],
             ..Default::default()
@@ -841,11 +841,11 @@ props { (
 
     test!(
         t_code_c2,
-        "code { \"plain\", \"auto\", '' }",
+        "code { \"plain\", \"run\", '' }",
         Doc {
             items: vec![DocItem::Code(Ok(CodeBlock{
                 language: "plain".to_string(),
-                mode: CodeModeHint::Auto,
+                mode: CodeModeHint::Run,
                 ..Default::default()
             }))],
             ..Default::default()

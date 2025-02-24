@@ -325,8 +325,8 @@ fn parse_code(pair: Pair<'_, Rule>) -> Result<CodeBlock, CodeIdentError> {
 fn parse_code_mode(pair: Pair<'_, Rule>) -> CodeModeHint {
     let string = parse_string(pair);
     match string.as_ref() {
-        "choice" => CodeModeHint::Choice,
-        "auto" => CodeModeHint::Auto,
+        "runnable" => CodeModeHint::Runnable,
+        "run" => CodeModeHint::Run,
         "replace" => CodeModeHint::Replace,
         _ => CodeModeHint::Show,
     }

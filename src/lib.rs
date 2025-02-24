@@ -372,8 +372,8 @@ impl RemoveErrors for CodeBlock {
 #[derive(Clone, Copy, Default, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub enum CodeModeHint {
     #[default] Show,
-    Choice,
-    Auto,
+    Runnable,
+    Run,
     Replace,
 }
 

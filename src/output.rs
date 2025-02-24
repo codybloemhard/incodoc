@@ -124,8 +124,8 @@ fn code_out(code: &CodeBlock, spaces: usize, output: &mut String) {
     output.push_str(",\n");
     let mode = match code.mode {
         CodeModeHint::Show => "show",
-        CodeModeHint::Choice => "choice",
-        CodeModeHint::Auto => "auto",
+        CodeModeHint::Runnable => "runnable",
+        CodeModeHint::Run => "run",
         CodeModeHint::Replace => "replace",
     };
     string_out(mode, spaces + 4, output);
