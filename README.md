@@ -1,6 +1,7 @@
 # incodoc
 
-Incorporeal document format.
+An incorporeal document format.
+
 - document type that doesn't dictate appearance
 - should be able to function like a static web page
 - the consumer chooses how to render the document
@@ -12,6 +13,18 @@ Incorporeal document format.
   - either converted or rendered to best serve the consumer
 - alternative to static site generators
   - emphasis on the consumer needs
+
+In this README:
+
+- Quick example
+- Why
+  - Situation
+  - Problem
+  - Existing solutions
+  - Existing document formats
+  - Name
+- License
+
 
 ## Quick example
 
@@ -187,7 +200,7 @@ The user may be severely impeded by the design but could otherwise consume the d
 - accessibility tools may struggle when design and content are entangled
 
 In the end, the spaghetti like entanglement of content and style/design limits the consumer.
-The consumer it limited in reading the document in a way that serves them best.
+The consumer is limited in reading the document in a way that serves them best.
 The author has forced a particular way of consuming the document onto the consumer.
 
 ### Existing solutions
@@ -210,12 +223,56 @@ Solutions are half baked or buggy work arounds.
 
 It is difficult to change small design elements to serve the consumer more effectively.
 
-## Existing document formats
+### Existing document formats
 
 Could be HTML but in practice it is deeply involved with style.
 Markdown is an incorporeal document.
 The renderer, thus the user, chooses the font, colours, layout, etc.
 Markdown is a successful incorporeal document.
+
+### Name
+
+Why does incodoc have the name it does?
+Incodoc is short for "incorporeal document" which is a bit of a mouth full.
+
+I wanted a single word to describe the document format.
+I considered negative descriptions:
+
+- styleless
+  - "without a particular style"
+    - <https://dictionary.cambridge.org/dictionary/english/styleless>
+  - Referring to stylesheets. However it is quite vague as style doesn't have to refer to appearance.
+
+- formless
+  - "without clear shape or structure"
+    - <https://dictionary.cambridge.org/dictionary/english/formless>
+- "without clear shape" is accurate but we do have structure.
+
+These negative descriptions are also not very catchy.
+Then I combed through some words and found:
+
+- ethereal
+  - "very light and delicate, especially in a way that does not seem to come from the real, physical world"
+    - https://dictionary.cambridge.org/dictionary/english/ethereal
+  - Another play on not being physical but this time like it's not real.
+
+- spectral
+  - "coming from or seeming to be the spirit of a dead person"
+    - https://dictionary.cambridge.org/dictionary/english/spectral
+  - Yet another version of not being physical but now having to do with the dead.
+
+Catchy but seem to imply some things that are not true or relevant of the document format.
+The closest word I could find:
+
+- incorporeal
+  - "not having a physical body but a spiritual form"
+    - https://dictionary.cambridge.org/dictionary/english/incorporeal
+  - Describes the document as not having a physical body (the consumer decides what it looks like).
+  - Describes the document as having form (the document has abstract/semantic structure (eg. paragraphs and sections))
+
+I consider incorporeal document formats a category of document formats.
+There may be other document formats that are incorporeal.
+Some document formats may be more incorporeal in spirit than others.
 
 ## License
 
