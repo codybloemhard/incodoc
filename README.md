@@ -5,10 +5,9 @@ An incorporeal document format.
 - document type that doesn't dictate appearance
 - should be able to function like a static web page
 - the consumer chooses how to render the document
-- not meant to write directly but should be human readable and writable
+- not meant to read or write directly but should be human readable and writable
 - meant as a middle layer
   - documents written in formats easy for humans
-  - converted to incodoc
   - served to consumers as an incodoc or incodoc compatible document
   - either converted or rendered to best serve the consumer
 - alternative to static site generators
@@ -22,9 +21,9 @@ In this README:
   - Problem
   - Existing solutions
   - Existing document formats
+    - Markdown
   - Name
 - License
-
 
 ## Quick example
 
@@ -225,10 +224,55 @@ It is difficult to change small design elements to serve the consumer more effec
 
 ### Existing document formats
 
-Could be HTML but in practice it is deeply involved with style.
-Markdown is an incorporeal document.
-The renderer, thus the user, chooses the font, colours, layout, etc.
-Markdown is a successful incorporeal document.
+When shortcomings or weak points of other formats are being discussed, it is taken to be relative
+to the goal that incodoc has.
+These design decisions often do make sense for the format's own goals.
+
+#### Markdown
+
+Markdown enjoys much use.
+It is a mostly incorporeal document format.
+Some issues:
+
+- line breaks
+  - may or may not be incorporeal depending on how you look at it
+- bold and italic
+  - corporeal but can be easily interpreted as incodoc's light, medium and heavy emphasis
+- horizontal rules
+  - may or may not be incorporeal depending on how you look at it
+- HTML
+  - usually used for corporeal elements like font and colour
+
+See: <https://www.markdownguide.org/basic-syntax/>
+
+Additional shortcomings:
+
+- no meta
+- no navigation
+- bit vague
+  - markdown vs commonmark
+  - whitespace dependent
+
+Strong points:
+
+- mostly incorporeal
+- wide adoption
+- very human readable and writeable
+- maps to incodoc with only small issues
+
+Markdown is important to incododoc.
+It will be the first document format convertible to incodoc.
+An incodoc flavoured markdown is planned.
+
+#### HTML
+
+HTML in practice is deeply involved with style.
+
+todo
+
+#### PDF
+
+todo
 
 ### Name
 
