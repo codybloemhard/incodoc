@@ -22,6 +22,7 @@ In this README:
   - Existing solutions
   - Existing document formats
     - Markdown
+    - HTML
   - Name
 - License
 
@@ -267,8 +268,39 @@ An incodoc flavoured markdown is planned.
 #### HTML
 
 HTML in practice is deeply involved with style.
+In principle you can use it incorporeally by using only incorporeal elements.
+In practice HTML almost never goes without accompanying CSS.
+The structure of the document usually is dictated by style.
+Often `div` and `span` are just there to separate out parts of the document so they can be assigned
+different style elements.
+For my own very simple webpage, even I used `span` like this.
+Anyone who ever tried to make a simple HTML + CSS webpage has most likely experienced this: having
+to change the HTML to get it styled right.
+But the document content was not changed.
+This shows HTML encodes style in practice and not just content.
+While we could use HTML as an incorporeal document, it would not be wise.
+Upon receiving a HTML document, it may or may not be incorporeal.
+It is desirable for the user to know whether they are dealing with incorporeal content or not before
+rendering it.
 
-todo
+A breakdown of the incorporeality of some HTML elements:
+
+Incorporeal: `html`, `head`, `body`, `title`, `h1`..`h6`, `p`, `em`, `blockquote`, `q`, `abbr`, `address`, `cite`, `table`, `ul`, `ol`, `li`, `dl`, `dt`, `dd`
+Mostly incorporeal: `a`, `img`
+Maybe incorporeal: `br`, `hr`, `pre`, `sub`, `sup`
+Corporeal with easy conversion: `i`, `mark`
+Incorporeal: `small`, `del`, `ins`, `bdo`
+Non document functionality: `button`
+
+It is desirable to both convert (HTML + CSS) to incodoc and render incodoc to (HTML + CSS).
+Parsing HTML + CSS and stripping it down as best as we can will allow consumers to consume as much
+content as possible through incodoc, and thus via their preferred aesthetics and workflow which
+they have control over.
+Exporting incodoc as HTML + CSS allows the user to consume content in their browser, presented in a
+way that they might prefer over the original presentation.
+The (HTML + CSS) -> incodoc -> (HTML + CSS) pipeline can be of utility as well.
+
+See: <https://www.w3schools.com/tags/>
 
 #### PDF
 
