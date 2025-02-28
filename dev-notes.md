@@ -64,11 +64,6 @@ are these anti features?
 line breaks?
 horizontal rules?
 
-incorporeal
-ethereal
-spectral
-content -> ssg -> page with style -> browser -> user
-content -> doc -> browser -> user
 txt, md, html + css -> doc
 doc + style -> tty, html + css
 

@@ -4,9 +4,9 @@ An incorporeal document format.
 
 - document type that doesn't dictate appearance
 - should be able to function like a static web page
-- the consumer chooses how to render the document
-- not meant to read or write directly but should be human readable and writable
-- meant as a middle layer
+- the consumer decides how to render the document
+- not meant to read or write directly but should be human readable and writeable
+- meant as a intermediate layer or final document
   - documents written in formats easy for humans
   - served to consumers as an incodoc or incodoc compatible document
   - either converted or rendered to best serve the consumer
@@ -16,6 +16,7 @@ An incorporeal document format.
 In this README:
 
 - Quick example
+- Usage
 - Why
   - Situation
   - Problem
@@ -140,6 +141,78 @@ par {
     },
 },
 ```
+
+## Usage
+
+### General
+
+Incodoc is a  document type that doesn't encode how the document is supposed to look.
+The consumer decides how to render the document.
+It is not meant to be read or written directly but it is human readable and writeable.
+Can be used directly or as an intermediate layer.
+
+#### Direct usecase:
+
+0. a document is written in a format easily readable and writeable for humans
+1. the document is converted to incodoc
+2. the incodoc is served
+3. the consumer retrieves the incodoc
+4. the consumer's document viewer/browser renders the incodoc as specified by the consumer 
+  - either incodoc is rendered directly by the viewer/browser
+  - or incodoc is converted behind the scenes by the viewer/browser and then displayed
+
+Example: markdown -> incodoc -> HTML + CSS
+
+0. the author writes their blog in markdown
+1. the author converts it to incodoc
+2. the author hosts their blog as incodoc
+3. the consumer retrieves an article as an incodoc with their browser
+4. the browser converts the incodoc to HTML + CSS as specified by the user config
+5. the browser renders the HTML + CSS to be consumed
+
+#### Indirect usecase:
+
+0. a document is served in format that is not incodoc
+1. the consumer retrieves the document
+2. the document is converted to incodoc
+3. the incodoc is rendered as specified by the consumer
+
+Example: HTML + CSS + JS -> incodoc -> ANSI
+
+0. a document is served as a HTML + CSS + JS webpage
+1. the consumer retrieves the document with a terminal browser
+2. the document is converted to incodoc as well possible converting/ignoring style
+3. the incodoc is rendered to ANSI as specified by the user config
+4. the content is outputted through stdout to be consumed
+
+#### As alternative to SSG's
+
+Usual static site generator (SSG) workflow:
+
+0. the author writes a site in some markdown flavour
+1. the author defines a style/theme
+2. the SSG converts the markdown to HTML + CSS + JS with given theme
+3. HTML + CSS + JS is served
+4. HTML + CSS + JS is retrieved and rendered in browser
+5. consumer required to:
+  - consume content as styled by author
+  - use a workaround like the indirect usecase above
+
+By publishing as incodoc:
+
+0. the author writes a site in
+  - an incodoc markdown flavour
+  - an incodoc compatible document formate like plain markdown
+1. the site is hosted as
+  - the markdown converted to incodoc
+  - just the markdown
+2. the consumer retrieves the documents
+3. the consumer's browser/viewer either
+  - renders the incodoc
+  - converts the markdown to incodoc and renders it
+
+This way the author does not need to bother with style.
+And the user can consumer the document as desired or needed with their own theme/style/aesthetics/accessibility needs.
 
 ## Why
 
@@ -286,10 +359,15 @@ rendering it.
 A breakdown of the incorporeality of some HTML elements:
 
 Incorporeal: `html`, `head`, `body`, `title`, `h1`..`h6`, `p`, `em`, `blockquote`, `q`, `abbr`, `address`, `cite`, `table`, `ul`, `ol`, `li`, `dl`, `dt`, `dd`
+
 Mostly incorporeal: `a`, `img`
+
 Maybe incorporeal: `br`, `hr`, `pre`, `sub`, `sup`
+
 Corporeal with easy conversion: `i`, `mark`
+
 Incorporeal: `small`, `del`, `ins`, `bdo`
+
 Non document functionality: `button`
 
 It is desirable to both convert (HTML + CSS) to incodoc and render incodoc to (HTML + CSS).
@@ -303,6 +381,10 @@ The (HTML + CSS) -> incodoc -> (HTML + CSS) pipeline can be of utility as well.
 See: <https://www.w3schools.com/tags/>
 
 #### PDF
+
+todo
+
+#### orgmode
 
 todo
 
