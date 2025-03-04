@@ -1,3 +1,6 @@
+/// An incodoc reference document.
+/// Contains all features of incodoc.
+/// A quick overview of the syntax as well as quick test material.
 pub const REF_DOC: &str = "
     tags { \"tag-a\", \"tag-b\" },
     props {

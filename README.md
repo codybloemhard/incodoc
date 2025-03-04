@@ -202,7 +202,7 @@ By publishing as incodoc:
 
 0. the author writes a site in
   - an incodoc markdown flavour
-  - an incodoc compatible document formate like plain markdown
+  - an incodoc compatible document format like plain markdown
 1. the site is hosted as
   - the markdown converted to incodoc
   - just the markdown
@@ -212,7 +212,7 @@ By publishing as incodoc:
   - converts the markdown to incodoc and renders it
 
 This way the author does not need to bother with style.
-And the user can consumer the document as desired or needed with their own theme/style/aesthetics/accessibility needs.
+And the user can consume the document as desired or needed with their own theme/style/aesthetics/accessibility features.
 
 ## Why
 

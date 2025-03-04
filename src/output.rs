@@ -251,6 +251,8 @@ fn section_out(section: &Section, spaces: usize, output: &mut String) {
     str_out("},\n", spaces, output);
 }
 
+/// Unparse: take abstract documents structure and produce a string that is an incodoc.
+/// Any output of this should be able to be parsed by this crate.
 pub fn doc_out(doc: &Doc, output: &mut String) {
     tags_out(&doc.tags, 0, output);
     props_out(&doc.props, 0, output);

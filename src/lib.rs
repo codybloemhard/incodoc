@@ -10,19 +10,24 @@ use std::{
 
 use pest_derive::Parser;
 
+/// Parser for incodoc.
 #[derive(Parser)]
 #[grammar = "parse/incodoc.pest"]
 pub struct IncodocParser;
 
+/// Merge two objects by having one absorb the other.
 pub trait Absorb {
     type Other;
+    /// Absorb other into self.
     fn absorb(&mut self, other: Self::Other);
 }
 
+/// Remove errors from self.
 pub trait RemoveErrors {
     fn remove_errors(&mut self);
 }
 
+/// Document.
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct Doc {
     tags: Tags,
@@ -30,14 +35,18 @@ pub struct Doc {
     items: Vec<DocItem>,
 }
 
+/// Document item.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum DocItem {
     Text(String),
+    /// Text with meta attached.
     MText(TextWithMeta),
     Emphasis(Emphasis),
+    /// Code or an error.
     Code(Result<CodeBlock, CodeIdentError>),
     Heading(Heading),
     Link(Link),
+    /// Navigation.
     Nav(Nav),
     List(List),
     Paragraph(Paragraph),
@@ -71,6 +80,7 @@ impl RemoveErrors for DocItem {
     }
 }
 
+/// Tags metadata. Each tag is a string.
 pub type Tags = HashSet<String>;
 
 impl Absorb for Tags {
@@ -84,8 +94,10 @@ impl Absorb for Tags {
     }
 }
 
+/// Properties metadata. Each property is a tuple of an identifier and a value.
 pub type Props = HashMap<String, PropVal>;
 
+/// Value properties can take.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum PropVal {
     String(String),
@@ -95,6 +107,7 @@ pub enum PropVal {
     Error(PropValError),
 }
 
+/// Error when no valid value could be parsed.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum PropValError {
     Int(ParseIntError),
@@ -136,6 +149,7 @@ fn insert_prop(props: &mut Props, (k, v): (String, PropVal)) {
     }
 }
 
+/// A section is a heading followed by content that goes with it.
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct Section {
     heading: Heading,
@@ -144,6 +158,7 @@ pub struct Section {
     props: Props,
 }
 
+/// Section items are either paragraphs or sub-sections.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum SectionItem {
     Paragraph(Paragraph),
@@ -168,6 +183,7 @@ impl RemoveErrors for SectionItem {
     }
 }
 
+/// Heading, a title for the accompanying content.
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct Heading {
     level: u8,
@@ -176,6 +192,7 @@ pub struct Heading {
     props: Props,
 }
 
+/// Headings are plain text that can have emphasis.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum HeadingItem {
     String(String),
@@ -199,6 +216,7 @@ impl RemoveErrors for HeadingItem {
     }
 }
 
+/// Paragraph is a grouping of content.
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct Paragraph {
     items: Vec<ParagraphItem>,
@@ -206,6 +224,7 @@ pub struct Paragraph {
     props: Props,
 }
 
+/// Paragraphs can have content and further structure but no smaller sub-sections.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ParagraphItem {
     Text(String),
@@ -238,6 +257,7 @@ impl RemoveErrors for ParagraphItem {
     }
 }
 
+/// Emphasised or de-emphasised piece of text.
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct Emphasis {
     strength: EmStrength,
@@ -247,6 +267,7 @@ pub struct Emphasis {
     props: Props,
 }
 
+/// Degree of emphasis or de-emphasis.
 #[derive(Clone, Copy, Default, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub enum EmStrength {
     #[default]
@@ -255,6 +276,7 @@ pub enum EmStrength {
     Strong,
 }
 
+/// Whether it is an emphasis or de-emphasis.
 #[derive(Clone, Copy, Default, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub enum EmType {
     #[default]
@@ -268,6 +290,7 @@ impl RemoveErrors for Emphasis {
     }
 }
 
+/// Lists are fine-grained structure in a document.
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct List {
     ltype: ListType,
@@ -278,8 +301,11 @@ pub struct List {
 
 #[derive(Clone, Copy, Default, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub enum ListType {
+    /// Each item has a distinct denotation.
     Distinct,
+    /// Each item is denotated identically.
     #[default] Identical,
+    /// Each item is either checked off or not.
     Checked,
 }
 
@@ -292,8 +318,10 @@ impl RemoveErrors for List {
     }
 }
 
+/// Navigation structure contains sub-navigation structures.
 pub type Nav = Vec<SNav>;
 
+/// Sub-navigation structure has a description, sub-navigation structures and links to navigate to.
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct SNav {
     description: String,
@@ -323,6 +351,7 @@ impl RemoveErrors for SNav {
     }
 }
 
+/// Links are pieces of text with an accompanying URL.
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct Link {
     pub url: String,
@@ -340,6 +369,7 @@ impl RemoveErrors for Link {
     }
 }
 
+/// Links have an exterior of plain text that may be emphasised.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum LinkItem {
     String(String),
@@ -354,10 +384,14 @@ impl RemoveErrors for LinkItem {
     }
 }
 
+/// CodeBlock contains computer code.
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct CodeBlock {
+    /// Computer language in which the code is written.
     pub language: String,
+    /// Behavioural hint.
     pub mode: CodeModeHint,
+    /// The code.
     pub code: String,
     pub tags: Tags,
     pub props: Props,
@@ -369,14 +403,20 @@ impl RemoveErrors for CodeBlock {
     }
 }
 
+/// Behavioural hint: the block hints what to do with the code.
 #[derive(Clone, Copy, Default, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub enum CodeModeHint {
+    /// Hint to show the code in the document.
     #[default] Show,
+    /// Hint to show the code in the document and to signal that it is supposed to be able to run.
     Runnable,
+    /// Hint to show the code in the document and to run the code and show the results as well.
     Run,
+    /// Hint to run the code and show the results in the document instead of the code itself.
     Replace,
 }
 
+/// Text that has metadata: tags and/or properties.
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct TextWithMeta {
     text: String,
@@ -396,9 +436,11 @@ impl RemoveErrors for TextWithMeta {
     }
 }
 
+/// Error to signal that the code was not formatted properly.
 #[derive(Clone, Copy, Default, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub struct CodeIdentError;
 
+/// Simple date: it is not checked if it actually exists on the calendar.
 #[derive(Clone, Copy, Default, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub struct Date {
     year: i16,
@@ -408,9 +450,13 @@ pub struct Date {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum DateError {
+    /// The year was out of range of i16.
     YearRange(i64),
+    /// The month was out of range: bigger than 12.
     MonthRange(u64),
+    /// The day was out of range: bigger than 31.
     DayRange(u64),
+    /// There was an error parsing an integer in the date.
     Parsing(ParseIntError),
 }
 
