@@ -293,6 +293,8 @@ Solutions are half baked or buggy work arounds.
   - mostly gets you a dark theme
   - breaks with images
   - doesn't work when authors refer to colours in the document
+- Firefox reader view
+  - todo
 
 It is difficult to change small design elements to serve the consumer more effectively.
 

@@ -486,6 +486,39 @@ props { (
     );
 
     test!(
+        t_props_tuple_date_c4,
+        "props { (\"prop\", 1/1/1) }",
+        Doc {
+            props: props!([
+                ("prop".to_string(), PropVal::Date(Date::new(1, 1, 1).unwrap())),
+            ]),
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_props_tuple_date_c5,
+        "props { (\"prop\", 0/0/0) }",
+        Doc {
+            props: props!([
+                ("prop".to_string(), PropVal::Error(PropValError::Date(DateError::MonthRange(0))))
+            ]),
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_props_tuple_date_c6,
+        "props { (\"prop\", 0/1/0) }",
+        Doc {
+            props: props!([
+                ("prop".to_string(), PropVal::Error(PropValError::Date(DateError::DayRange(0))))
+            ]),
+            ..Default::default()
+        }
+    );
+
+    test!(
         t_props_tuple_text_c0,
         "props { (\"prop\", 'this is text') }",
         Doc {

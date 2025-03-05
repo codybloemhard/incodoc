@@ -463,8 +463,12 @@ pub enum DateError {
 impl Date {
     pub fn new(y: i64, m: u64, d: u64) -> Result<Self, DateError> {
         let year: i16 = y.try_into().map_err(|_| DateError::YearRange(y))?;
-        let month: u8 = m.try_into().map_err(|_| DateError::MonthRange(m))?;
-        let day: u8 = d.try_into().map_err(|_| DateError::DayRange(d))?;
+        let month: u8 = m.try_into()
+            .map_err(|_| DateError::MonthRange(m))
+            .and_then(|m| if m == 0 { Err(DateError::MonthRange(m as u64)) } else { Ok(m) } )?;
+        let day: u8 = d.try_into()
+            .map_err(|_| DateError::DayRange(d))
+            .and_then(|d| if d == 0 { Err(DateError::DayRange(d as u64)) } else { Ok(d) } )?;
         if month > 12 { return Err(DateError::MonthRange(m)); }
         if day > 31 { return Err(DateError::DayRange(d)); }
         Ok(Self { year, month, day })

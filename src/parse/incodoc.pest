@@ -58,9 +58,9 @@ int = @{ ("-" | "+")? ~ ASCII_DIGIT+ }
 date = @{
     year ~ "/" ~ month ~ "/" ~ day
 }
-year = { "-"? ~ ASCII_DIGIT{4} }
-month = { ASCII_DIGIT{2} }
-day = { ASCII_DIGIT{2} }
+year = { "-"? ~ ASCII_DIGIT{1,4} }
+month = { ASCII_DIGIT{1,2} }
+day = { ASCII_DIGIT{1,2} }
 
 WHITESPACE = _{ WHITE_SPACE }
 COMMENT = _ { multi_line_comment | single_line_comment }

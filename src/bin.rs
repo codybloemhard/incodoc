@@ -72,6 +72,7 @@ par{
     '
     Copyright (c) 1337 me
     ',
+    props { (\"date\", 2000/00/00) },
 },
 ";
 
