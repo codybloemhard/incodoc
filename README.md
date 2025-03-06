@@ -24,6 +24,7 @@ In this README:
   - Existing document formats
     - Markdown
     - HTML
+    - PDF
   - Name
 - License
 
@@ -294,7 +295,13 @@ Solutions are half baked or buggy work arounds.
   - breaks with images
   - doesn't work when authors refer to colours in the document
 - Firefox reader view
-  - todo
+  - strips pages of many corporeal elements
+  - allows consumers to choose font and colour scheme
+  - has text-to-speech feature
+  - could have more customisation
+  - no document format seems to be behind it
+  - <https://support.mozilla.org/en-US/kb/firefox-reader-view-clutter-free-web-pages>
+  - <https://blog.mozilla.org/en/products/firefox/reader-view/>
 
 It is difficult to change small design elements to serve the consumer more effectively.
 
@@ -384,11 +391,31 @@ See: <https://www.w3schools.com/tags/>
 
 #### PDF
 
-todo
+PDF is one of the most used document formats.
+A quick look at the Wikipedia article shows it is heavily corporeal in nature.
+Based on PostScript, a PDF file is almost more like an application than it is a document.
+It controls content, style and interaction, this in a very similar way to HTML + CSS + JS.
 
-#### orgmode
+See: <https://en.wikipedia.org/wiki/PDF>
 
-todo
+#### Org Mode
+
+Org is a plain text file format.
+It is a markup language similar to markdown (with different syntax).
+It is mostly incorporeal, with small issues similar to markdown.
+It does feature metadata capabilities.
+There are some advanced features like tables.
+It is not just a simple document format that encodes some content.
+From the features overview it is clear that you are supposed to work directly in an Org document,
+almost like some sort of application.
+Mostly used in Emacs along with its scripting abilities.
+A subset of Org could be used as an incodoc like document.
+If no advanced and Emacs specific features are used, it should be relatively straight forward to
+convert to incodoc.
+
+See:
+- <https://orgmode.org/features.html>
+- <https://orgmode.org/quickstart.html>
 
 ### Name
 
