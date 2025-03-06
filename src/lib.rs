@@ -30,9 +30,9 @@ pub trait RemoveErrors {
 /// Document.
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct Doc {
-    tags: Tags,
-    props: Props,
-    items: Vec<DocItem>,
+    pub tags: Tags,
+    pub props: Props,
+    pub items: Vec<DocItem>,
 }
 
 /// Document item.
@@ -152,10 +152,10 @@ fn insert_prop(props: &mut Props, (k, v): (String, PropVal)) {
 /// A section is a heading followed by content that goes with it.
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct Section {
-    heading: Heading,
-    items: Vec<SectionItem>,
-    tags: Tags,
-    props: Props,
+    pub heading: Heading,
+    pub items: Vec<SectionItem>,
+    pub tags: Tags,
+    pub props: Props,
 }
 
 /// Section items are either paragraphs or sub-sections.
@@ -186,10 +186,10 @@ impl RemoveErrors for SectionItem {
 /// Heading, a title for the accompanying content.
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct Heading {
-    level: u8,
-    items: Vec<HeadingItem>,
-    tags: Tags,
-    props: Props,
+    pub level: u8,
+    pub items: Vec<HeadingItem>,
+    pub tags: Tags,
+    pub props: Props,
 }
 
 /// Headings are plain text that can have emphasis.
@@ -219,9 +219,9 @@ impl RemoveErrors for HeadingItem {
 /// Paragraph is a grouping of content.
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct Paragraph {
-    items: Vec<ParagraphItem>,
-    tags: Tags,
-    props: Props,
+    pub items: Vec<ParagraphItem>,
+    pub tags: Tags,
+    pub props: Props,
 }
 
 /// Paragraphs can have content and further structure but no smaller sub-sections.
@@ -260,11 +260,11 @@ impl RemoveErrors for ParagraphItem {
 /// Emphasised or de-emphasised piece of text.
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct Emphasis {
-    strength: EmStrength,
-    etype: EmType,
-    text: String,
-    tags: Tags,
-    props: Props,
+    pub strength: EmStrength,
+    pub etype: EmType,
+    pub text: String,
+    pub tags: Tags,
+    pub props: Props,
 }
 
 /// Degree of emphasis or de-emphasis.
@@ -293,10 +293,10 @@ impl RemoveErrors for Emphasis {
 /// Lists are fine-grained structure in a document.
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct List {
-    ltype: ListType,
-    items: Vec<ParagraphItem>,
-    tags: Tags,
-    props: Props,
+    pub ltype: ListType,
+    pub items: Vec<ParagraphItem>,
+    pub tags: Tags,
+    pub props: Props,
 }
 
 #[derive(Clone, Copy, Default, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
@@ -324,11 +324,11 @@ pub type Nav = Vec<SNav>;
 /// Sub-navigation structure has a description, sub-navigation structures and links to navigate to.
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct SNav {
-    description: String,
-    subs: Vec<SNav>,
-    links: Vec<Link>,
-    tags: Tags,
-    props: Props,
+    pub description: String,
+    pub subs: Vec<SNav>,
+    pub links: Vec<Link>,
+    pub tags: Tags,
+    pub props: Props,
 }
 
 impl RemoveErrors for Nav {
@@ -419,9 +419,9 @@ pub enum CodeModeHint {
 /// Text that has metadata: tags and/or properties.
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct TextWithMeta {
-    text: String,
-    tags: Tags,
-    props: Props,
+    pub text: String,
+    pub tags: Tags,
+    pub props: Props,
 }
 
 impl TextWithMeta {
@@ -443,9 +443,9 @@ pub struct CodeIdentError;
 /// Simple date: it is not checked if it actually exists on the calendar.
 #[derive(Clone, Copy, Default, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub struct Date {
-    year: i16,
-    month: u8,
-    day: u8,
+    pub year: i16,
+    pub month: u8,
+    pub day: u8,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
