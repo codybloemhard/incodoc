@@ -1,6 +1,6 @@
 top = _{ SOI ~ (top_structs ~ ",")* ~ top_structs? ~ EOI }
 top_structs = _{
-    tags | props | text_item | emphasis | code | paragraph | heading | list | section | link | nav
+    tags | props | text_item | emphasis | code | paragraph | list | section | link | nav
 }
 
 tags = { "tags" ~ "{" ~ strings ~ "}" }

@@ -1432,150 +1432,308 @@ props { (
 
     test!(
         t_heading_c0,
-        "head { 0, \"h\" }",
+        "
+        section {
+            head { 0, \"h\" },
+            par { 'p' },
+        }
+        ",
         Doc {
-            items: vec![DocItem::Heading(Heading{
-                level: 0,
-                items: vec![HeadingItem::String("h".to_string())],
-                ..Default::default()
-            })],
+            items: vec![
+                DocItem::Section(Section {
+                    heading: Heading {
+                        level: 0,
+                        items: vec![
+                            HeadingItem::String("h".to_string()),
+                        ],
+                        ..Default::default()
+                    },
+                    items: vec![
+                        SectionItem::Paragraph(Paragraph {
+                            items: vec![
+                                ParagraphItem::Text("p".to_string()),
+                            ],
+                            ..Default::default()
+                        })
+                    ],
+                    ..Default::default()
+                }),
+            ],
             ..Default::default()
         }
     );
 
     test!(
         t_heading_c1,
-        "head { 1, \"h\" }",
+        "
+        section {
+            head { 1, \"h\" },
+            par { 'p' },
+        }
+        ",
         Doc {
-            items: vec![DocItem::Heading(Heading{
-                level: 1,
-                items: vec![HeadingItem::String("h".to_string())],
-                ..Default::default()
-            })],
+            items: vec![
+                DocItem::Section(Section {
+                    heading: Heading {
+                        level: 1,
+                        items: vec![
+                            HeadingItem::String("h".to_string()),
+                        ],
+                        ..Default::default()
+                    },
+                    items: vec![
+                        SectionItem::Paragraph(Paragraph {
+                            items: vec![
+                                ParagraphItem::Text("p".to_string()),
+                            ],
+                            ..Default::default()
+                        })
+                    ],
+                    ..Default::default()
+                }),
+            ],
             ..Default::default()
         }
     );
 
     test!(
         t_heading_c2,
-        "head { 256, \"h\" }",
+        "
+        section {
+            head { 256, \"h\" },
+            par { 'p' },
+        }
+        ",
         Doc {
-            items: vec![DocItem::Heading(Heading{
-                level: 255,
-                items: vec![HeadingItem::String("h".to_string())],
-                ..Default::default()
-            })],
+            items: vec![
+                DocItem::Section(Section {
+                    heading: Heading {
+                        level: 255,
+                        items: vec![
+                            HeadingItem::String("h".to_string()),
+                        ],
+                        ..Default::default()
+                    },
+                    items: vec![
+                        SectionItem::Paragraph(Paragraph {
+                            items: vec![
+                                ParagraphItem::Text("p".to_string()),
+                            ],
+                            ..Default::default()
+                        })
+                    ],
+                    ..Default::default()
+                }),
+            ],
             ..Default::default()
         }
     );
 
     test!(
         t_heading_c3,
-        "head { 9999999999999999999, \"h\" }",
+        "
+        section {
+            head { 9999999999999999999, \"h\" },
+            par { 'p' },
+        }
+        ",
         Doc {
-            items: vec![DocItem::Heading(Heading{
-                level: 255,
-                items: vec![HeadingItem::String("h".to_string())],
-                ..Default::default()
-            })],
+            items: vec![
+                DocItem::Section(Section {
+                    heading: Heading {
+                        level: 255,
+                        items: vec![
+                            HeadingItem::String("h".to_string()),
+                        ],
+                        ..Default::default()
+                    },
+                    items: vec![
+                        SectionItem::Paragraph(Paragraph {
+                            items: vec![
+                                ParagraphItem::Text("p".to_string()),
+                            ],
+                            ..Default::default()
+                        })
+                    ],
+                    ..Default::default()
+                }),
+            ],
             ..Default::default()
         }
     );
 
     test!(
         t_heading_c4,
-        "head { 0, \"hello\" }",
-        Doc {
-            items: vec![DocItem::Heading(Heading{
-                level: 0,
-                items: vec![HeadingItem::String("hello".to_string())],
-                ..Default::default()
-            })],
-            ..Default::default()
+        "
+        section {
+            head { 0, \"hello\", em { md, \" world\" } },
+            par { 'p' },
         }
-    );
-
-    test!(
-        t_heading_c5,
-        "head { 0, \"hello\", em { md, \" world\" } }",
+        ",
         Doc {
-            items: vec![DocItem::Heading(Heading{
-                level: 0,
-                items: vec![
-                    HeadingItem::String("hello".to_string()),
-                    HeadingItem::Em(Emphasis {
-                        text: " world".to_string(),
-                        etype: EmType::Deemphasis,
-                        strength: EmStrength::Medium,
+            items: vec![
+                DocItem::Section(Section {
+                    heading: Heading {
+                        level: 0,
+                        items: vec![
+                            HeadingItem::String("hello".to_string()),
+                            HeadingItem::Em(Emphasis {
+                                text: " world".to_string(),
+                                etype: EmType::Deemphasis,
+                                strength: EmStrength::Medium,
+                                ..Default::default()
+                            }),
+                        ],
                         ..Default::default()
-                    })
-                ],
-                ..Default::default()
-            })],
+                    },
+                    items: vec![
+                        SectionItem::Paragraph(Paragraph {
+                            items: vec![
+                                ParagraphItem::Text("p".to_string()),
+                            ],
+                            ..Default::default()
+                        })
+                    ],
+                    ..Default::default()
+                }),
+            ],
             ..Default::default()
         }
     );
 
     test!(
         t_heading_meta0,
-        "head { 1, tags { \"a\" }, tags{ \"b\" } }",
+        "
+        section {
+            head { 1, tags { \"a\" }, tags{ \"b\" } },
+            par { 'p' },
+        }
+        ",
         Doc {
-            items: vec![DocItem::Heading(Heading{
-                level: 1,
-                items: vec![],
-                tags: hset!(["a", "b"]),
-                ..Default::default()
-            })],
+            items: vec![
+                DocItem::Section(Section {
+                    heading: Heading {
+                        level: 1,
+                        items: vec![],
+                        tags: hset!(["a", "b"]),
+                        ..Default::default()
+                    },
+                    items: vec![
+                        SectionItem::Paragraph(Paragraph {
+                            items: vec![
+                                ParagraphItem::Text("p".to_string()),
+                            ],
+                            ..Default::default()
+                        })
+                    ],
+                    ..Default::default()
+                }),
+            ],
             ..Default::default()
         }
     );
 
     test!(
         t_heading_meta1,
-        "head { 1, props { (\"a\", 0), (\"b\", 0) }, props{ (\"b\", 1) } }",
+        "
+        section {
+            head { 1, props { (\"a\", 0), (\"b\", 0) }, props{ (\"b\", 1) } },
+            par { 'p' },
+        }
+        ",
         Doc {
-            items: vec![DocItem::Heading(Heading{
-                level: 1,
-                items: vec![],
-                props: props!([
-                    ("a".to_string(), PropVal::Int(0)),
-                    ("b".to_string(), PropVal::Int(1))
-                ]),
-                ..Default::default()
-            })],
+            items: vec![
+                DocItem::Section(Section {
+                    heading: Heading {
+                        level: 1,
+                        items: vec![],
+                        props: props!([
+                            ("a".to_string(), PropVal::Int(0)),
+                            ("b".to_string(), PropVal::Int(1))
+                        ]),
+                        ..Default::default()
+                    },
+                    items: vec![
+                        SectionItem::Paragraph(Paragraph {
+                            items: vec![
+                                ParagraphItem::Text("p".to_string()),
+                            ],
+                            ..Default::default()
+                        })
+                    ],
+                    ..Default::default()
+                }),
+            ],
             ..Default::default()
         }
     );
 
     test!(
         t_heading_meta2,
-        "head { 1, props { (\"a\", 0), (\"b\", 0) }, tags { \"tag\" }, props{ (\"b\", 1) } }",
+        "
+        section {
+            head { 1, props { (\"a\", 0), (\"b\", 0) }, tags { \"tag\" }, props{ (\"b\", 1) } },
+            par { 'p' },
+        }
+        ",
         Doc {
-            items: vec![DocItem::Heading(Heading{
-                level: 1,
-                items: vec![],
-                tags: hset!(["tag"]),
-                props: props!([
-                    ("a".to_string(), PropVal::Int(0)),
-                    ("b".to_string(), PropVal::Int(1))
-                ]),
-            })],
+            items: vec![
+                DocItem::Section(Section {
+                    heading: Heading {
+                        level: 1,
+                        items: vec![],
+                        tags: hset!(["tag"]),
+                        props: props!([
+                            ("a".to_string(), PropVal::Int(0)),
+                            ("b".to_string(), PropVal::Int(1))
+                        ]),
+                        ..Default::default()
+                    },
+                    items: vec![
+                        SectionItem::Paragraph(Paragraph {
+                            items: vec![
+                                ParagraphItem::Text("p".to_string()),
+                            ],
+                            ..Default::default()
+                        })
+                    ],
+                    ..Default::default()
+                }),
+            ],
             ..Default::default()
         }
     );
 
     test!(
         t_heading_comment,
-        "/*c*/head /*c*/ {/*c*/0/*c*/,/**/\"a\"/*c*/,/*c*/\"b\"/*c*/}//c",
+        "
+        section {
+            /*c*/head /*c*/ {/*c*/0/*c*/,/**/\"a\"/*c*/,/*c*/\"b\"/*c*/},//c,
+            par { 'p' },
+        }
+        ",
         Doc {
-            items: vec![DocItem::Heading(Heading{
-                level: 0,
-                items: vec![
-                    HeadingItem::String("a".to_string()),
-                    HeadingItem::String("b".to_string()),
-                ],
-                ..Default::default()
-            })],
+            items: vec![
+                DocItem::Section(Section {
+                    heading: Heading {
+                        level: 0,
+                        items: vec![
+                            HeadingItem::String("a".to_string()),
+                            HeadingItem::String("b".to_string()),
+                        ],
+                        ..Default::default()
+                    },
+                    items: vec![
+                        SectionItem::Paragraph(Paragraph {
+                            items: vec![
+                                ParagraphItem::Text("p".to_string()),
+                            ],
+                            ..Default::default()
+                        })
+                    ],
+                    ..Default::default()
+                }),
+            ],
             ..Default::default()
         }
     );

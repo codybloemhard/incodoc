@@ -263,7 +263,6 @@ pub fn doc_out(doc: &Doc, output: &mut String) {
             DocItem::Emphasis(em) => emphasis_out(em, 0, output),
             DocItem::Code(Ok(code)) => code_out(code, 0, output),
             DocItem::Link(link) => link_out(link, 0, output),
-            DocItem::Heading(head) => heading_out(head, 0, output),
             DocItem::Nav(nav) => nav_out(nav, 0, output),
             DocItem::List(list) => list_out(list, 0, output),
             DocItem::Paragraph(par) => paragraph_out(par, 0, output),

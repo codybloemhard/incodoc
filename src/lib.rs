@@ -44,7 +44,6 @@ pub enum DocItem {
     Emphasis(Emphasis),
     /// Code or an error.
     Code(Result<CodeBlock, CodeIdentError>),
-    Heading(Heading),
     Link(Link),
     /// Navigation.
     Nav(Nav),
@@ -69,7 +68,6 @@ impl RemoveErrors for DocItem {
             DocItem::MText(mtext) => mtext.remove_errors(),
             DocItem::Emphasis(em) => em.remove_errors(),
             DocItem::Code(Ok(code)) => code.remove_errors(),
-            DocItem::Heading(head) => head.remove_errors(),
             DocItem::Link(link) => link.remove_errors(),
             DocItem::Nav(nav) => nav.remove_errors(),
             DocItem::List(list) => list.remove_errors(),

@@ -25,6 +25,7 @@ In this README:
     - Markdown
     - HTML
     - PDF
+    - Org Mode
   - Name
 - License
 
