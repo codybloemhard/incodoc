@@ -2004,7 +2004,7 @@ props { (
         "
         section {
             head { 0, \"heading\" },
-            section { head { 1, \"heading\" }, par { 'paragraph' } },
+            section { head { 0, \"heading\" }, par { 'paragraph' } },
         }
         ",
         Doc {
@@ -2032,6 +2032,155 @@ props { (
                                 ],
                                 ..Default::default()
                             })],
+                            ..Default::default()
+                        })
+                    ],
+                    ..Default::default()
+                }),
+            ],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_section_c2,
+        "
+        section {
+            head { 0, \"heading\" },
+            section { head { 1, \"heading\" }, par { 'paragraph' } },
+        }
+        ",
+        Doc {
+            items: vec![
+                DocItem::Section(Section {
+                    heading: Heading {
+                        level: 0,
+                        items: vec![
+                            HeadingItem::String("heading".to_string()),
+                        ],
+                        ..Default::default()
+                    },
+                    items: vec![
+                        SectionItem::Section(Section {
+                            heading: Heading {
+                                level: 2,
+                                items: vec![
+                                    HeadingItem::String("heading".to_string()),
+                                ],
+                                ..Default::default()
+                            },
+                            items: vec![SectionItem::Paragraph(Paragraph {
+                                items: vec![
+                                    ParagraphItem::Text("paragraph".to_string()),
+                                ],
+                                ..Default::default()
+                            })],
+                            ..Default::default()
+                        })
+                    ],
+                    ..Default::default()
+                }),
+            ],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_section_c3,
+        "
+        section {
+            head { 2, \"heading\" },
+            section { head { 0, \"heading\" }, par { 'paragraph' } },
+        }
+        ",
+        Doc {
+            items: vec![
+                DocItem::Section(Section {
+                    heading: Heading {
+                        level: 2,
+                        items: vec![
+                            HeadingItem::String("heading".to_string()),
+                        ],
+                        ..Default::default()
+                    },
+                    items: vec![
+                        SectionItem::Section(Section {
+                            heading: Heading {
+                                level: 3,
+                                items: vec![
+                                    HeadingItem::String("heading".to_string()),
+                                ],
+                                ..Default::default()
+                            },
+                            items: vec![SectionItem::Paragraph(Paragraph {
+                                items: vec![
+                                    ParagraphItem::Text("paragraph".to_string()),
+                                ],
+                                ..Default::default()
+                            })],
+                            ..Default::default()
+                        })
+                    ],
+                    ..Default::default()
+                }),
+            ],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_section_c4,
+        "
+        section {
+            head { 2, \"heading\" },
+            section {
+                head { 1, \"heading\" },
+                section {
+                    head { 0, \"heading\" },
+                    par { 'paragraph' },
+                },
+            },
+        }
+        ",
+        Doc {
+            items: vec![
+                DocItem::Section(Section {
+                    heading: Heading {
+                        level: 2,
+                        items: vec![
+                            HeadingItem::String("heading".to_string()),
+                        ],
+                        ..Default::default()
+                    },
+                    items: vec![
+                        SectionItem::Section(Section {
+                            heading: Heading {
+                                level: 4,
+                                items: vec![
+                                    HeadingItem::String("heading".to_string()),
+                                ],
+                                ..Default::default()
+                            },
+                            items: vec![
+                                SectionItem::Section(Section {
+                                    heading: Heading {
+                                        level: 5,
+                                        items: vec![
+                                            HeadingItem::String("heading".to_string()),
+                                        ],
+                                        ..Default::default()
+                                    },
+                                    items: vec![
+                                        SectionItem::Paragraph(Paragraph {
+                                            items: vec![
+                                                ParagraphItem::Text("paragraph".to_string()),
+                                            ],
+                                            ..Default::default()
+                                        }),
+                                    ],
+                                    ..Default::default()
+                                })
+                            ],
                             ..Default::default()
                         })
                     ],

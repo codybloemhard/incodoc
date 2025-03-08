@@ -156,9 +156,9 @@ fn link_out(link: &Link, spaces: usize, output: &mut String) {
     str_out("},\n", spaces, output);
 }
 
-fn heading_out(head: &Heading, spaces: usize, output: &mut String) {
+fn heading_out(head: &Heading, spaces: usize, plevel: usize, output: &mut String) -> usize {
     str_out("head {\n", spaces, output);
-    str_out(&head.level.to_string(), spaces + 4, output);
+    str_out(&(head.level as usize - plevel).to_string(), spaces + 4, output);
     output.push_str(",\n");
     for item in &head.items {
         match item {
@@ -174,6 +174,7 @@ fn heading_out(head: &Heading, spaces: usize, output: &mut String) {
     tags_out(&head.tags, spaces + 4, output);
     props_out(&head.props, spaces + 4, output);
     str_out("},\n", spaces, output);
+    head.level as usize
 }
 
 fn nav_out(nav: &[SNav], spaces: usize, output: &mut String) {
@@ -237,13 +238,13 @@ fn paragraph_out(par: &Paragraph, spaces: usize, output: &mut String) {
     str_out("},\n", spaces, output);
 }
 
-fn section_out(section: &Section, spaces: usize, output: &mut String) {
+fn section_out(section: &Section, spaces: usize, plevel: usize, output: &mut String) {
     str_out("section {\n", spaces, output);
-    heading_out(&section.heading, spaces + 4, output);
+    let plevel = 1 + heading_out(&section.heading, spaces + 4, plevel, output);
     for item in &section.items {
         match item {
             SectionItem::Paragraph(par) => paragraph_out(par, spaces + 4, output),
-            SectionItem::Section(section) => section_out(section, spaces + 4, output),
+            SectionItem::Section(section) => section_out(section, spaces + 4, plevel, output),
         }
     }
     tags_out(&section.tags, spaces + 4, output);
@@ -266,7 +267,7 @@ pub fn doc_out(doc: &Doc, output: &mut String) {
             DocItem::Nav(nav) => nav_out(nav, 0, output),
             DocItem::List(list) => list_out(list, 0, output),
             DocItem::Paragraph(par) => paragraph_out(par, 0, output),
-            DocItem::Section(section) => section_out(section, 0, output),
+            DocItem::Section(section) => section_out(section, 0, 0, output),
             _ => (),
         }
     }
