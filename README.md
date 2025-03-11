@@ -17,6 +17,11 @@ In this README:
 
 - Quick example
 - Usage
+- What
+  - General
+  - Incorporeality
+- How
+  - Usage
 - Why
   - Situation
   - Problem
@@ -148,14 +153,64 @@ par {
 },
 ```
 
-## Usage
+## What
 
 ### General
 
-Incodoc is a  document type that doesn't encode how the document is supposed to look.
+Incodoc is a document format that doesn't encode how the document is supposed to look.
 The consumer decides how to render the document.
-It is not meant to be read or written directly but it is human readable and writeable.
-Can be used directly or as an intermediate layer.
+The idea is that you only encode what the content is and how it is structured.
+What the final document looks like is up to the consumer.
+It aims to serve the consumer first and foremost.
+Incodoc is as much an ideology as a document format.
+Documents should be as incorporeal as possible.
+Any unnecessary corporeality is seen as a restriction, suppression of consumer freedom.
+
+### Incorporeality
+
+Incorporeal: "not having a physical body but a spiritual form",
+as per <https://dictionary.cambridge.org/dictionary/english/incorporeal> (March 2025).
+Describes the document as not having a physical body as the consumer decides what it looks like.
+Yet describes the document as having form.
+This refers to abstract form and structure like sections, paragraphs, lists, etc.
+For motivation on the choice of words see the "Name" section.
+ 
+Some incorporeal elements a document can have:
+
+- text
+- list
+- paragraph
+- section
+- heading
+- meta data
+
+Some corporeal elements often encoded in many document formats:
+
+- font
+  - specific font
+  - font size
+- colour
+  - colour theme
+  - assigning certain colours to certain elements (e.g. links, headings)
+- spacing
+  - line height
+  - word spacing
+  - page margins
+  - heading margins
+
+Incorporeal documents try to encode the important bits while discarding the superfluous
+style details leaving those to be decided by the consumer.
+Incorporeality is a spectrum.
+Some document formats allow for more incorporeality than others.
+Some documents use more incorporeal elements than others.
+The aim is to reduce corporeality in documents as much as possible and give power to the consumer.
+
+## How
+
+### Usage
+
+Incodoc is not meant to be read or written directly but it is human readable and writeable.
+It can be used directly or as an intermediate layer.
 
 #### Direct usecase:
 
