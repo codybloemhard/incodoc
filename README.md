@@ -10,28 +10,33 @@ An incorporeal document format.
   - documents written in formats easy for humans
   - served to consumers as an incodoc or incodoc compatible document
   - either converted or rendered to best serve the consumer
-- alternative to static site generators
+- alternative/addition to static site generators
   - emphasis on the consumer needs
+
+incodoc is a work in progress.
 
 In this README:
 
 - Quick example
-- Usage
 - What
   - General
   - Incorporeality
 - How
   - Usage
+  - UX possibilities
 - Why
   - Situation
   - Problem
+  - Solution
   - Existing solutions
   - Existing document formats
     - Markdown
     - HTML
     - PDF
     - Org Mode
+- Extra
   - Name
+  - "Consumer"
 - License
 
 ## Quick example
@@ -174,7 +179,7 @@ Describes the document as not having a physical body as the consumer decides wha
 Yet describes the document as having form.
 This refers to abstract form and structure like sections, paragraphs, lists, etc.
 For motivation on the choice of words see the "Name" section.
- 
+
 Some incorporeal elements a document can have:
 
 - text
@@ -189,6 +194,7 @@ Some corporeal elements often encoded in many document formats:
 - font
   - specific font
   - font size
+  - font justification
 - colour
   - colour theme
   - assigning certain colours to certain elements (e.g. links, headings)
@@ -204,6 +210,7 @@ Incorporeality is a spectrum.
 Some document formats allow for more incorporeality than others.
 Some documents use more incorporeal elements than others.
 The aim is to reduce corporeality in documents as much as possible and give power to the consumer.
+While writing a document, minimising the corporeal elements maximises accessibility and freedom.
 
 ## How
 
@@ -275,6 +282,114 @@ By publishing as incodoc:
 This way the author does not need to bother with style.
 And the user can consume the document as desired or needed with their own theme/style/aesthetics/accessibility features.
 
+By publishing incodoc alongside regular SSG output:
+
+0. the author writes a site in
+  - a format suitable for the SSG
+  - possibly an incodoc compatible format if the SSG can take it
+1. the SSG outputs both
+  - regular corporeal output
+  - incodoc compatible output
+2. both versions are hosted side by side
+3. the consumer retrieves either version
+
+Regular web documents are served to regular consumers.
+Incodoc version is served to those who prefer it.
+
+### UX possibilities
+
+When the consumer decides how to render documents, a much better experience can be crafted.
+A designer may design a document that serves well as many people as possible.
+But there is no design that truly works for all.
+For example: make the line height bigger and dyslectic readers may have an easier time.
+But other readers rather have more text fitted on their screen.
+Every corporeal decision you make will improve the document for one group of consumers,
+but will make it worse for another.
+
+See this webpage for an overview of corporeal considerations for dyslectic readers:
+<https://uxplanet.org/what-to-consider-when-designing-for-dyslexia-b99d373905ac>.
+
+#### Line tracking
+
+Every sentence on a new line.
+A slightly increased line height.
+The current line is highlighted.
+This can help readers that have trouble keeping track where they are.
+I suffer a bit from this.
+
+#### Contrast and colour
+
+Just the right contrast and colours.
+Some readers require high contrast for visibility.
+Others require lower contrast against eye fatigue.
+The right amount of contrast and the right colours are very personal.
+That is why the user knows best.
+
+#### Folding
+
+Paragraphs and sections can be folded and unfolded.
+This helps readers who are overwhelmed by large amounts of content at once.
+Based on preference documents can start out with certain elements folded or unfolded.
+
+#### Images
+
+Most webpages automatically download images and display them in the page.
+Consumers with slow internet can choose not to and only retrieve images on command.
+Consumers reading in a terminal can choose to only show images in a program of choice on command.
+A consumer might want to see an overview of all images on a page.
+A consumer might wish to have a slide show inserted into the page if multiple images are come one
+after the other.
+
+#### Emphasis
+
+Readers may render emphasis as as usual: bold, strike-through, etc.
+Blind consumers may listen to the text instead and might have different voices for different
+emphasis.
+
+#### Links
+
+Consumers may choose whether links open in a new tab or not.
+The consumer decides so it is always consistent.
+The document may suggest in the meta data if it intends on a new tab or not.
+The consumer may ignore this.
+The reader might assign different colours depending on if the link is local, on the same site or 
+going to another website.
+The consumer has their own way of marking whether a site was visited by them already.
+
+#### Navigation
+ 
+The consumer has their preferred way of browsing the document/website menu.
+Maybe they prefer a drop-down menu.
+Maybe they prefer it out of sight with a fuzzy finder bound to a key combination.
+The consumer can consistently browse the menus across documents.
+
+#### Lists
+
+The consumer can have their preferred style for lists.
+Think about indentation for sub lists, what icon on what level.
+Ordered lists starting at 0 instead of 1.
+Ordered lists with alphabetic ordering or Roman numerals.
+List may implement folding.
+
+#### Table of contents
+
+The consumer may wish to summon a table of contents or have it inserted at the desired place in
+the document.
+
+#### Heuristics and statistics
+
+The consumer may want to have a word count or estimated time to consume shown.
+Consumers have their own average pace of consuming.
+The estimated time can be personalised for the specific consumer.
+
+#### Multiple/specific configurations
+
+Consumers may have different configurations for various document types.
+The might have a style for academic papers, one for wikis, one for blog posts and one for printing.
+The consumer might have specific configurations for specific websites that they like to visit.
+A special one for Wikipedia for example.
+They may consume each class of documents as they wish.
+
 ## Why
 
 ### Situation
@@ -313,7 +428,7 @@ Most also dictate how you interact with them:
 
 ### Problem
 
-All of these variations are not at all serving the consumer.
+All of these variations of corporeal elements are not at all serving the consumer.
 The documents are often designed to be internally consistent.
 But the user likely experiences multiple of these documents at once.
 All with different authors and designs.
@@ -333,9 +448,74 @@ The user may be severely impeded by the design but could otherwise consume the d
 - images that download and show by default on a slow connection
 - accessibility tools may struggle when design and content are entangled
 
-In the end, the spaghetti like entanglement of content and style/design limits the consumer.
+Furthermore, it can be said that many contemporary documents are really applications.
+PDFs are basically programs. HTML + CSS + JS pages are web applications rather than web documents.
+See also the "Existing document formats" section.
+Documents are more accessible and give the user more freedom, security and privacy.
+If something can be a document instead of an application, it should be strongly considered.
+
+In the end, the spaghetti like entanglement of content and style/behaviour limits the consumer.
 The consumer is limited in reading the document in a way that serves them best.
 The author has forced a particular way of consuming the document onto the consumer.
+
+### Solution
+
+The solution is to serve documents that have no corporeal elements at all.
+By having no corporeal elements the consumer is free to shape their experience.
+
+#### Personal experience
+
+Changing fonts, colours and other corporeal elements is trivial when you don't have to untangle
+style from content.
+Incodoc is designed to be easy to deal with.
+Everyone can consume documents in a way they want to.
+
+#### Consistent experience
+
+Consumers can consume documents from a wide range of sources and authors but do so in a consistent
+experience.
+All documents will look and behave the same.
+The consumer interacts consistently with all of them.
+All documents elements will behave the same across all documents.
+
+#### Accessibility
+
+The aforementioned freedom can help people with disabilities.
+People with disabilities need a different corporeal representation of the content than most.
+This is trivial with incorporeal documents.
+
+#### Less data and bloat
+
+Despite incodoc not being designed to minimise file sizes, it can reduce document size just by
+not having to include style and scripting.
+Media like background images may be ignored and thus not downloaded when converting corporeal sites.
+With incorporeal documents they would not be included to begin with.
+
+#### Privacy and security
+
+Incodoc does not have document level scripting abilities.
+The only scripting incodoc supports is code blocks.
+Users have complete control over whether to execute a code block or not and what to execute it with.
+In general, incodoc documents should still be readable when the consumer decides to not run any code.
+
+In browsers, JS (document level scripting) can access things like screen resolution,
+fonts installed, audio devices available, etc.
+This is needed because site decides how it is rendered and that depends on the environment.
+Therefore the environment supplies these details when the document scripts are ran.
+This can be used to fingerprint users and send back information to the document issuer.
+The user can disable JS but then most websites do not work any more.
+Because of the incorporeal nature of incodoc, a browser or incodoc viewer does not have to expose
+such details.
+No information can be send back unless the consumer runs a code block with code in it that does so.
+
+Complex document formats sometimes include macros, some type of scripting that shapes the document.
+These complex systems are probable to have bugs that allow for exploitations.
+This can lead to users being compromised just by opening a document, because rendering the document
+correctly requires some kind of script to be ran.
+
+Because incodocs really are just documents and not applications, a whole class of risks for the
+consumer is eliminated.
+Viewing incodoc documents should be as safe as viewing plain HTML or markdown documents.
 
 ### Existing solutions
 
@@ -443,9 +623,9 @@ It is desirable to both convert (HTML + CSS) to incodoc and render incodoc to (H
 Parsing HTML + CSS and stripping it down as best as we can will allow consumers to consume as much
 content as possible through incodoc, and thus via their preferred aesthetics and workflow which
 they have control over.
-Exporting incodoc as HTML + CSS allows the user to consume content in their browser, presented in a
-way that they might prefer over the original presentation.
-The (HTML + CSS) -> incodoc -> (HTML + CSS) pipeline can be of utility as well.
+Exporting incodoc as HTML + CSS allows the user to consume content in their browser,
+rendered as they prefer.
+Combining the two, the (HTML + CSS) -> incodoc -> (HTML + CSS) pipeline can be of utility as well.
 
 See: <https://www.w3schools.com/tags/>
 
@@ -477,7 +657,9 @@ See:
 - <https://orgmode.org/features.html>
 - <https://orgmode.org/quickstart.html>
 
-### Name
+# Extra
+
+## Name
 
 Why does incodoc have the name it does?
 Incodoc is short for "incorporeal document" which is a bit of a mouth full.
@@ -517,9 +699,15 @@ The closest word I could find:
   - Describes the document as not having a physical body (the consumer decides what it looks like).
   - Describes the document as having form (the document has abstract/semantic structure (eg. paragraphs and sections))
 
-I consider incorporeal document formats a category of document formats.
-There may be other document formats that are incorporeal.
-Some document formats may be more incorporeal in spirit than others.
+## "Consumer"
+
+In this document the term "consumer" is used for the one who consumes incodoc documents.
+Because of the incorporeal nature, we cannot be sure our consumers will read our documents.
+They might listen to it or take in the content in other ways.
+That is why the consumer is referred to as a consumer and not as a reader.
+Consumer is chosen instead of user, to make clear that we are talking about the consuming user
+and not the producing user.
+The user of incodoc that produces documents is referred to as an author.
 
 ## License
 

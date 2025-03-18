@@ -31,18 +31,9 @@ features:
   - anything can have a tag
   - links can link to tags
 
-change section items to one list to preserve order between paragraphs and sub sections
-
 things to write about
 
-- why
-  - problem
-  - solution
-- why not existing formats
-- positives
 - all the features and suggested use
-- applicationification of documents
-- on the term 'consumer'
 
 think about:
 
