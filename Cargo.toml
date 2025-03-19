@@ -2,6 +2,13 @@
 name = "incodoc"
 version = "0.1.0"
 edition = "2024"
+authors = ["Cody Bloemhard <codybloemhard@gmail.com>"]
+description = "Incorporeal document format."
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/codybloemhard/incodoc"
+keywords = ["incorporeal", "document", "parser"]
+categories = ["accessibility", "parser-implementations"]
 
 [[bin]]
 name = "testbin"

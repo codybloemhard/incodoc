@@ -714,6 +714,6 @@ The user of incodoc that produces documents is referred to as an author.
 Code under MIT, see `LICENSE`.
 This readme under CC BY 4.0:
 
-This work © 2024 by Cody Bloemhard is licensed under CC BY 4.0.
+This work © 2025 by Cody Bloemhard is licensed under CC BY 4.0.
 To view a copy of this license, visit https://creativecommons.org/licenses/by/4.0/
 
