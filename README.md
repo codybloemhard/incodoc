@@ -17,27 +17,32 @@ incodoc is a work in progress.
 
 In this README:
 
-- Quick example
-- What
-  - General
-  - Incorporeality
-- How
-  - Usage
-  - UX possibilities
-- Why
-  - Situation
-  - Problem
-  - Solution
-  - Existing solutions
-  - Existing document formats
-    - Markdown
-    - HTML
-    - PDF
-    - Org Mode
-- Extra
-  - Name
-  - "Consumer"
-- License
+- [Quick example](#quick-example)
+- [What](#what)
+  - [General](#general)
+  - [Incorporeality](#incorporeality)
+- [How](#how)
+  - [Usage](#usage)
+  - [UX possibilities](#ux-possibilities)
+- [Why](#why)
+  - [Situation](#situation)
+  - [Problem](#problem)
+  - [Solution](#solution)
+  - [Existing solutions](#existing-solutions)
+  - [Existing document formats](#existing-document-formats)
+    - [Markdown](#markdown)
+    - [HTML](#html)
+    - [PDF](#pdf)
+    - [Org Mode](#org-mode)
+- [Extra](#extra)
+  - [Name](#name)
+  - ["Consumer"](#"consumer")
+- [License](#license)
+
+## Projects
+
+[md-to-incodoc](https://github.com/codybloemhard/md-to-incodoc)
+Parse markdown and yield an incodoc data structure.
 
 ## Quick example
 
@@ -323,7 +328,7 @@ Just the right contrast and colours.
 Some readers require high contrast for visibility.
 Others require lower contrast against eye fatigue.
 The right amount of contrast and the right colours are very personal.
-That is why the user knows best.
+That is why the consumers knows best.
 
 #### Folding
 
@@ -371,10 +376,20 @@ Ordered lists starting at 0 instead of 1.
 Ordered lists with alphabetic ordering or Roman numerals.
 List may implement folding.
 
+#### Code blocks
+
+Code blocks can be rendered with the consumers preferences.
+Colours and fonts are even more important and personal when reading code.
+Renderers could allow consumers to the run the code in the document.
+The results of the code can be inserted into the document.
+The consumer can open the code directly in their favourite editor without copying and pasting it.
+
 #### Table of contents
 
 The consumer may wish to summon a table of contents or have it inserted at the desired place in
 the document.
+If this was an incodoc document or if this markdown was rendered through incodoc,
+you would only see the table of contents if you had it enabled it or if you summoned it.
 
 #### Heuristics and statistics
 
@@ -584,7 +599,8 @@ Strong points:
 - maps to incodoc with only small issues
 
 Markdown is important to incododoc.
-It will be the first document format convertible to incodoc.
+It will be the first document format convertible to incodoc
+(see: [md-to-incodoc](https://github.com/codybloemhard/md-to-incodoc))
 An incodoc flavoured markdown is planned.
 
 #### HTML
