@@ -224,7 +224,9 @@ fn list_out(list: &List, spaces: usize, output: &mut String) {
     };
     output.push_str(ltype);
     output.push_str(",\n");
-    par_items_out(&list.items, spaces + 4, output);
+    for par in &list.items {
+        paragraph_out(par, spaces + 4, output);
+    }
     tags_out(&list.tags, spaces + 4, output);
     props_out(&list.props, spaces + 4, output);
     str_out("},\n", spaces, output);

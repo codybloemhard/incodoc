@@ -219,18 +219,7 @@ pub fn parse_list(pair: Pair<'_, Rule>) -> List {
     };
     for inner in iter {
         match inner.as_rule() {
-            Rule::text_item => {
-                let text = parse_text_item(inner);
-                if text.meta_is_empty() {
-                    items.push(ParagraphItem::Text(text.text));
-                } else {
-                    items.push(ParagraphItem::MText(text));
-                }
-            },
-            Rule::emphasis => items.push(ParagraphItem::Em(parse_emphasis(inner))),
-            Rule::code => items.push(ParagraphItem::Code(parse_code(inner))),
-            Rule::list => items.push(ParagraphItem::List(parse_list(inner))),
-            Rule::link => items.push(ParagraphItem::Link(parse_link(inner))),
+            Rule::paragraph => items.push(parse_paragraph(inner)),
             Rule::tags => tags.absorb(parse_tags(inner)),
             Rule::props => props.absorb(parse_props(inner)),
             r => panic!("IP: parse_list: illegal rule: {:?};", r),

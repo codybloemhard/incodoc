@@ -1336,7 +1336,7 @@ props { (
                     let i = 0;
                 '
             },
-            list { il, 'item' }
+            list { il, par { 'item' } }
         },
         'Outside the paragraph.',
         ",
@@ -1361,7 +1361,12 @@ props { (
                         })),
                         ParagraphItem::List(List {
                             ltype: ListType::Identical,
-                            items: vec![ParagraphItem::Text("item".to_string())],
+                            items: vec![
+                                Paragraph {
+                                    items: vec![ParagraphItem::Text("item".to_string())],
+                                    ..Default::default()
+                                }
+                            ],
                             ..Default::default()
                         })
                     ],
@@ -1740,11 +1745,16 @@ props { (
 
     test!(
         t_list_c0,
-        "list { dl, 'test' }",
+        "list { dl, par { 'test' } }",
         Doc {
             items: vec![
                 DocItem::List(List{
-                    items: vec![ParagraphItem::Text("test".to_string())],
+                    items: vec![
+                        Paragraph {
+                            items: vec![ParagraphItem::Text("test".to_string())],
+                            ..Default::default()
+                        }
+                    ],
                     ltype: ListType::Distinct,
                     ..Default::default()
                 })
@@ -1755,11 +1765,16 @@ props { (
 
     test!(
         t_list_c0_trailing_comma,
-        "list { dl, 'test', }",
+        "list { dl, par { 'test', }, }",
         Doc {
             items: vec![
-                DocItem::List(List{
-                    items: vec![ParagraphItem::Text("test".to_string())],
+                DocItem::List(List {
+                    items: vec![
+                        Paragraph {
+                            items: vec![ParagraphItem::Text("test".to_string())],
+                            ..Default::default()
+                        }
+                    ],
                     ltype: ListType::Distinct,
                     ..Default::default()
                 })
@@ -1770,11 +1785,16 @@ props { (
 
     test!(
         t_list_c1,
-        "list { il, 'test' }",
+        "list { il, par { 'test' } }",
         Doc {
             items: vec![
-                DocItem::List(List{
-                    items: vec![ParagraphItem::Text("test".to_string())],
+                DocItem::List(List {
+                    items: vec![
+                        Paragraph {
+                            items: vec![ParagraphItem::Text("test".to_string())],
+                            ..Default::default()
+                        }
+                    ],
                     ltype: ListType::Identical,
                     ..Default::default()
                 })
@@ -1785,11 +1805,16 @@ props { (
 
     test!(
         t_list_c2,
-        "list { cl, 'test' }",
+        "list { cl, par { 'test' } }",
         Doc {
             items: vec![
-                DocItem::List(List{
-                    items: vec![ParagraphItem::Text("test".to_string())],
+                DocItem::List(List {
+                    items: vec![
+                        Paragraph {
+                            items: vec![ParagraphItem::Text("test".to_string())],
+                            ..Default::default()
+                        }
+                    ],
                     ltype: ListType::Checked,
                     ..Default::default()
                 })
@@ -1800,15 +1825,33 @@ props { (
 
     test!(
         t_list_c3,
-        "list { cl, 'test' { tags { \"tag\" }, props { (\"prop\", 0) } } }",
+        "list { cl, par { 'a0', 'a1' }, par { 'b0', 'b1' }, par { 'c0', 'c1' } }",
         Doc {
             items: vec![
-                DocItem::List(List{
-                    items: vec![ParagraphItem::MText(TextWithMeta {
-                        text: "test".to_string(),
-                        tags: hset!(["tag"]),
-                        props: props!([("prop".to_string(), PropVal::Int(0))]),
-                    })],
+                DocItem::List(List {
+                    items: vec![
+                        Paragraph {
+                            items: vec![
+                                ParagraphItem::Text("a0".to_string()),
+                                ParagraphItem::Text("a1".to_string()),
+                            ],
+                            ..Default::default()
+                        },
+                        Paragraph {
+                            items: vec![
+                                ParagraphItem::Text("b0".to_string()),
+                                ParagraphItem::Text("b1".to_string()),
+                            ],
+                            ..Default::default()
+                        },
+                        Paragraph {
+                            items: vec![
+                                ParagraphItem::Text("c0".to_string()),
+                                ParagraphItem::Text("c1".to_string()),
+                            ],
+                            ..Default::default()
+                        },
+                    ],
                     ltype: ListType::Checked,
                     ..Default::default()
                 })
@@ -1819,68 +1862,37 @@ props { (
 
     test!(
         t_list_c4,
-        "list { cl, em{ le, \"em\" } }",
-        Doc {
-            items: vec![
-                DocItem::List(List{
-                    items: vec![ParagraphItem::Em(Emphasis {
-                        text: "em".to_string(),
-                        etype: EmType::Emphasis,
-                        strength: EmStrength::Light,
-                        ..Default::default()
-                    })],
-                    ltype: ListType::Checked,
-                    ..Default::default()
-                })
-            ],
-            ..Default::default()
-        }
-    );
-
-    test!(
-        t_list_c5,
-        "list { cl, code { \"rust\", \"show\", 'let rust = true;' } }",
-        Doc {
-            items: vec![
-                DocItem::List(List{
-                    items: vec![ParagraphItem::Code(Ok(CodeBlock {
-                        language: "rust".to_string(),
-                        mode: CodeModeHint::Show,
-                        code: "let rust = true;".to_string(),
-                        ..Default::default()
-                    }))],
-                    ltype: ListType::Checked,
-                    ..Default::default()
-                })
-            ],
-            ..Default::default()
-        }
-    );
-
-    test!(
-        t_list_c6,
-        "list { il, '0', list { dl, '1', list { cl, '2' } } }",
+        "list { il, par { '0', list { dl, par { '1', list { cl, par { '2' } } } } } }",
         Doc {
             items: vec![
                 DocItem::List(List {
                     ltype: ListType::Identical,
-                    items: vec![
-                        ParagraphItem::Text("0".to_string()),
-                        ParagraphItem::List(List {
-                            ltype: ListType::Distinct,
-                            items: vec![
-                                ParagraphItem::Text("1".to_string()),
-                                ParagraphItem::List(List {
-                                    ltype: ListType::Checked,
+                    items: vec![Paragraph {
+                        items: vec![
+                            ParagraphItem::Text("0".to_string()),
+                            ParagraphItem::List(List {
+                                ltype: ListType::Distinct,
+                                items: vec![Paragraph {
                                     items: vec![
-                                        ParagraphItem::Text("2".to_string()),
+                                        ParagraphItem::Text("1".to_string()),
+                                        ParagraphItem::List(List {
+                                            ltype: ListType::Checked,
+                                            items: vec![Paragraph {
+                                                items: vec![
+                                                    ParagraphItem::Text("2".to_string()),
+                                                ],
+                                                ..Default::default()
+                                            }],
+                                            ..Default::default()
+                                        }),
                                     ],
                                     ..Default::default()
-                                }),
-                            ],
-                            ..Default::default()
-                        }),
-                    ],
+                                }],
+                                ..Default::default()
+                            }),
+                        ],
+                        ..Default::default()
+                    }],
                     ..Default::default()
                 })
             ],
@@ -1889,27 +1901,86 @@ props { (
     );
 
     test!(
-        t_list_meta,
+        t_list_meta_c0,
         "
         list {
             il,
-            'item',
-            props { (\"a\", 0), (\"b\", 0) },
-            tags { \"a\" },
-            props { (\"c\", 2), (\"b\", 1) },
-            tags { \"b\" }
+            par {'item', tags { \"tag\" }, props { (\"prop\", 0) } },
+            tags { \"a\", \"b\" },
         }
         ",
         Doc {
             items: vec![DocItem::List(List {
                 ltype: ListType::Identical,
-                items: vec![ParagraphItem::Text("item".to_string())],
+                items: vec![
+                    Paragraph {
+                        items: vec![ParagraphItem::Text("item".to_string())],
+                        tags: hset!(["tag"]),
+                        props: props!([("prop".to_string(), PropVal::Int(0))]),
+                    }
+                ],
+                tags: hset!(["a", "b"]),
+                ..Default::default()
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_list_meta_c1,
+        "
+        list {
+            il,
+            par {'item', tags { \"tag\" }, props { (\"prop\", 0) } },
+            props { (\"a\", 0), (\"b\", 1) },
+        }
+        ",
+        Doc {
+            items: vec![DocItem::List(List {
+                ltype: ListType::Identical,
+                items: vec![
+                    Paragraph {
+                        items: vec![ParagraphItem::Text("item".to_string())],
+                        tags: hset!(["tag"]),
+                        props: props!([("prop".to_string(), PropVal::Int(0))]),
+                    }
+                ],
+                props: props!([
+                    ("a".to_string(), PropVal::Int(0)),
+                    ("b".to_string(), PropVal::Int(1)),
+                ]),
+                ..Default::default()
+            })],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        t_list_meta_c2,
+        "
+        list {
+            il,
+            par {'item', tags { \"tag\" }, props { (\"prop\", 0) } },
+            tags { \"a\", \"b\" },
+            props { (\"a\", 0), (\"b\", 1) },
+        }
+        ",
+        Doc {
+            items: vec![DocItem::List(List {
+                ltype: ListType::Identical,
+                items: vec![
+                    Paragraph {
+                        items: vec![ParagraphItem::Text("item".to_string())],
+                        tags: hset!(["tag"]),
+                        props: props!([("prop".to_string(), PropVal::Int(0))]),
+                    }
+                ],
                 tags: hset!(["a", "b"]),
                 props: props!([
                     ("a".to_string(), PropVal::Int(0)),
                     ("b".to_string(), PropVal::Int(1)),
-                    ("c".to_string(), PropVal::Int(2)),
                 ]),
+                ..Default::default()
             })],
             ..Default::default()
         }
@@ -1917,13 +1988,18 @@ props { (
 
     test!(
         t_list_comment,
-        "/*c*/list/*c*/{/*c*/dl/*c*/,/*c*/'a'/*c*/,/*c*/'b'/*c*/,/*c*/}//c",
+        "/*c*/list/*c*/{/*c*/dl/*c*/,/*c*/par/*c*/{/*c*/'a'/*c*/,/*c*/'b'/*c*/}/*c*/}//c",
         Doc {
             items: vec![
                 DocItem::List(List{
                     items: vec![
-                        ParagraphItem::Text("a".to_string()),
-                        ParagraphItem::Text("b".to_string()),
+                        Paragraph {
+                            items: vec![
+                                ParagraphItem::Text("a".to_string()),
+                                ParagraphItem::Text("b".to_string()),
+                            ],
+                            ..Default::default()
+                        }
                     ],
                     ltype: ListType::Distinct,
                     ..Default::default()

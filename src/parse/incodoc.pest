@@ -22,7 +22,7 @@ par_item = _{ text_item | emphasis | code | list | link | tags | props }
 emphasis = { "em" ~ "{" ~ em_st ~ "," ~ string ~ tp_postfix ~ "}" }
 em_st = { "le" | "me" | "se" | "ld" | "md" | "sd" }
 
-list = { "list" ~ "{" ~ list_type ~ ("," ~ par_item)+ ~ ","? ~ "}" }
+list = { "list" ~ "{" ~ list_type ~ ("," ~ paragraph)+ ~ tp_postfix ~ "}" }
 list_type = { "dl" | "il" | "cl" }
 
 nav = { "nav" ~ "{" ~ snav ~ ("," ~ snav)* ~ ","? ~ "}" }

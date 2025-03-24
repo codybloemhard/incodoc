@@ -4,7 +4,7 @@ use incodoc::{
     reference_doc::REF_DOC,
 };
 
-const TEST: &str = "
+const README: &str = "
 props{
     (\"language\", \"en\"),
     (\"date\", 9999/12/31),
@@ -78,6 +78,15 @@ par{
     ',
     props { (\"date\", 2000/00/00) },
 },
+";
+
+const TEST: &str = "
+list {
+    il,
+    par { 'aaaaa', 'bbbbb', tags { \"a\" }, },
+    par { 'ccccc', 'ddddd', },
+    tags { \"b\" },
+}
 ";
 
 fn main() {

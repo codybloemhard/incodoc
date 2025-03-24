@@ -292,7 +292,7 @@ impl RemoveErrors for Emphasis {
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct List {
     pub ltype: ListType,
-    pub items: Vec<ParagraphItem>,
+    pub items: Vec<Paragraph>,
     pub tags: Tags,
     pub props: Props,
 }
