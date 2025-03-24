@@ -25,12 +25,6 @@ pub const REF_DOC: &str = "
     code { \"rust\", \"auto\", 'let x = 0;', tags { \"tag\" }, props { (\"prop\", 0) } },
     code { \"rust\", \"replace\", 'let x = 0;', tags { \"tag\" }, props { (\"prop\", 0) } },
     link { \"url\", \"link string\", tags { \"tag\" }, props { (\"prop\", 0) } },
-    head {
-        0,
-        \"heading with an \",
-        em { le, \"emphasised\", tags { \"tag\" }, props { (\"prop\", 0) } },
-        \" part\",
-    },
     nav {
         snav {
             \"description A\",
@@ -53,20 +47,29 @@ pub const REF_DOC: &str = "
         em { le, \"light emphasis\" },
         code { \"rust\", \"show\", 'let x = 0' },
         link { \"url\", \"link\" },
-        list { il, 'item 0', 'item 1' },
+        list { il, par { 'item 0' }, par { 'item 1' } },
     },
     list {
         il,
+        par {
+            'text',
+            em { le, \"light emphasis\" },
+            code { \"rust\", \"show\", 'let x = 0' },
+            link { \"url\", \"link\" },
+            list { il, par { 'item 0' }, par { 'item 1' } },
+            tags { \"tag\" },
+            props { (\"prop\", 0) },
+        },
         tags { \"tag\" },
         props { (\"prop\", 0) },
-        'text',
-        em { le, \"light emphasis\" },
-        code { \"rust\", \"show\", 'let x = 0' },
-        link { \"url\", \"link\" },
-        list { il, 'item 0', 'item 1' },
     },
     section {
-        head { 0, \"heading\" },
+        head {
+            0,
+            \"heading with an \",
+            em { le, \"emphasised\", tags { \"tag\" }, props { (\"prop\", 0) } },
+            \" part\",
+        },
         par { 'paragraph' },
         section {
             head { 1, \"heading\" },

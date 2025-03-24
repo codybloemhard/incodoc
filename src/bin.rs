@@ -90,7 +90,7 @@ list {
 ";
 
 fn main() {
-    let res = parse(TEST);
+    let res = parse(REF_DOC);
     match res {
         Ok(res) => {
             // println!("{:#?}", res);
