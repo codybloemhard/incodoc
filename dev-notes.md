@@ -31,9 +31,37 @@ features:
   - anything can have a tag
   - links can link to tags
 
+imperfections:
+section
+  - empty header
+  - empty items
+  - both
+heading
+  - wrong level
+  - empty
+paragraph
+  - empty
+emphasis
+  - empty
+list
+  - empty
+snav
+  - empty description
+  - empty subs
+  - empty links
+link
+  - empty url
+  - empty items
+codeblock
+  - empty language
+  - empty code
+mtext
+  - empty
+
 things to write about
 
 - all the features and suggested use
+https://www.gnu.org/licenses/license-recommendations.html
 
 think about:
 

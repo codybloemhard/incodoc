@@ -6,7 +6,7 @@ An incorporeal document format.
 - should be able to function like a static web page
 - the consumer decides how to render the document
 - not meant to read or write directly but should be human readable and writeable
-- meant as a intermediate layer or final document
+- meant as an intermediate layer or final document
   - documents written in formats easy for humans
   - served to consumers as an incodoc or incodoc compatible document
   - either converted or rendered to best serve the consumer
@@ -18,6 +18,7 @@ incodoc is a work in progress.
 In this README:
 
 - [Quick example](#quick-example)
+- [Projects](#projects)
 - [What](#what)
   - [General](#general)
   - [Incorporeality](#incorporeality)

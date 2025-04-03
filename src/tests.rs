@@ -26,7 +26,7 @@ mod tests {
                     let mut output = String::new();
                     doc_out(&doc_a, &mut output);
                     let doc_b = parse(&output).expect("test_out: could not parse doc b");
-                    doc_a.remove_errors();
+                    doc_a.prune_errors();
                     assert_eq!(doc_a, doc_b);
                 }
             }
