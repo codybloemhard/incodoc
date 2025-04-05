@@ -126,7 +126,10 @@ impl DocPartActions for String {
     fn prune_errors(&mut self) { }
 
     fn prune_contentless(&mut self) {
-        *self = self.trim().to_string();
+        let trimmed = self.trim();
+        if trimmed.is_empty() {
+            *self = trimmed.to_string();
+        }
     }
 
     fn is_contentless(&self) -> bool {

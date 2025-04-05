@@ -31,32 +31,12 @@ features:
   - anything can have a tag
   - links can link to tags
 
-imperfections:
-section
-  - empty header
-  - empty items
-  - both
 heading
-  - wrong level
-  - empty
-paragraph
-  - empty
-emphasis
-  - empty
-list
-  - empty
-snav
-  - empty description
-  - empty subs
-  - empty links
+  - wrong level: auto fix?
 link
-  - empty url
-  - empty items
-codeblock
-  - empty language
-  - empty code
+  - empty items: fix by putting url as text
 mtext
-  - empty
+  - empty: convert to regular text
 
 things to write about
 
