@@ -25,6 +25,7 @@ pub trait Absorb {
 pub trait DocPartActions {
     fn prune_errors(&mut self);
     fn prune_contentless(&mut self);
+    fn squash(&mut self);
     fn is_contentless(&self) -> bool;
 }
 
@@ -71,6 +72,90 @@ impl DocPartActions for Doc {
         self.items.retain(|item| !item.is_contentless());
     }
 
+    fn squash(&mut self) {
+        let mut keep = Vec::new();
+        let mut ltext = None;
+        let mut lmtext: Option<&mut TextWithMeta> = None;
+        let mut lem: Option<&mut Emphasis> = None;
+
+        // squash items into earlier item if possible
+        for item in &mut self.items {
+            match item {
+                DocItem::Text(text) => {
+                    match ltext {
+                        None => {
+                            ltext = Some(text);
+                            keep.push(true);
+                        },
+                        Some(ref mut t) => {
+                            t.push_str(text);
+                            keep.push(false);
+                        },
+                    }
+                    lmtext = None;
+                    lem = None;
+                },
+                DocItem::MText(mtext) => {
+                    mtext.prune_contentless();
+                    if mtext.is_contentless() {
+                        keep.push(false);
+                    } else {
+                        ltext = None;
+                        if let Some(ref mut t) = lmtext {
+                            if mtext.tags == t.tags && mtext.props == t.props {
+                                t.text.push_str(&mtext.text);
+                                keep.push(false);
+                            } else {
+                                lmtext = Some(mtext);
+                                keep.push(true);
+                            }
+                        } else {
+                            lmtext = Some(mtext);
+                            keep.push(true);
+                        }
+                    }
+                    lem = None;
+                },
+                DocItem::Emphasis(em) => {
+                    ltext = None;
+                    lmtext = None;
+                    if let Some(ref mut e) = lem {
+                        if em.props == e.props && em.tags == e.tags
+                            && em.strength == e.strength && em.etype == e.etype {
+                            e.text.push_str(&em.text);
+                            keep.push(false);
+                        } else {
+                            lem = Some(em);
+                            keep.push(true);
+                        }
+                    } else {
+                        lem = Some(em);
+                        keep.push(true);
+                    }
+                },
+                _ => {
+                    keep.push(true);
+                    ltext = None;
+                    lmtext = None;
+                    lem = None;
+                },
+            }
+        }
+
+        // remove parts that have been squashed
+        let mut kiter = keep.into_iter();
+        self.items.retain(|_| kiter.next().unwrap());
+
+        // downgrade MText's with no meta
+        for item in &mut self.items {
+            if let DocItem::MText(TextWithMeta { text, tags, props }) = item {
+                if tags.is_empty() && props.is_empty() {
+                    *item = DocItem::Text(std::mem::take(text));
+                }
+            }
+        }
+    }
+
     fn is_contentless(&self) -> bool {
         self.items.is_empty()
     }
@@ -106,6 +191,10 @@ impl DocPartActions for DocItem {
         }
     }
 
+    fn squash(&mut self) {
+        todo!();
+    }
+
     fn is_contentless(&self) -> bool {
         match self {
             DocItem::Text(text) => text.is_empty(),
@@ -130,6 +219,10 @@ impl DocPartActions for String {
         if trimmed.is_empty() {
             *self = trimmed.to_string();
         }
+    }
+
+    fn squash(&mut self) {
+        todo!();
     }
 
     fn is_contentless(&self) -> bool {
@@ -159,6 +252,10 @@ impl DocPartActions for Tags {
             !t.is_empty() &&
             !t.chars().all(|c| c.is_whitespace())
         );
+    }
+
+    fn squash(&mut self) {
+        todo!();
     }
 
     fn is_contentless(&self) -> bool {
@@ -216,6 +313,10 @@ impl DocPartActions for Props {
         );
     }
 
+    fn squash(&mut self) {
+        todo!();
+    }
+
     fn is_contentless(&self) -> bool {
         self.is_empty()
     }
@@ -230,6 +331,10 @@ impl DocPartActions for PropVal {
             Self::Text(string) => string.prune_contentless(),
             _ => { },
         }
+    }
+
+    fn squash(&mut self) {
+        todo!();
     }
 
     fn is_contentless(&self) -> bool {
@@ -289,6 +394,10 @@ impl DocPartActions for Section {
         self.props.prune_contentless();
     }
 
+    fn squash(&mut self) {
+        todo!();
+    }
+
     fn is_contentless(&self) -> bool {
         self.heading.is_contentless() && self.items.is_empty()
     }
@@ -307,6 +416,10 @@ impl DocPartActions for SectionItem {
             Self::Paragraph(par) => par.prune_contentless(),
             Self::Section(section) => section.prune_contentless(),
         }
+    }
+
+    fn squash(&mut self) {
+        todo!();
     }
 
     fn is_contentless(&self) -> bool {
@@ -350,6 +463,10 @@ impl DocPartActions for Heading {
         self.props.prune_contentless();
     }
 
+    fn squash(&mut self) {
+        todo!();
+    }
+
     fn is_contentless(&self) -> bool {
         self.items.is_empty()
     }
@@ -367,6 +484,10 @@ impl DocPartActions for HeadingItem {
             Self::String(string) => string.prune_contentless(),
             Self::Em(em) => em.prune_contentless(),
         }
+    }
+
+    fn squash(&mut self) {
+        todo!();
     }
 
     fn is_contentless(&self) -> bool {
@@ -413,6 +534,10 @@ impl DocPartActions for Paragraph {
         self.props.prune_contentless();
     }
 
+    fn squash(&mut self) {
+        todo!();
+    }
+
     fn is_contentless(&self) -> bool {
         self.items.is_empty()
     }
@@ -440,6 +565,10 @@ impl DocPartActions for ParagraphItem {
             Self::Link(link) => link.prune_contentless(),
             Self::List(list) => list.prune_contentless(),
         }
+    }
+
+    fn squash(&mut self) {
+        todo!();
     }
 
     fn is_contentless(&self) -> bool {
@@ -493,6 +622,10 @@ impl DocPartActions for Emphasis {
         self.props.prune_contentless();
     }
 
+    fn squash(&mut self) {
+        todo!();
+    }
+
     fn is_contentless(&self) -> bool {
         self.text.is_empty()
     }
@@ -534,6 +667,10 @@ impl DocPartActions for List {
         self.props.prune_contentless();
     }
 
+    fn squash(&mut self) {
+        todo!();
+    }
+
     fn is_contentless(&self) -> bool {
         self.items.is_empty()
     }
@@ -566,6 +703,10 @@ impl DocPartActions for Nav {
         self.retain(|snav| !snav.is_contentless());
     }
 
+    fn squash(&mut self) {
+        todo!();
+    }
+
     fn is_contentless(&self) -> bool {
         self.is_empty()
     }
@@ -594,6 +735,10 @@ impl DocPartActions for SNav {
         self.subs.retain(|sub| !sub.is_contentless());
         self.tags.prune_contentless();
         self.props.prune_contentless();
+    }
+
+    fn squash(&mut self) {
+        todo!();
     }
 
     fn is_contentless(&self) -> bool {
@@ -628,6 +773,10 @@ impl DocPartActions for Link {
         self.props.prune_contentless();
     }
 
+    fn squash(&mut self) {
+        todo!();
+    }
+
     fn is_contentless(&self) -> bool {
         self.url.is_empty() && self.items.is_empty()
     }
@@ -652,6 +801,10 @@ impl DocPartActions for LinkItem {
             Self::String(string) => string.prune_contentless(),
             Self::Em(em) => em.prune_contentless(),
         }
+    }
+
+    fn squash(&mut self) {
+        todo!();
     }
 
     fn is_contentless(&self) -> bool {
@@ -685,6 +838,10 @@ impl DocPartActions for CodeBlock {
         self.code.prune_contentless();
         self.tags.prune_contentless();
         self.props.prune_contentless();
+    }
+
+    fn squash(&mut self) {
+        todo!();
     }
 
     fn is_contentless(&self) -> bool {
@@ -728,6 +885,10 @@ impl DocPartActions for TextWithMeta {
         self.text.prune_contentless();
         self.tags.prune_contentless();
         self.props.prune_contentless();
+    }
+
+    fn squash(&mut self) {
+        todo!();
     }
 
     fn is_contentless(&self) -> bool {

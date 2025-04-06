@@ -44,6 +44,17 @@ mod tests {
         }
     }
 
+    macro_rules! test_squash {
+        ($name:ident, $input:expr, $output:expr) => {
+            #[test]
+            fn $name() {
+                let mut res = $input;
+                res.squash();
+                assert_eq!(res, $output);
+            }
+        }
+    }
+
     test_prune_contentless!(
         t_pc_string_c0,
         "stay the same".to_string(),
@@ -470,6 +481,135 @@ mod tests {
             props: props!([
                 ("ok".to_string(), PropVal::Int(0)),
             ]),
+        }
+    );
+
+    test_squash!(
+        test_sq,
+        Doc {
+            items: vec![
+                DocItem::Text("a".to_string()),
+                DocItem::Text("\n".to_string()),
+                DocItem::Text("b\n".to_string()),
+                DocItem::Emphasis(Emphasis {
+                    text: "em".to_string(),
+                    ..Default::default()
+                }),
+                DocItem::Text("c\n".to_string()),
+                DocItem::MText(TextWithMeta {
+                    text: "A".to_string(),
+                    tags: hset!(["same"]),
+                    ..Default::default()
+                }),
+                DocItem::MText(TextWithMeta {
+                    text: "B".to_string(),
+                    tags: hset!(["same"]),
+                    ..Default::default()
+                }),
+                DocItem::MText(TextWithMeta {
+                    text: "C".to_string(),
+                    tags: hset!(["different"]),
+                    ..Default::default()
+                }),
+                DocItem::MText(TextWithMeta {
+                    text: "D".to_string(),
+                    tags: hset!(["same"]),
+                    ..Default::default()
+                }),
+                DocItem::MText(TextWithMeta {
+                    text: "E".to_string(),
+                    tags: hset!(["same"]),
+                    ..Default::default()
+                }),
+                DocItem::Emphasis(Emphasis {
+                    strength: EmStrength::Strong,
+                    etype: EmType::Deemphasis,
+                    text: "de-em".to_string(),
+                    props: props!([("p".to_string(), PropVal::Int(0))]),
+                    ..Default::default()
+                }),
+                DocItem::Emphasis(Emphasis {
+                    strength: EmStrength::Strong,
+                    etype: EmType::Deemphasis,
+                    text: "de-em".to_string(),
+                    props: props!([("p".to_string(), PropVal::Int(0))]),
+                    ..Default::default()
+                }),
+                DocItem::Emphasis(Emphasis {
+                    strength: EmStrength::Medium,
+                    etype: EmType::Deemphasis,
+                    text: "de-em".to_string(),
+                    props: props!([("p".to_string(), PropVal::Int(0))]),
+                    ..Default::default()
+                }),
+                DocItem::Text("d\n".to_string()),
+                DocItem::MText(TextWithMeta {
+                    text: "F".to_string(),
+                    tags: hset!(["same"]),
+                    ..Default::default()
+                }),
+                DocItem::Emphasis(Emphasis {
+                    strength: EmStrength::Strong,
+                    etype: EmType::Deemphasis,
+                    text: "de-em".to_string(),
+                    props: props!([("p".to_string(), PropVal::Int(0))]),
+                    ..Default::default()
+                }),
+            ],
+            ..Default::default()
+        },
+        Doc {
+            items: vec![
+                DocItem::Text("a\nb\n".to_string()),
+                DocItem::Emphasis(Emphasis {
+                    text: "em".to_string(),
+                    ..Default::default()
+                }),
+                DocItem::Text("c\n".to_string()),
+                DocItem::MText(TextWithMeta {
+                    text: "AB".to_string(),
+                    tags: hset!(["same"]),
+                    ..Default::default()
+                }),
+                DocItem::MText(TextWithMeta {
+                    text: "C".to_string(),
+                    tags: hset!(["different"]),
+                    ..Default::default()
+                }),
+                DocItem::MText(TextWithMeta {
+                    text: "DE".to_string(),
+                    tags: hset!(["same"]),
+                    ..Default::default()
+                }),
+                DocItem::Emphasis(Emphasis {
+                    strength: EmStrength::Strong,
+                    etype: EmType::Deemphasis,
+                    text: "de-emde-em".to_string(),
+                    props: props!([("p".to_string(), PropVal::Int(0))]),
+                    ..Default::default()
+                }),
+                DocItem::Emphasis(Emphasis {
+                    strength: EmStrength::Medium,
+                    etype: EmType::Deemphasis,
+                    text: "de-em".to_string(),
+                    props: props!([("p".to_string(), PropVal::Int(0))]),
+                    ..Default::default()
+                }),
+                DocItem::Text("d\n".to_string()),
+                DocItem::MText(TextWithMeta {
+                    text: "F".to_string(),
+                    tags: hset!(["same"]),
+                    ..Default::default()
+                }),
+                DocItem::Emphasis(Emphasis {
+                    strength: EmStrength::Strong,
+                    etype: EmType::Deemphasis,
+                    text: "de-em".to_string(),
+                    props: props!([("p".to_string(), PropVal::Int(0))]),
+                    ..Default::default()
+                }),
+            ],
+            ..Default::default()
         }
     );
 

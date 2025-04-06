@@ -38,6 +38,8 @@ link
 mtext
   - empty: convert to regular text
 
+smash texts and emphasis
+
 things to write about
 
 - all the features and suggested use
