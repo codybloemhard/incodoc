@@ -43,7 +43,7 @@ pub enum DocItem {
     Text(String),
     /// Text with meta attached.
     MText(TextWithMeta),
-    Emphasis(Emphasis),
+    Em(Emphasis),
     /// Code or an error.
     Code(Result<CodeBlock, CodeIdentError>),
     Link(Link),
@@ -52,6 +52,161 @@ pub enum DocItem {
     List(List),
     Paragraph(Paragraph),
     Section(Section),
+}
+
+fn squash_alg_text_case<'a>(
+    ltext: &mut Option<&'a mut String>,
+    lmtext: &mut Option<&mut TextWithMeta>,
+    lem: &mut Option<&mut Emphasis>,
+    text: &'a mut String, keep: &mut Vec<bool>
+) {
+    match ltext {
+        None => {
+            *ltext = Some(text);
+            keep.push(true);
+        },
+        Some(t) => {
+            t.push_str(text);
+            keep.push(false);
+        },
+    }
+    *lmtext = None;
+    *lem = None;
+}
+
+fn squash_alg_mtext_case<'a>(
+    ltext: &mut Option<&mut String>,
+    lmtext: &mut Option<&'a mut TextWithMeta>,
+    lem: &mut Option<&mut Emphasis>,
+    mtext: &'a mut TextWithMeta, keep: &mut Vec<bool>
+) {
+    mtext.prune_contentless();
+    if mtext.is_contentless() {
+        keep.push(false);
+    } else {
+        *ltext = None;
+        if let Some(t) = lmtext {
+            if mtext.tags == t.tags && mtext.props == t.props {
+                t.text.push_str(&mtext.text);
+                keep.push(false);
+            } else {
+                *lmtext = Some(mtext);
+                keep.push(true);
+            }
+        } else {
+            *lmtext = Some(mtext);
+            keep.push(true);
+        }
+    }
+    *lem = None;
+}
+
+fn squash_alg_em_case<'a>(
+    ltext: &mut Option<&mut String>,
+    lmtext: &mut Option<&mut TextWithMeta>,
+    lem: &mut Option<&'a mut Emphasis>,
+    em: &'a mut Emphasis, keep: &mut Vec<bool>
+) {
+    *ltext = None;
+    *lmtext = None;
+    if let Some(e) = lem {
+        if em.props == e.props && em.tags == e.tags
+            && em.strength == e.strength && em.etype == e.etype {
+            e.text.push_str(&em.text);
+            keep.push(false);
+        } else {
+            *lem = Some(em);
+            keep.push(true);
+        }
+    } else {
+        *lem = Some(em);
+        keep.push(true);
+    }
+}
+
+fn squash_alg_def_case(
+    ltext: &mut Option<&mut String>,
+    lmtext: &mut Option<&mut TextWithMeta>,
+    lem: &mut Option<&mut Emphasis>,
+    keep: &mut Vec<bool>
+) {
+    keep.push(true);
+    *ltext = None;
+    *lmtext = None;
+    *lem = None;
+}
+
+macro_rules! impl_squash_text_mtext_em {
+    ($enumname:ident) => {
+        fn squash(&mut self) {
+            let mut keep = Vec::new();
+            let mut ltext: Option<&mut String> = None;
+            let mut lmtext: Option<&mut TextWithMeta> = None;
+            let mut lem: Option<&mut Emphasis> = None;
+
+            // squash items into earlier item if possible
+            for item in &mut self.items {
+                match item {
+                    $enumname::Text(text) => {
+                        squash_alg_text_case(&mut ltext, &mut lmtext, &mut lem, text, &mut keep);
+                    },
+                    $enumname::MText(mtext) => {
+                        squash_alg_mtext_case(&mut ltext, &mut lmtext, &mut lem, mtext, &mut keep);
+                    },
+                    $enumname::Em(em) => {
+                        squash_alg_em_case(&mut ltext, &mut lmtext, &mut lem, em, &mut keep);
+                    },
+                    _ => {
+                        squash_alg_def_case(&mut ltext, &mut lmtext, &mut lem, &mut keep);
+                    },
+                }
+            }
+
+            // remove parts that have been squashed
+            let mut kiter = keep.into_iter();
+            self.items.retain(|_| kiter.next().unwrap());
+
+            // downgrade MText's with no meta
+            for item in &mut self.items {
+                if let $enumname::MText(TextWithMeta { text, tags, props }) = item {
+                    if tags.is_empty() && props.is_empty() {
+                        *item = $enumname::Text(std::mem::take(text));
+                    }
+                }
+            }
+
+            // recurse
+            for item in &mut self.items {
+                item.squash();
+            }
+        }
+    }
+}
+
+macro_rules! impl_squash_text_em {
+    ($enumname:ident) => {
+        fn squash(&mut self) {
+            let mut keep = Vec::new();
+            let mut ltext: Option<&mut String> = None;
+            let mut lem: Option<&mut Emphasis> = None;
+
+            // squash items into earlier item if possible
+            for item in &mut self.items {
+                match item {
+                    $enumname::String(text) => {
+                        squash_alg_text_case(&mut ltext, &mut None, &mut lem, text, &mut keep);
+                    },
+                    $enumname::Em(em) => {
+                        squash_alg_em_case(&mut ltext, &mut None, &mut lem, em, &mut keep);
+                    },
+                }
+            }
+
+            // remove parts that have been squashed
+            let mut kiter = keep.into_iter();
+            self.items.retain(|_| kiter.next().unwrap());
+        }
+    }
 }
 
 impl DocPartActions for Doc {
@@ -72,89 +227,7 @@ impl DocPartActions for Doc {
         self.items.retain(|item| !item.is_contentless());
     }
 
-    fn squash(&mut self) {
-        let mut keep = Vec::new();
-        let mut ltext = None;
-        let mut lmtext: Option<&mut TextWithMeta> = None;
-        let mut lem: Option<&mut Emphasis> = None;
-
-        // squash items into earlier item if possible
-        for item in &mut self.items {
-            match item {
-                DocItem::Text(text) => {
-                    match ltext {
-                        None => {
-                            ltext = Some(text);
-                            keep.push(true);
-                        },
-                        Some(ref mut t) => {
-                            t.push_str(text);
-                            keep.push(false);
-                        },
-                    }
-                    lmtext = None;
-                    lem = None;
-                },
-                DocItem::MText(mtext) => {
-                    mtext.prune_contentless();
-                    if mtext.is_contentless() {
-                        keep.push(false);
-                    } else {
-                        ltext = None;
-                        if let Some(ref mut t) = lmtext {
-                            if mtext.tags == t.tags && mtext.props == t.props {
-                                t.text.push_str(&mtext.text);
-                                keep.push(false);
-                            } else {
-                                lmtext = Some(mtext);
-                                keep.push(true);
-                            }
-                        } else {
-                            lmtext = Some(mtext);
-                            keep.push(true);
-                        }
-                    }
-                    lem = None;
-                },
-                DocItem::Emphasis(em) => {
-                    ltext = None;
-                    lmtext = None;
-                    if let Some(ref mut e) = lem {
-                        if em.props == e.props && em.tags == e.tags
-                            && em.strength == e.strength && em.etype == e.etype {
-                            e.text.push_str(&em.text);
-                            keep.push(false);
-                        } else {
-                            lem = Some(em);
-                            keep.push(true);
-                        }
-                    } else {
-                        lem = Some(em);
-                        keep.push(true);
-                    }
-                },
-                _ => {
-                    keep.push(true);
-                    ltext = None;
-                    lmtext = None;
-                    lem = None;
-                },
-            }
-        }
-
-        // remove parts that have been squashed
-        let mut kiter = keep.into_iter();
-        self.items.retain(|_| kiter.next().unwrap());
-
-        // downgrade MText's with no meta
-        for item in &mut self.items {
-            if let DocItem::MText(TextWithMeta { text, tags, props }) = item {
-                if tags.is_empty() && props.is_empty() {
-                    *item = DocItem::Text(std::mem::take(text));
-                }
-            }
-        }
-    }
+    impl_squash_text_mtext_em!(DocItem);
 
     fn is_contentless(&self) -> bool {
         self.items.is_empty()
@@ -165,14 +238,14 @@ impl DocPartActions for DocItem {
     fn prune_errors(&mut self) {
         match self {
             DocItem::MText(mtext) => mtext.prune_errors(),
-            DocItem::Emphasis(em) => em.prune_errors(),
+            DocItem::Em(em) => em.prune_errors(),
             DocItem::Code(Ok(code)) => code.prune_errors(),
             DocItem::Link(link) => link.prune_errors(),
             DocItem::Nav(nav) => nav.prune_errors(),
             DocItem::List(list) => list.prune_errors(),
             DocItem::Paragraph(par) => par.prune_errors(),
             DocItem::Section(section) => section.prune_errors(),
-            _ => {},
+            _ => { },
         }
     }
 
@@ -180,7 +253,7 @@ impl DocPartActions for DocItem {
         match self {
             DocItem::Text(text) => text.prune_contentless(),
             DocItem::MText(mtext) => mtext.prune_contentless(),
-            DocItem::Emphasis(em) => em.prune_contentless(),
+            DocItem::Em(em) => em.prune_contentless(),
             DocItem::Code(Ok(code)) => code.prune_contentless(),
             DocItem::Code(Err(_)) => { },
             DocItem::Link(link) => link.prune_contentless(),
@@ -192,14 +265,20 @@ impl DocPartActions for DocItem {
     }
 
     fn squash(&mut self) {
-        todo!();
+        match self {
+            DocItem::Link(link) => link.squash(),
+            DocItem::Nav(nav) => nav.squash(),
+            DocItem::List(list) => list.squash(),
+            DocItem::Paragraph(par) => par.squash(),
+            _ => { },
+        }
     }
 
     fn is_contentless(&self) -> bool {
         match self {
             DocItem::Text(text) => text.is_empty(),
             DocItem::MText(mtext) => mtext.is_contentless(),
-            DocItem::Emphasis(em) => em.is_contentless(),
+            DocItem::Em(em) => em.is_contentless(),
             DocItem::Code(Ok(code)) => code.is_contentless(),
             DocItem::Code(Err(_)) => true,
             DocItem::Link(link) => link.is_contentless(),
@@ -221,9 +300,7 @@ impl DocPartActions for String {
         }
     }
 
-    fn squash(&mut self) {
-        todo!();
-    }
+    fn squash(&mut self) { }
 
     fn is_contentless(&self) -> bool {
         self.is_empty()
@@ -254,9 +331,7 @@ impl DocPartActions for Tags {
         );
     }
 
-    fn squash(&mut self) {
-        todo!();
-    }
+    fn squash(&mut self) { }
 
     fn is_contentless(&self) -> bool {
         self.is_empty()
@@ -313,9 +388,7 @@ impl DocPartActions for Props {
         );
     }
 
-    fn squash(&mut self) {
-        todo!();
-    }
+    fn squash(&mut self) { }
 
     fn is_contentless(&self) -> bool {
         self.is_empty()
@@ -333,9 +406,7 @@ impl DocPartActions for PropVal {
         }
     }
 
-    fn squash(&mut self) {
-        todo!();
-    }
+    fn squash(&mut self) { }
 
     fn is_contentless(&self) -> bool {
         match self {
@@ -395,7 +466,9 @@ impl DocPartActions for Section {
     }
 
     fn squash(&mut self) {
-        todo!();
+        for item in &mut self.items {
+            item.squash();
+        }
     }
 
     fn is_contentless(&self) -> bool {
@@ -419,7 +492,10 @@ impl DocPartActions for SectionItem {
     }
 
     fn squash(&mut self) {
-        todo!();
+        match self {
+            Self::Paragraph(par) => par.squash(),
+            Self::Section(section) => section.squash(),
+        }
     }
 
     fn is_contentless(&self) -> bool {
@@ -463,9 +539,7 @@ impl DocPartActions for Heading {
         self.props.prune_contentless();
     }
 
-    fn squash(&mut self) {
-        todo!();
-    }
+    impl_squash_text_em!(HeadingItem);
 
     fn is_contentless(&self) -> bool {
         self.items.is_empty()
@@ -486,9 +560,7 @@ impl DocPartActions for HeadingItem {
         }
     }
 
-    fn squash(&mut self) {
-        todo!();
-    }
+    fn squash(&mut self) { }
 
     fn is_contentless(&self) -> bool {
         match self {
@@ -534,9 +606,7 @@ impl DocPartActions for Paragraph {
         self.props.prune_contentless();
     }
 
-    fn squash(&mut self) {
-        todo!();
-    }
+    impl_squash_text_mtext_em!(ParagraphItem);
 
     fn is_contentless(&self) -> bool {
         self.items.is_empty()
@@ -568,7 +638,11 @@ impl DocPartActions for ParagraphItem {
     }
 
     fn squash(&mut self) {
-        todo!();
+        match self {
+            Self::Link(link) => link.squash(),
+            Self::List(list) => list.squash(),
+            _ => { },
+        }
     }
 
     fn is_contentless(&self) -> bool {
@@ -622,9 +696,7 @@ impl DocPartActions for Emphasis {
         self.props.prune_contentless();
     }
 
-    fn squash(&mut self) {
-        todo!();
-    }
+    fn squash(&mut self) { }
 
     fn is_contentless(&self) -> bool {
         self.text.is_empty()
@@ -668,7 +740,9 @@ impl DocPartActions for List {
     }
 
     fn squash(&mut self) {
-        todo!();
+        for item in &mut self.items {
+            item.squash();
+        }
     }
 
     fn is_contentless(&self) -> bool {
@@ -703,9 +777,7 @@ impl DocPartActions for Nav {
         self.retain(|snav| !snav.is_contentless());
     }
 
-    fn squash(&mut self) {
-        todo!();
-    }
+    fn squash(&mut self) { }
 
     fn is_contentless(&self) -> bool {
         self.is_empty()
@@ -737,9 +809,7 @@ impl DocPartActions for SNav {
         self.props.prune_contentless();
     }
 
-    fn squash(&mut self) {
-        todo!();
-    }
+    fn squash(&mut self) { }
 
     fn is_contentless(&self) -> bool {
         self.subs.is_empty() && self.links.is_empty()
@@ -773,9 +843,7 @@ impl DocPartActions for Link {
         self.props.prune_contentless();
     }
 
-    fn squash(&mut self) {
-        todo!();
-    }
+    impl_squash_text_em!(LinkItem);
 
     fn is_contentless(&self) -> bool {
         self.url.is_empty() && self.items.is_empty()
@@ -803,9 +871,7 @@ impl DocPartActions for LinkItem {
         }
     }
 
-    fn squash(&mut self) {
-        todo!();
-    }
+    fn squash(&mut self) { }
 
     fn is_contentless(&self) -> bool {
         match self {
@@ -840,9 +906,7 @@ impl DocPartActions for CodeBlock {
         self.props.prune_contentless();
     }
 
-    fn squash(&mut self) {
-        todo!();
-    }
+    fn squash(&mut self) { }
 
     fn is_contentless(&self) -> bool {
         self.code.is_empty()
@@ -887,9 +951,7 @@ impl DocPartActions for TextWithMeta {
         self.props.prune_contentless();
     }
 
-    fn squash(&mut self) {
-        todo!();
-    }
+    fn squash(&mut self) { }
 
     fn is_contentless(&self) -> bool {
         self.text.is_empty()

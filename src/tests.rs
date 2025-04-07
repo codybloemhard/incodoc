@@ -485,13 +485,13 @@ mod tests {
     );
 
     test_squash!(
-        test_sq,
+        test_sq_doc,
         Doc {
             items: vec![
                 DocItem::Text("a".to_string()),
                 DocItem::Text("\n".to_string()),
                 DocItem::Text("b\n".to_string()),
-                DocItem::Emphasis(Emphasis {
+                DocItem::Em(Emphasis {
                     text: "em".to_string(),
                     ..Default::default()
                 }),
@@ -521,21 +521,21 @@ mod tests {
                     tags: hset!(["same"]),
                     ..Default::default()
                 }),
-                DocItem::Emphasis(Emphasis {
+                DocItem::Em(Emphasis {
                     strength: EmStrength::Strong,
                     etype: EmType::Deemphasis,
                     text: "de-em".to_string(),
                     props: props!([("p".to_string(), PropVal::Int(0))]),
                     ..Default::default()
                 }),
-                DocItem::Emphasis(Emphasis {
+                DocItem::Em(Emphasis {
                     strength: EmStrength::Strong,
                     etype: EmType::Deemphasis,
                     text: "de-em".to_string(),
                     props: props!([("p".to_string(), PropVal::Int(0))]),
                     ..Default::default()
                 }),
-                DocItem::Emphasis(Emphasis {
+                DocItem::Em(Emphasis {
                     strength: EmStrength::Medium,
                     etype: EmType::Deemphasis,
                     text: "de-em".to_string(),
@@ -548,7 +548,7 @@ mod tests {
                     tags: hset!(["same"]),
                     ..Default::default()
                 }),
-                DocItem::Emphasis(Emphasis {
+                DocItem::Em(Emphasis {
                     strength: EmStrength::Strong,
                     etype: EmType::Deemphasis,
                     text: "de-em".to_string(),
@@ -561,7 +561,7 @@ mod tests {
         Doc {
             items: vec![
                 DocItem::Text("a\nb\n".to_string()),
-                DocItem::Emphasis(Emphasis {
+                DocItem::Em(Emphasis {
                     text: "em".to_string(),
                     ..Default::default()
                 }),
@@ -581,14 +581,14 @@ mod tests {
                     tags: hset!(["same"]),
                     ..Default::default()
                 }),
-                DocItem::Emphasis(Emphasis {
+                DocItem::Em(Emphasis {
                     strength: EmStrength::Strong,
                     etype: EmType::Deemphasis,
                     text: "de-emde-em".to_string(),
                     props: props!([("p".to_string(), PropVal::Int(0))]),
                     ..Default::default()
                 }),
-                DocItem::Emphasis(Emphasis {
+                DocItem::Em(Emphasis {
                     strength: EmStrength::Medium,
                     etype: EmType::Deemphasis,
                     text: "de-em".to_string(),
@@ -601,11 +601,403 @@ mod tests {
                     tags: hset!(["same"]),
                     ..Default::default()
                 }),
-                DocItem::Emphasis(Emphasis {
+                DocItem::Em(Emphasis {
                     strength: EmStrength::Strong,
                     etype: EmType::Deemphasis,
                     text: "de-em".to_string(),
                     props: props!([("p".to_string(), PropVal::Int(0))]),
+                    ..Default::default()
+                }),
+            ],
+            ..Default::default()
+        }
+    );
+
+    test_squash!(
+        test_sq_section,
+        Section {
+            items: vec![
+                SectionItem::Paragraph(Paragraph {
+                    items: vec![
+                        ParagraphItem::Text("a".to_string()),
+                        ParagraphItem::Text("\nb".to_string()),
+                    ],
+                    ..Default::default()
+                }),
+                SectionItem::Section(Section {
+                    items: vec![
+                        SectionItem::Paragraph(Paragraph {
+                            items: vec![
+                                ParagraphItem::Text("a".to_string()),
+                                ParagraphItem::Text("\nb".to_string()),
+                            ],
+                            ..Default::default()
+                        }),
+                    ],
+                    ..Default::default()
+                }),
+            ],
+            ..Default::default()
+        },
+        Section {
+            items: vec![
+                SectionItem::Paragraph(Paragraph {
+                    items: vec![
+                        ParagraphItem::Text("a\nb".to_string()),
+                    ],
+                    ..Default::default()
+                }),
+                SectionItem::Section(Section {
+                    items: vec![
+                        SectionItem::Paragraph(Paragraph {
+                            items: vec![
+                                ParagraphItem::Text("a\nb".to_string()),
+                            ],
+                            ..Default::default()
+                        }),
+                    ],
+                    ..Default::default()
+                }),
+            ],
+            ..Default::default()
+        }
+    );
+
+    test_squash!(
+        test_sq_heading,
+        Heading {
+            items: vec![
+                HeadingItem::String("a\n".to_string()),
+                HeadingItem::String("b\n".to_string()),
+                HeadingItem::Em(Emphasis {
+                    text: "em ".to_string(),
+                    ..Default::default()
+                }),
+                HeadingItem::Em(Emphasis {
+                    text: "em".to_string(),
+                    ..Default::default()
+                }),
+                HeadingItem::String("c".to_string()),
+                HeadingItem::Em(Emphasis {
+                    text: "em".to_string(),
+                    ..Default::default()
+                }),
+                HeadingItem::String("d".to_string()),
+                HeadingItem::Em(Emphasis {
+                    text: "em".to_string(),
+                    tags: hset!(["A"]),
+                    ..Default::default()
+                }),
+                HeadingItem::Em(Emphasis {
+                    text: "em".to_string(),
+                    tags: hset!(["A"]),
+                    ..Default::default()
+                }),
+                HeadingItem::Em(Emphasis {
+                    text: "em".to_string(),
+                    tags: hset!(["A", "B"]),
+                    ..Default::default()
+                }),
+            ],
+            ..Default::default()
+        },
+        Heading {
+            items: vec![
+                HeadingItem::String("a\nb\n".to_string()),
+                HeadingItem::Em(Emphasis {
+                    text: "em em".to_string(),
+                    ..Default::default()
+                }),
+                HeadingItem::String("c".to_string()),
+                HeadingItem::Em(Emphasis {
+                    text: "em".to_string(),
+                    ..Default::default()
+                }),
+                HeadingItem::String("d".to_string()),
+                HeadingItem::Em(Emphasis {
+                    text: "emem".to_string(),
+                    tags: hset!(["A"]),
+                    ..Default::default()
+                }),
+                HeadingItem::Em(Emphasis {
+                    text: "em".to_string(),
+                    tags: hset!(["A", "B"]),
+                    ..Default::default()
+                }),
+            ],
+            ..Default::default()
+        }
+    );
+
+    test_squash!(
+        test_sq_paragraph_c0,
+        Paragraph {
+            items: vec![
+                ParagraphItem::Text("a".to_string()),
+                ParagraphItem::Text("\n".to_string()),
+                ParagraphItem::Text("b\n".to_string()),
+                ParagraphItem::Em(Emphasis {
+                    text: "em".to_string(),
+                    ..Default::default()
+                }),
+                ParagraphItem::Text("c\n".to_string()),
+                ParagraphItem::MText(TextWithMeta {
+                    text: "A".to_string(),
+                    tags: hset!(["same"]),
+                    ..Default::default()
+                }),
+                ParagraphItem::MText(TextWithMeta {
+                    text: "B".to_string(),
+                    tags: hset!(["same"]),
+                    ..Default::default()
+                }),
+                ParagraphItem::MText(TextWithMeta {
+                    text: "C".to_string(),
+                    tags: hset!(["different"]),
+                    ..Default::default()
+                }),
+                ParagraphItem::MText(TextWithMeta {
+                    text: "D".to_string(),
+                    tags: hset!(["same"]),
+                    ..Default::default()
+                }),
+                ParagraphItem::MText(TextWithMeta {
+                    text: "E".to_string(),
+                    tags: hset!(["same"]),
+                    ..Default::default()
+                }),
+                ParagraphItem::Em(Emphasis {
+                    strength: EmStrength::Strong,
+                    etype: EmType::Deemphasis,
+                    text: "de-em".to_string(),
+                    props: props!([("p".to_string(), PropVal::Int(0))]),
+                    ..Default::default()
+                }),
+                ParagraphItem::Em(Emphasis {
+                    strength: EmStrength::Strong,
+                    etype: EmType::Deemphasis,
+                    text: "de-em".to_string(),
+                    props: props!([("p".to_string(), PropVal::Int(0))]),
+                    ..Default::default()
+                }),
+                ParagraphItem::Em(Emphasis {
+                    strength: EmStrength::Medium,
+                    etype: EmType::Deemphasis,
+                    text: "de-em".to_string(),
+                    props: props!([("p".to_string(), PropVal::Int(0))]),
+                    ..Default::default()
+                }),
+                ParagraphItem::Text("d\n".to_string()),
+                ParagraphItem::MText(TextWithMeta {
+                    text: "F".to_string(),
+                    tags: hset!(["same"]),
+                    ..Default::default()
+                }),
+                ParagraphItem::Em(Emphasis {
+                    strength: EmStrength::Strong,
+                    etype: EmType::Deemphasis,
+                    text: "de-em".to_string(),
+                    props: props!([("p".to_string(), PropVal::Int(0))]),
+                    ..Default::default()
+                }),
+            ],
+            ..Default::default()
+        },
+        Paragraph {
+            items: vec![
+                ParagraphItem::Text("a\nb\n".to_string()),
+                ParagraphItem::Em(Emphasis {
+                    text: "em".to_string(),
+                    ..Default::default()
+                }),
+                ParagraphItem::Text("c\n".to_string()),
+                ParagraphItem::MText(TextWithMeta {
+                    text: "AB".to_string(),
+                    tags: hset!(["same"]),
+                    ..Default::default()
+                }),
+                ParagraphItem::MText(TextWithMeta {
+                    text: "C".to_string(),
+                    tags: hset!(["different"]),
+                    ..Default::default()
+                }),
+                ParagraphItem::MText(TextWithMeta {
+                    text: "DE".to_string(),
+                    tags: hset!(["same"]),
+                    ..Default::default()
+                }),
+                ParagraphItem::Em(Emphasis {
+                    strength: EmStrength::Strong,
+                    etype: EmType::Deemphasis,
+                    text: "de-emde-em".to_string(),
+                    props: props!([("p".to_string(), PropVal::Int(0))]),
+                    ..Default::default()
+                }),
+                ParagraphItem::Em(Emphasis {
+                    strength: EmStrength::Medium,
+                    etype: EmType::Deemphasis,
+                    text: "de-em".to_string(),
+                    props: props!([("p".to_string(), PropVal::Int(0))]),
+                    ..Default::default()
+                }),
+                ParagraphItem::Text("d\n".to_string()),
+                ParagraphItem::MText(TextWithMeta {
+                    text: "F".to_string(),
+                    tags: hset!(["same"]),
+                    ..Default::default()
+                }),
+                ParagraphItem::Em(Emphasis {
+                    strength: EmStrength::Strong,
+                    etype: EmType::Deemphasis,
+                    text: "de-em".to_string(),
+                    props: props!([("p".to_string(), PropVal::Int(0))]),
+                    ..Default::default()
+                }),
+            ],
+            ..Default::default()
+        }
+    );
+
+    test_squash!(
+        test_sq_paragraph_c1,
+        Paragraph {
+            items: vec![
+                ParagraphItem::Link(Link {
+                    items: vec![
+                        LinkItem::String("a".to_string()),
+                        LinkItem::String("\n".to_string()),
+                        LinkItem::String("b".to_string()),
+                    ],
+                    ..Default::default()
+                }),
+                ParagraphItem::List(List {
+                    items: vec![
+                        Paragraph {
+                            items: vec![
+                                ParagraphItem::Text("a".to_string()),
+                                ParagraphItem::Text("\n".to_string()),
+                                ParagraphItem::Text("b".to_string()),
+                            ],
+                            ..Default::default()
+                        }
+                    ],
+                    ..Default::default()
+                }),
+            ],
+            ..Default::default()
+        },
+        Paragraph {
+            items: vec![
+                ParagraphItem::Link(Link {
+                    items: vec![
+                        LinkItem::String("a\nb".to_string()),
+                    ],
+                    ..Default::default()
+                }),
+                ParagraphItem::List(List {
+                    items: vec![
+                        Paragraph {
+                            items: vec![
+                                ParagraphItem::Text("a\nb".to_string()),
+                            ],
+                            ..Default::default()
+                        }
+                    ],
+                    ..Default::default()
+                }),
+            ],
+            ..Default::default()
+        }
+    );
+
+    test_squash!(
+        test_sq_list,
+        List {
+            items: vec![
+                Paragraph {
+                    items: vec![
+                        ParagraphItem::Text("a".to_string()),
+                        ParagraphItem::Text("\n".to_string()),
+                        ParagraphItem::Text("b".to_string()),
+                    ],
+                    ..Default::default()
+                }
+            ],
+            ..Default::default()
+        },
+        List {
+            items: vec![
+                Paragraph {
+                    items: vec![
+                        ParagraphItem::Text("a\nb".to_string()),
+                    ],
+                    ..Default::default()
+                }
+            ],
+            ..Default::default()
+        }
+    );
+
+    test_squash!(
+        test_sq_link,
+        Link {
+            items: vec![
+                LinkItem::String("a".to_string()),
+                LinkItem::String("\n".to_string()),
+                LinkItem::String("b\n".to_string()),
+                LinkItem::Em(Emphasis {
+                    text: "em ".to_string(),
+                    ..Default::default()
+                }),
+                LinkItem::Em(Emphasis {
+                    text: "em".to_string(),
+                    ..Default::default()
+                }),
+                LinkItem::String("c".to_string()),
+                LinkItem::Em(Emphasis {
+                    text: "em".to_string(),
+                    ..Default::default()
+                }),
+                LinkItem::String("d".to_string()),
+                LinkItem::Em(Emphasis {
+                    text: "em".to_string(),
+                    tags: hset!(["A"]),
+                    ..Default::default()
+                }),
+                LinkItem::Em(Emphasis {
+                    text: "em".to_string(),
+                    tags: hset!(["A"]),
+                    ..Default::default()
+                }),
+                LinkItem::Em(Emphasis {
+                    text: "em".to_string(),
+                    tags: hset!(["A", "B"]),
+                    ..Default::default()
+                }),
+            ],
+            ..Default::default()
+        },
+        Link {
+            items: vec![
+                LinkItem::String("a\nb\n".to_string()),
+                LinkItem::Em(Emphasis {
+                    text: "em em".to_string(),
+                    ..Default::default()
+                }),
+                LinkItem::String("c".to_string()),
+                LinkItem::Em(Emphasis {
+                    text: "em".to_string(),
+                    ..Default::default()
+                }),
+                LinkItem::String("d".to_string()),
+                LinkItem::Em(Emphasis {
+                    text: "emem".to_string(),
+                    tags: hset!(["A"]),
+                    ..Default::default()
+                }),
+                LinkItem::Em(Emphasis {
+                    text: "em".to_string(),
+                    tags: hset!(["A", "B"]),
                     ..Default::default()
                 }),
             ],
@@ -1333,7 +1725,7 @@ props { (
         t_emphasis_c0_f0,
         "em{le, \"light emphasis\"}",
         Doc {
-            items: vec![DocItem::Emphasis(Emphasis{
+            items: vec![DocItem::Em(Emphasis{
                 strength: EmStrength::Light,
                 etype: EmType::Emphasis,
                 text: "light emphasis".to_string(),
@@ -1351,7 +1743,7 @@ props { (
             \"light emphasis\"
         }",
         Doc {
-            items: vec![DocItem::Emphasis(Emphasis{
+            items: vec![DocItem::Em(Emphasis{
                 strength: EmStrength::Light,
                 etype: EmType::Emphasis,
                 text: "light emphasis".to_string(),
@@ -1366,7 +1758,7 @@ props { (
         t_emphasis_c1,
         "em{me, \"medium emphasis\"}",
         Doc {
-            items: vec![DocItem::Emphasis(Emphasis{
+            items: vec![DocItem::Em(Emphasis{
                 strength: EmStrength::Medium,
                 etype: EmType::Emphasis,
                 text: "medium emphasis".to_string(),
@@ -1381,7 +1773,7 @@ props { (
         t_emphasis_c2,
         "em{se, \"strong emphasis\"}",
         Doc {
-            items: vec![DocItem::Emphasis(Emphasis{
+            items: vec![DocItem::Em(Emphasis{
                 strength: EmStrength::Strong,
                 etype: EmType::Emphasis,
                 text: "strong emphasis".to_string(),
@@ -1396,7 +1788,7 @@ props { (
         t_emphasis_c3,
         "em{ld, \"light deemphasis\"}",
         Doc {
-            items: vec![DocItem::Emphasis(Emphasis{
+            items: vec![DocItem::Em(Emphasis{
                 strength: EmStrength::Light,
                 etype: EmType::Deemphasis,
                 text: "light deemphasis".to_string(),
@@ -1411,7 +1803,7 @@ props { (
         t_emphasis_c4,
         "em{md, \"medium deemphasis\"}",
         Doc {
-            items: vec![DocItem::Emphasis(Emphasis{
+            items: vec![DocItem::Em(Emphasis{
                 strength: EmStrength::Medium,
                 etype: EmType::Deemphasis,
                 text: "medium deemphasis".to_string(),
@@ -1426,7 +1818,7 @@ props { (
         t_emphasis_c5,
         "em{sd, \"strong deemphasis\"}",
         Doc {
-            items: vec![DocItem::Emphasis(Emphasis{
+            items: vec![DocItem::Em(Emphasis{
                 strength: EmStrength::Strong,
                 etype: EmType::Deemphasis,
                 text: "strong deemphasis".to_string(),
@@ -1447,7 +1839,7 @@ props { (
         Doc {
             items: vec![
                 DocItem::Text("This is a ".to_string()),
-                DocItem::Emphasis(Emphasis{
+                DocItem::Em(Emphasis{
                     strength: EmStrength::Light,
                     etype: EmType::Emphasis,
                     text: "light".to_string(),
@@ -1471,7 +1863,7 @@ props { (
         ",
         Doc {
             items: vec![
-                DocItem::Emphasis(Emphasis{
+                DocItem::Em(Emphasis{
                     strength: EmStrength::Light,
                     etype: EmType::Emphasis,
                     text: "light".to_string(),
@@ -1495,7 +1887,7 @@ props { (
         ",
         Doc {
             items: vec![
-                DocItem::Emphasis(Emphasis{
+                DocItem::Em(Emphasis{
                     strength: EmStrength::Light,
                     etype: EmType::Emphasis,
                     text: "light".to_string(),
@@ -1523,7 +1915,7 @@ props { (
         ",
         Doc {
             items: vec![
-                DocItem::Emphasis(Emphasis{
+                DocItem::Em(Emphasis{
                     strength: EmStrength::Light,
                     etype: EmType::Emphasis,
                     text: "light".to_string(),
@@ -1543,7 +1935,7 @@ props { (
         t_emphasis_comment,
         "/*c*/em/*c*/{/*c*/le/*c*/,/*c*/\"le\"/*c*/,/*c*/tags{}/*c*/,/*c*/props{}/*c*/}//c",
         Doc {
-            items: vec![DocItem::Emphasis(Emphasis{
+            items: vec![DocItem::Em(Emphasis{
                 strength: EmStrength::Light,
                 etype: EmType::Emphasis,
                 text: "le".to_string(),

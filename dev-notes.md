@@ -38,7 +38,7 @@ link
 mtext
   - empty: convert to regular text
 
-smash texts and emphasis
+squash duplicate nav, snav, par, section
 
 things to write about
 

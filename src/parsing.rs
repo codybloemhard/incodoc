@@ -33,7 +33,7 @@ pub fn parse(input: &str) -> Result<Doc, String> {
                     doc.items.push(DocItem::MText(text));
                 }
             },
-            Rule::emphasis => doc.items.push(DocItem::Emphasis(parse_emphasis(inner))),
+            Rule::emphasis => doc.items.push(DocItem::Em(parse_emphasis(inner))),
             Rule::code => doc.items.push(DocItem::Code(parse_code(inner))),
             Rule::paragraph => doc.items.push(DocItem::Paragraph(parse_paragraph(inner))),
             Rule::list => doc.items.push(DocItem::List(parse_list(inner))),

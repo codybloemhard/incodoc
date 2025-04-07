@@ -263,7 +263,7 @@ pub fn doc_out(doc: &Doc, output: &mut String) {
         match item {
             DocItem::Text(text) => text_item_out(text, 0, output),
             DocItem::MText(mtext) => mtext_out(mtext, 0, output),
-            DocItem::Emphasis(em) => emphasis_out(em, 0, output),
+            DocItem::Em(em) => emphasis_out(em, 0, output),
             DocItem::Code(Ok(code)) => code_out(code, 0, output),
             DocItem::Link(link) => link_out(link, 0, output),
             DocItem::Nav(nav) => nav_out(nav, 0, output),
