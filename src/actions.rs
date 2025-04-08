@@ -7,10 +7,10 @@ pub trait Absorb {
     fn absorb(&mut self, other: Self::Other);
 }
 
-pub trait DocPartActions {
+/// Prune document tree of various unwanted elements.
+pub trait PruneIncodoc {
     fn prune_errors(&mut self);
     fn prune_contentless(&mut self);
-    fn squash(&mut self);
     fn is_contentless(&self) -> bool;
 }
 
@@ -98,7 +98,7 @@ fn squash_alg_def_case(
 
 macro_rules! impl_squash_text_mtext_em {
     ($enumname:ident) => {
-        fn squash(&mut self) {
+        pub fn squash(&mut self) {
             let mut keep = Vec::new();
             let mut ltext: Option<&mut String> = None;
             let mut lmtext: Option<&mut TextWithMeta> = None;
@@ -145,7 +145,7 @@ macro_rules! impl_squash_text_mtext_em {
 
 macro_rules! impl_squash_text_em {
     ($enumname:ident) => {
-        fn squash(&mut self) {
+        pub fn squash(&mut self) {
             let mut keep = Vec::new();
             let mut ltext: Option<&mut String> = None;
             let mut lem: Option<&mut Emphasis> = None;
@@ -169,7 +169,11 @@ macro_rules! impl_squash_text_em {
     }
 }
 
-impl DocPartActions for Doc {
+impl Doc {
+    impl_squash_text_mtext_em!(DocItem);
+}
+
+impl PruneIncodoc for Doc {
     fn prune_errors(&mut self) {
         self.props.prune_errors();
         self.items.retain(|i| !matches!(i, DocItem::Code(Err(_))));
@@ -187,14 +191,23 @@ impl DocPartActions for Doc {
         self.items.retain(|item| !item.is_contentless());
     }
 
-    impl_squash_text_mtext_em!(DocItem);
-
     fn is_contentless(&self) -> bool {
         self.items.is_empty()
     }
 }
 
-impl DocPartActions for DocItem {
+impl DocItem {
+    pub fn squash(&mut self) {
+        match self {
+            DocItem::Link(link) => link.squash(),
+            DocItem::List(list) => list.squash(),
+            DocItem::Paragraph(par) => par.squash(),
+            _ => { },
+        }
+    }
+}
+
+impl PruneIncodoc for DocItem {
     fn prune_errors(&mut self) {
         match self {
             DocItem::MText(mtext) => mtext.prune_errors(),
@@ -224,16 +237,6 @@ impl DocPartActions for DocItem {
         }
     }
 
-    fn squash(&mut self) {
-        match self {
-            DocItem::Link(link) => link.squash(),
-            DocItem::Nav(nav) => nav.squash(),
-            DocItem::List(list) => list.squash(),
-            DocItem::Paragraph(par) => par.squash(),
-            _ => { },
-        }
-    }
-
     fn is_contentless(&self) -> bool {
         match self {
             DocItem::Text(text) => text.is_empty(),
@@ -250,7 +253,7 @@ impl DocPartActions for DocItem {
     }
 }
 
-impl DocPartActions for String {
+impl PruneIncodoc for String {
     fn prune_errors(&mut self) { }
 
     fn prune_contentless(&mut self) {
@@ -259,8 +262,6 @@ impl DocPartActions for String {
             *self = trimmed.to_string();
         }
     }
-
-    fn squash(&mut self) { }
 
     fn is_contentless(&self) -> bool {
         self.is_empty()
@@ -278,7 +279,7 @@ impl Absorb for Tags {
     }
 }
 
-impl DocPartActions for Tags {
+impl PruneIncodoc for Tags {
     fn prune_errors(&mut self) { }
 
     fn prune_contentless(&mut self) {
@@ -287,8 +288,6 @@ impl DocPartActions for Tags {
             !t.chars().all(|c| c.is_whitespace())
         );
     }
-
-    fn squash(&mut self) { }
 
     fn is_contentless(&self) -> bool {
         self.is_empty()
@@ -304,7 +303,7 @@ impl Absorb for Props {
     }
 }
 
-impl DocPartActions for Props {
+impl PruneIncodoc for Props {
     fn prune_errors(&mut self) {
         self.retain(|_, v| !v.is_error());
     }
@@ -319,14 +318,12 @@ impl DocPartActions for Props {
         );
     }
 
-    fn squash(&mut self) { }
-
     fn is_contentless(&self) -> bool {
         self.is_empty()
     }
 }
 
-impl DocPartActions for PropVal {
+impl PruneIncodoc for PropVal {
     fn prune_errors(&mut self) {  }
 
     fn prune_contentless(&mut self) {
@@ -337,8 +334,6 @@ impl DocPartActions for PropVal {
         }
     }
 
-    fn squash(&mut self) { }
-
     fn is_contentless(&self) -> bool {
         match self {
             Self::String(string) => string.is_empty(),
@@ -348,7 +343,15 @@ impl DocPartActions for PropVal {
     }
 }
 
-impl DocPartActions for Section {
+impl Section {
+    pub fn squash(&mut self) {
+        for item in &mut self.items {
+            item.squash();
+        }
+    }
+}
+
+impl PruneIncodoc for Section {
     fn prune_errors(&mut self) {
         self.props.prune_errors();
         for item in &mut self.items {
@@ -366,18 +369,21 @@ impl DocPartActions for Section {
         self.props.prune_contentless();
     }
 
-    fn squash(&mut self) {
-        for item in &mut self.items {
-            item.squash();
-        }
-    }
-
     fn is_contentless(&self) -> bool {
         self.heading.is_contentless() && self.items.is_empty()
     }
 }
 
-impl DocPartActions for SectionItem {
+impl SectionItem {
+    pub fn squash(&mut self) {
+        match self {
+            Self::Paragraph(par) => par.squash(),
+            Self::Section(section) => section.squash(),
+        }
+    }
+}
+
+impl PruneIncodoc for SectionItem {
     fn prune_errors(&mut self) {
         match self {
             Self::Paragraph(par) => par.prune_errors(),
@@ -392,13 +398,6 @@ impl DocPartActions for SectionItem {
         }
     }
 
-    fn squash(&mut self) {
-        match self {
-            Self::Paragraph(par) => par.squash(),
-            Self::Section(section) => section.squash(),
-        }
-    }
-
     fn is_contentless(&self) -> bool {
         match self {
             Self::Paragraph(par) => par.is_contentless(),
@@ -407,7 +406,11 @@ impl DocPartActions for SectionItem {
     }
 }
 
-impl DocPartActions for Heading {
+impl Heading {
+    impl_squash_text_em!(HeadingItem);
+}
+
+impl PruneIncodoc for Heading {
     fn prune_errors(&mut self) {
         self.props.prune_errors();
         for item in &mut self.items {
@@ -424,14 +427,12 @@ impl DocPartActions for Heading {
         self.props.prune_contentless();
     }
 
-    impl_squash_text_em!(HeadingItem);
-
     fn is_contentless(&self) -> bool {
         self.items.is_empty()
     }
 }
 
-impl DocPartActions for HeadingItem {
+impl PruneIncodoc for HeadingItem {
     fn prune_errors(&mut self) {
         if let Self::Em(em) = self {
             em.prune_errors();
@@ -445,8 +446,6 @@ impl DocPartActions for HeadingItem {
         }
     }
 
-    fn squash(&mut self) { }
-
     fn is_contentless(&self) -> bool {
         match self {
             Self::String(string) => string.is_empty(),
@@ -455,7 +454,11 @@ impl DocPartActions for HeadingItem {
     }
 }
 
-impl DocPartActions for Paragraph {
+impl Paragraph {
+    impl_squash_text_mtext_em!(ParagraphItem);
+}
+
+impl PruneIncodoc for Paragraph {
     fn prune_errors(&mut self) {
         self.props.prune_errors();
         for item in &mut self.items {
@@ -472,14 +475,22 @@ impl DocPartActions for Paragraph {
         self.props.prune_contentless();
     }
 
-    impl_squash_text_mtext_em!(ParagraphItem);
-
     fn is_contentless(&self) -> bool {
         self.items.is_empty()
     }
 }
 
-impl DocPartActions for ParagraphItem {
+impl ParagraphItem {
+    pub fn squash(&mut self) {
+        match self {
+            Self::Link(link) => link.squash(),
+            Self::List(list) => list.squash(),
+            _ => { },
+        }
+    }
+}
+
+impl PruneIncodoc for ParagraphItem {
     fn prune_errors(&mut self) {
         match self {
             Self::MText(mtext) => mtext.prune_errors(),
@@ -503,14 +514,6 @@ impl DocPartActions for ParagraphItem {
         }
     }
 
-    fn squash(&mut self) {
-        match self {
-            Self::Link(link) => link.squash(),
-            Self::List(list) => list.squash(),
-            _ => { },
-        }
-    }
-
     fn is_contentless(&self) -> bool {
         match self {
             Self::Text(text) => text.is_empty(),
@@ -524,7 +527,7 @@ impl DocPartActions for ParagraphItem {
     }
 }
 
-impl DocPartActions for Emphasis {
+impl PruneIncodoc for Emphasis {
     fn prune_errors(&mut self) {
         self.props.prune_errors();
     }
@@ -535,14 +538,20 @@ impl DocPartActions for Emphasis {
         self.props.prune_contentless();
     }
 
-    fn squash(&mut self) { }
-
     fn is_contentless(&self) -> bool {
         self.text.is_empty()
     }
 }
 
-impl DocPartActions for List {
+impl List {
+    pub fn squash(&mut self) {
+        for item in &mut self.items {
+            item.squash();
+        }
+    }
+}
+
+impl PruneIncodoc for List {
     fn prune_errors(&mut self) {
         self.props.prune_errors();
         for par in &mut self.items {
@@ -559,18 +568,12 @@ impl DocPartActions for List {
         self.props.prune_contentless();
     }
 
-    fn squash(&mut self) {
-        for item in &mut self.items {
-            item.squash();
-        }
-    }
-
     fn is_contentless(&self) -> bool {
         self.items.is_empty()
     }
 }
 
-impl DocPartActions for Nav {
+impl PruneIncodoc for Nav {
     fn prune_errors(&mut self) {
         for snav in self {
             snav.prune_errors();
@@ -584,14 +587,12 @@ impl DocPartActions for Nav {
         self.retain(|snav| !snav.is_contentless());
     }
 
-    fn squash(&mut self) { }
-
     fn is_contentless(&self) -> bool {
-        self.is_empty()
+        self.is_empty() || self.iter().all(|s| s.is_contentless())
     }
 }
 
-impl DocPartActions for SNav {
+impl PruneIncodoc for SNav {
     fn prune_errors(&mut self) {
         self.props.prune_errors();
         for link in &mut self.links {
@@ -616,14 +617,16 @@ impl DocPartActions for SNav {
         self.props.prune_contentless();
     }
 
-    fn squash(&mut self) { }
-
     fn is_contentless(&self) -> bool {
         self.subs.is_empty() && self.links.is_empty()
     }
 }
 
-impl DocPartActions for Link {
+impl Link {
+    impl_squash_text_em!(LinkItem);
+}
+
+impl PruneIncodoc for Link {
     fn prune_errors(&mut self) {
         self.props.prune_errors();
         for item in &mut self.items {
@@ -641,14 +644,12 @@ impl DocPartActions for Link {
         self.props.prune_contentless();
     }
 
-    impl_squash_text_em!(LinkItem);
-
     fn is_contentless(&self) -> bool {
         self.url.is_empty() && self.items.is_empty()
     }
 }
 
-impl DocPartActions for LinkItem {
+impl PruneIncodoc for LinkItem {
     fn prune_errors(&mut self) {
         if let Self::Em(em) = self {
             em.prune_errors();
@@ -662,8 +663,6 @@ impl DocPartActions for LinkItem {
         }
     }
 
-    fn squash(&mut self) { }
-
     fn is_contentless(&self) -> bool {
         match self {
             Self::String(string) => string.is_empty(),
@@ -672,7 +671,7 @@ impl DocPartActions for LinkItem {
     }
 }
 
-impl DocPartActions for CodeBlock {
+impl PruneIncodoc for CodeBlock {
     fn prune_errors(&mut self) {
         self.props.prune_errors();
     }
@@ -684,14 +683,12 @@ impl DocPartActions for CodeBlock {
         self.props.prune_contentless();
     }
 
-    fn squash(&mut self) { }
-
     fn is_contentless(&self) -> bool {
         self.code.is_empty()
     }
 }
 
-impl DocPartActions for TextWithMeta {
+impl PruneIncodoc for TextWithMeta {
     fn prune_errors(&mut self) {
         self.props.prune_errors();
     }
@@ -701,8 +698,6 @@ impl DocPartActions for TextWithMeta {
         self.tags.prune_contentless();
         self.props.prune_contentless();
     }
-
-    fn squash(&mut self) { }
 
     fn is_contentless(&self) -> bool {
         self.text.is_empty()

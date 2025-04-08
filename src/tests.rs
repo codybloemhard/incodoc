@@ -3,6 +3,7 @@ mod tests {
     use crate::*;
     use crate::parsing::*;
     use crate::output::*;
+    use crate::actions::*;
 
     macro_rules! props {
         ($slice:expr) => {
