@@ -555,6 +555,10 @@ mod tests {
                     props: props!([("p".to_string(), PropVal::Int(0))]),
                     ..Default::default()
                 }),
+                DocItem::MText(TextWithMeta {
+                    text: "G".to_string(),
+                    ..Default::default()
+                }),
             ],
             ..Default::default()
         },
@@ -608,6 +612,7 @@ mod tests {
                     props: props!([("p".to_string(), PropVal::Int(0))]),
                     ..Default::default()
                 }),
+                DocItem::Text("G".to_string()),
             ],
             ..Default::default()
         }

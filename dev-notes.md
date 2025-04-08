@@ -35,10 +35,8 @@ heading
   - wrong level: auto fix?
 link
   - empty items: fix by putting url as text
-mtext
-  - empty: convert to regular text
 
-squash duplicate nav, snav, par, section
+dedup nav, snav, par, section
 
 things to write about
 

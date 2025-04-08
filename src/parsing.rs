@@ -1,3 +1,5 @@
+use crate::actions::Absorb;
+
 use std::{
     num::ParseIntError,
     collections::{ HashMap, HashSet },
