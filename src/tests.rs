@@ -57,19 +57,19 @@ mod tests {
     }
 
     test_prune_contentless!(
-        t_pc_string_c0,
+        pc_string_c0,
         "stay the same".to_string(),
         "stay the same".to_string()
     );
 
     test_prune_contentless!(
-        t_pc_string_c1,
+        pc_string_c1,
         "   ".to_string(),
         "".to_string()
     );
 
     test_prune_contentless!(
-        t_pc_string_c2,
+        pc_string_c2,
         "  
 
 
@@ -79,19 +79,19 @@ mod tests {
     );
 
     test_prune_contentless!(
-        t_pc_string_c3,
+        pc_string_c3,
         "  dont trim   ".to_string(),
         "  dont trim   ".to_string()
     );
 
     test_prune_contentless!(
-        t_pc_tags,
+        pc_tags,
         hset!(["needs".to_string(), "  ".to_string(), " ".to_string(), " prune ".to_string()]),
         hset!(["needs".to_string(), " prune ".to_string()])
     );
 
     test_prune_contentless!(
-        t_pc_props,
+        pc_props,
         props!([
             ("please".to_string(), PropVal::Int(0)),
             ("key".to_string(), PropVal::String("  ".to_string())),
@@ -107,7 +107,7 @@ mod tests {
     );
 
     test_prune_contentless!(
-        t_pc_section,
+        pc_section,
         Section {
             heading: Heading {
                 level: 0,
@@ -157,7 +157,7 @@ mod tests {
     );
 
     test_prune_contentless!(
-        t_pc_heading,
+        pc_heading,
         Heading {
             level: 0,
             items: vec![
@@ -181,7 +181,7 @@ mod tests {
     );
 
     test_prune_contentless!(
-        t_pc_paragraph,
+        pc_paragraph,
         SectionItem::Paragraph(Paragraph {
             items: vec![
                 ParagraphItem::Text(" ".to_string()),
@@ -213,7 +213,7 @@ mod tests {
     );
 
     test_prune_contentless!(
-        t_pc_emphasis_c0,
+        pc_emphasis_c0,
         Emphasis {
             strength: EmStrength::Light,
             etype: EmType::Emphasis,
@@ -241,7 +241,7 @@ mod tests {
     );
 
     test_prune_contentless!(
-        t_pc_emphasis_c1,
+        pc_emphasis_c1,
         Emphasis {
             strength: EmStrength::Light,
             etype: EmType::Emphasis,
@@ -269,7 +269,7 @@ mod tests {
     );
 
     test_prune_contentless!(
-        t_pc_list,
+        pc_list,
         List {
             ltype: ListType::Identical,
             items: vec![
@@ -317,7 +317,7 @@ mod tests {
     );
 
     test_prune_contentless!(
-        t_pc_nav,
+        pc_nav,
         vec![
             SNav {
                 description: "desc".to_string(),
@@ -360,7 +360,7 @@ mod tests {
     );
 
     test_prune_contentless!(
-        t_pc_snav,
+        pc_snav,
         SNav {
             description: "desc".to_string(),
             subs: vec![
@@ -406,7 +406,7 @@ mod tests {
     );
 
     test_prune_contentless!(
-        test_pc_link,
+        pc_link,
         Link {
             url: "  ".to_string(),
             items: vec![
@@ -434,7 +434,7 @@ mod tests {
     );
 
     test_prune_contentless!(
-        test_pc_code,
+        pc_code,
         CodeBlock {
             language: " ".to_string(),
             mode: CodeModeHint::Show,
@@ -462,7 +462,7 @@ mod tests {
     );
 
     test_prune_contentless!(
-        test_pc_mtext,
+        pc_mtext,
         TextWithMeta {
             text: " ".to_string(),
             tags: hset!([
@@ -486,7 +486,7 @@ mod tests {
     );
 
     test_squash!(
-        test_sq_doc,
+        sq_doc,
         Doc {
             items: vec![
                 DocItem::Text("a".to_string()),
@@ -620,7 +620,7 @@ mod tests {
     );
 
     test_squash!(
-        test_sq_section,
+        sq_section,
         Section {
             items: vec![
                 SectionItem::Paragraph(Paragraph {
@@ -670,7 +670,7 @@ mod tests {
     );
 
     test_squash!(
-        test_sq_heading,
+        sq_heading,
         Heading {
             items: vec![
                 HeadingItem::String("a\n".to_string()),
@@ -736,7 +736,7 @@ mod tests {
     );
 
     test_squash!(
-        test_sq_paragraph_c0,
+        sq_paragraph_c0,
         Paragraph {
             items: vec![
                 ParagraphItem::Text("a".to_string()),
@@ -865,7 +865,7 @@ mod tests {
     );
 
     test_squash!(
-        test_sq_paragraph_c1,
+        sq_paragraph_c1,
         Paragraph {
             items: vec![
                 ParagraphItem::Link(Link {
@@ -917,7 +917,7 @@ mod tests {
     );
 
     test_squash!(
-        test_sq_list,
+        sq_list,
         List {
             items: vec![
                 Paragraph {
@@ -945,7 +945,7 @@ mod tests {
     );
 
     test_squash!(
-        test_sq_link,
+        sq_link,
         Link {
             items: vec![
                 LinkItem::String("a".to_string()),
@@ -1012,19 +1012,19 @@ mod tests {
     );
 
     test!(
-        t_empty,
+        po_empty,
         "",
         Doc::default()
     );
 
     test!(
-        t_empty_comment0,
+        po_empty_comment0,
         "// comment",
         Doc::default()
     );
 
     test!(
-        t_empty_comment1,
+        po_empty_comment1,
         "
         /* comment */
         ",
@@ -1032,7 +1032,7 @@ mod tests {
     );
 
     test!(
-        t_empty_comment2,
+        po_empty_comment2,
         "
         //
         ",
@@ -1040,7 +1040,7 @@ mod tests {
     );
 
     test!(
-        t_empty_comment3,
+        po_empty_comment3,
         "
         /**/
         ",
@@ -1048,7 +1048,7 @@ mod tests {
     );
 
     test!(
-        t_text_c0,
+        po_text_c0,
         "'this is text'",
         Doc {
             items: vec![DocItem::Text("this is text".to_string())],
@@ -1057,7 +1057,7 @@ mod tests {
     );
 
     test!(
-        t_text_c1,
+        po_text_c1,
         "
         '
         this is text
@@ -1070,7 +1070,7 @@ mod tests {
     );
 
     test!(
-        t_text_c2,
+        po_text_c2,
         "
         '
         this is text
@@ -1083,7 +1083,7 @@ mod tests {
     );
 
     test!(
-        t_text_c3,
+        po_text_c3,
         "
         '
         this is     text
@@ -1096,7 +1096,7 @@ mod tests {
     );
 
     test!(
-        t_text_c4,
+        po_text_c4,
         "
         '
         this
@@ -1113,7 +1113,7 @@ mod tests {
     );
 
     test!(
-        t_text_c5,
+        po_text_c5,
         "
         ' pre'
         ",
@@ -1124,7 +1124,7 @@ mod tests {
     );
 
     test!(
-        t_text_c6,
+        po_text_c6,
         "
         '    pre'
         ",
@@ -1135,7 +1135,7 @@ mod tests {
     );
 
     test!(
-        t_text_c7,
+        po_text_c7,
         "
         'post '
         ",
@@ -1146,7 +1146,7 @@ mod tests {
     );
 
     test!(
-        t_text_c8,
+        po_text_c8,
         "
         'post        '
         ",
@@ -1157,7 +1157,7 @@ mod tests {
     );
 
     test!(
-        t_text_c9,
+        po_text_c9,
         "
         '   prepost        '
         ",
@@ -1168,7 +1168,7 @@ mod tests {
     );
 
     test!(
-        t_text_c10,
+        po_text_c10,
         "
         '   pre
 
@@ -1182,7 +1182,7 @@ mod tests {
     );
 
     test!(
-        t_text_meta0,
+        po_text_meta0,
         "
         'text'{ tags { } }
         ",
@@ -1193,7 +1193,7 @@ mod tests {
     );
 
     test!(
-        t_text_meta1,
+        po_text_meta1,
         "
         'text'{ props { } }
         ",
@@ -1204,7 +1204,7 @@ mod tests {
     );
 
     test!(
-        t_text_meta2,
+        po_text_meta2,
         "
         'text'{ tags { }, props { } }
         ",
@@ -1215,7 +1215,7 @@ mod tests {
     );
 
     test!(
-        t_text_meta3,
+        po_text_meta3,
         "
         'text'{ tags { \"a\", \"b\" } }
         ",
@@ -1230,7 +1230,7 @@ mod tests {
     );
 
     test!(
-        t_text_meta4,
+        po_text_meta4,
         "
         'text'{ props { (\"a\", 0), (\"b\", 1), (\"a\", 2) } }
         ",
@@ -1248,7 +1248,7 @@ mod tests {
     );
 
     test!(
-        t_text_meta5,
+        po_text_meta5,
         "
         'text'{ tags { \"a\", \"b\" }, props { (\"a\", 0), (\"b\", 1), (\"a\", 2) } }
         ",
@@ -1266,7 +1266,7 @@ mod tests {
     );
 
     test!(
-        t_text_comment0,
+        po_text_comment0,
         "
         // comment
         'text' // comment
@@ -1279,7 +1279,7 @@ mod tests {
     );
 
     test!(
-        t_text_comment1,
+        po_text_comment1,
         "
         /* comment */
         /* comment */ 'text' /* comment */
@@ -1292,7 +1292,7 @@ mod tests {
     );
 
     test!(
-        t_text_comment2,
+        po_text_comment2,
         "
         // comment
         'text' {
@@ -1321,7 +1321,7 @@ mod tests {
     );
 
     test!(
-        t_text_comment3,
+        po_text_comment3,
         "
         /* comment */
         /* comment */ '//comment' /* comment */,
@@ -1338,25 +1338,25 @@ mod tests {
     );
 
     test!(
-        t_props_empty_f0,
+        po_props_empty_f0,
         "props{}",
         Doc::default()
     );
 
     test!(
-        t_props_empty_f1,
+        po_props_empty_f1,
         "props {}",
         Doc::default()
     );
 
     test!(
-        t_props_empty_f2,
+        po_props_empty_f2,
         "props {  }, ",
         Doc::default()
     );
 
     test!(
-        t_props_empty_f3,
+        po_props_empty_f3,
         "
         props {
 
@@ -1366,7 +1366,7 @@ mod tests {
     );
 
     test!(
-        t_props_tuple_string_f0,
+        po_props_tuple_string_f0,
         "props{(\"prop\",\"test\")}",
         Doc {
             props: props!([("prop".to_string(), PropVal::String("test".to_string()))]),
@@ -1375,7 +1375,7 @@ mod tests {
     );
 
     test!(
-        t_props_tuple_string_f1,
+        po_props_tuple_string_f1,
 "
 props { (
     \"
@@ -1397,7 +1397,7 @@ props { (
     );
 
     test!(
-        t_props_tuple_int_c0,
+        po_props_tuple_int_c0,
         "props { (\"prop\", 5) }",
         Doc {
             props: props!([("prop".to_string(), PropVal::Int(5))]),
@@ -1406,7 +1406,7 @@ props { (
     );
 
     test!(
-        t_props_tuple_int_c1,
+        po_props_tuple_int_c1,
         "props { (\"prop\", +7) }",
         Doc {
             props: props!([("prop".to_string(), PropVal::Int(7))]),
@@ -1415,7 +1415,7 @@ props { (
     );
 
     test!(
-        t_props_tuple_int_c2,
+        po_props_tuple_int_c2,
         "props { (\"prop\", -1) }",
         Doc {
             props: props!([("prop".to_string(), PropVal::Int(-1))]),
@@ -1424,7 +1424,7 @@ props { (
     );
 
     test!(
-        t_props_tuple_date_c0,
+        po_props_tuple_date_c0,
         "props { (\"prop\", 2000/01/01) }",
         Doc {
             props: props!([("prop".to_string(), PropVal::Date(Date::new(2000, 1, 1).unwrap()))]),
@@ -1433,7 +1433,7 @@ props { (
     );
 
     test!(
-        t_props_tuple_date_c1,
+        po_props_tuple_date_c1,
         "props { (\"prop\", -3434/01/01) }",
         Doc {
             props: props!([("prop".to_string(), PropVal::Date(Date::new(-3434, 1, 1).unwrap()))]),
@@ -1442,7 +1442,7 @@ props { (
     );
 
     test!(
-        t_props_tuple_date_c2,
+        po_props_tuple_date_c2,
         "props { (\"prop\", 2000/13/01) }",
         Doc {
             props: props!([
@@ -1453,7 +1453,7 @@ props { (
     );
 
     test!(
-        t_props_tuple_date_c3,
+        po_props_tuple_date_c3,
         "props { (\"prop\", 2000/01/32) }",
         Doc {
             props: props!([
@@ -1464,7 +1464,7 @@ props { (
     );
 
     test!(
-        t_props_tuple_date_c4,
+        po_props_tuple_date_c4,
         "props { (\"prop\", 1/1/1) }",
         Doc {
             props: props!([
@@ -1475,7 +1475,7 @@ props { (
     );
 
     test!(
-        t_props_tuple_date_c5,
+        po_props_tuple_date_c5,
         "props { (\"prop\", 0/0/0) }",
         Doc {
             props: props!([
@@ -1486,7 +1486,7 @@ props { (
     );
 
     test!(
-        t_props_tuple_date_c6,
+        po_props_tuple_date_c6,
         "props { (\"prop\", 0/1/0) }",
         Doc {
             props: props!([
@@ -1497,7 +1497,7 @@ props { (
     );
 
     test!(
-        t_props_tuple_text_c0,
+        po_props_tuple_text_c0,
         "props { (\"prop\", 'this is text') }",
         Doc {
             props: props!([("prop".to_string(), PropVal::Text("this is text".to_string()))]),
@@ -1506,7 +1506,7 @@ props { (
     );
 
     test!(
-        t_props_tuple_text_c1,
+        po_props_tuple_text_c1,
         // looks incorrect because of the escape characters for "
         "
         props { (\"prop\", '
@@ -1519,7 +1519,7 @@ props { (
     );
 
     test!(
-        t_props_absorb_c0,
+        po_props_absorb_c0,
         "props { (\"a\", 0), (\"b\", 0) }, props { (\"c\", 1) }",
         Doc {
             props: props!([
@@ -1532,7 +1532,7 @@ props { (
     );
 
     test!(
-        t_props_absorb_c1,
+        po_props_absorb_c1,
         "props { (\"a\", 0), (\"b\", 0) }, props { (\"b\", 1) }",
         Doc {
             props: props!([
@@ -1544,7 +1544,7 @@ props { (
     );
 
     test!(
-        t_props_absorb_c2,
+        po_props_absorb_c2,
         "props { (\"a\", 0), (\"b\", 2000/13/01) }, props { (\"b\", 1) }",
         Doc {
             props: props!([
@@ -1556,7 +1556,7 @@ props { (
     );
 
     test!(
-        t_props_absorb_c3,
+        po_props_absorb_c3,
         "
         props { (\"a\", 0), (\"b\", 0), (\"a\", 1) },
         props { (\"b\", 2000/13/01) }
@@ -1571,7 +1571,7 @@ props { (
     );
 
     test!(
-        t_props_absorb_c4,
+        po_props_absorb_c4,
         "
         props { (\"a\", 0), (\"b\", 2000/13/01), (\"a\", 1) },
         props { (\"b\", 2000/14/01) }
@@ -1586,7 +1586,7 @@ props { (
     );
 
     test!(
-        t_props_overwrite_c0,
+        po_props_overwrite_c0,
         "
         props { (\"a\", 0), (\"b\", 2000/13/01), (\"a\", 1), (\"b\", 2000/14/01) },
         ",
@@ -1600,7 +1600,7 @@ props { (
     );
 
     test!(
-        t_props_overwrite_c1,
+        po_props_overwrite_c1,
         "
         props { (\"a\", 0), (\"b\", 2000/13/01), (\"a\", 1), (\"b\", 2) },
         ",
@@ -1614,7 +1614,7 @@ props { (
     );
 
     test!(
-        t_props_overwrite_c2,
+        po_props_overwrite_c2,
         "
         props { (\"a\", 0), (\"b\", 0), (\"a\", 1), (\"b\", 2000/15/01) },
         ",
@@ -1628,7 +1628,7 @@ props { (
     );
 
     test!(
-        t_props_trailing_comma,
+        po_props_trailing_comma,
         "props{ (\"a\", 0), }",
         Doc {
             props: props!([("a".to_string(), PropVal::Int(0))]),
@@ -1637,7 +1637,7 @@ props { (
     );
 
     test!(
-        t_props_comment,
+        po_props_comment,
         "
         // comment
         /*comment*/props/*comment*/{/*comment*/(/*comment*/\"//comment\"/*comment*/,/*comment*/0/*coment*/)/*comment*/}//comment
@@ -1650,7 +1650,7 @@ props { (
     );
 
     test!(
-        t_tags_c0_f0,
+        po_tags_c0_f0,
         "tags{\"tag0\", \"tag1\"}",
         Doc {
             tags: hset!(["tag0", "tag1"]),
@@ -1659,7 +1659,7 @@ props { (
     );
 
     test!(
-        t_tags_c0_f1,
+        po_tags_c0_f1,
         "tags {
             \"tag0\",
             \"tag1\"
@@ -1671,7 +1671,7 @@ props { (
     );
 
     test!(
-        t_tags_c0_f2,
+        po_tags_c0_f2,
         "tags {
             \"tag0\",
             \"tag1\",
@@ -1683,7 +1683,7 @@ props { (
     );
 
     test!(
-        t_tags_c1,
+        po_tags_c1,
         "tags{}",
         Doc {
             ..Default::default()
@@ -1691,7 +1691,7 @@ props { (
     );
 
     test!(
-        t_tags_c2,
+        po_tags_c2,
         "
         tags{\"tag0\"},
         tags{\"tag1\"},
@@ -1703,7 +1703,7 @@ props { (
     );
 
     test!(
-        t_tags_c3,
+        po_tags_c3,
         "
         tags{\"tag0\"},
         tags{\"tag0\"},
@@ -1715,7 +1715,7 @@ props { (
     );
 
     test!(
-        t_tags_comment,
+        po_tags_comment,
         "
         /* comment */
         /*comment*/tags/*comment*/{/*comment*/\"a\"/*comment*/,/*comment*/\"b\"/*comment*/}/*comment*/,//comment
@@ -1728,7 +1728,7 @@ props { (
     );
 
     test!(
-        t_emphasis_c0_f0,
+        po_emphasis_c0_f0,
         "em{le, \"light emphasis\"}",
         Doc {
             items: vec![DocItem::Em(Emphasis{
@@ -1743,7 +1743,7 @@ props { (
     );
 
     test!(
-        t_emphasis_c0_f1,
+        po_emphasis_c0_f1,
         " em{
             le   ,
             \"light emphasis\"
@@ -1761,7 +1761,7 @@ props { (
     );
 
     test!(
-        t_emphasis_c1,
+        po_emphasis_c1,
         "em{me, \"medium emphasis\"}",
         Doc {
             items: vec![DocItem::Em(Emphasis{
@@ -1776,7 +1776,7 @@ props { (
     );
 
     test!(
-        t_emphasis_c2,
+        po_emphasis_c2,
         "em{se, \"strong emphasis\"}",
         Doc {
             items: vec![DocItem::Em(Emphasis{
@@ -1791,7 +1791,7 @@ props { (
     );
 
     test!(
-        t_emphasis_c3,
+        po_emphasis_c3,
         "em{ld, \"light deemphasis\"}",
         Doc {
             items: vec![DocItem::Em(Emphasis{
@@ -1806,7 +1806,7 @@ props { (
     );
 
     test!(
-        t_emphasis_c4,
+        po_emphasis_c4,
         "em{md, \"medium deemphasis\"}",
         Doc {
             items: vec![DocItem::Em(Emphasis{
@@ -1821,7 +1821,7 @@ props { (
     );
 
     test!(
-        t_emphasis_c5,
+        po_emphasis_c5,
         "em{sd, \"strong deemphasis\"}",
         Doc {
             items: vec![DocItem::Em(Emphasis{
@@ -1836,7 +1836,7 @@ props { (
     );
 
     test!(
-        t_emphasis_c6,
+        po_emphasis_c6,
         "
         'This is a ',
         em{le, \"light\"},
@@ -1859,7 +1859,7 @@ props { (
     );
 
     test!(
-        t_emphasis_c7,
+        po_emphasis_c7,
         "
         em{
             le,
@@ -1883,7 +1883,7 @@ props { (
     );
 
     test!(
-        t_emphasis_c8,
+        po_emphasis_c8,
         "
         em{
             le,
@@ -1910,7 +1910,7 @@ props { (
     );
 
     test!(
-        t_emphasis_c9,
+        po_emphasis_c9,
         "
         em{
             le,
@@ -1938,7 +1938,7 @@ props { (
     );
 
     test!(
-        t_emphasis_comment,
+        po_emphasis_comment,
         "/*c*/em/*c*/{/*c*/le/*c*/,/*c*/\"le\"/*c*/,/*c*/tags{}/*c*/,/*c*/props{}/*c*/}//c",
         Doc {
             items: vec![DocItem::Em(Emphasis{
@@ -1953,7 +1953,7 @@ props { (
     );
 
     test!(
-        t_code_c0_f0,
+        po_code_c0_f0,
         "code { \"plain\", \"show\", '' }",
         Doc {
             items: vec![DocItem::Code(Ok(CodeBlock{
@@ -1965,7 +1965,7 @@ props { (
     );
 
     test!(
-        t_code_c0_f1,
+        po_code_c0_f1,
         "code
         {
     \"plain\",
@@ -1981,7 +1981,7 @@ props { (
     );
 
     test!(
-        t_code_c1,
+        po_code_c1,
         "code { \"plain\", \"runnable\", '' }",
         Doc {
             items: vec![DocItem::Code(Ok(CodeBlock{
@@ -1994,7 +1994,7 @@ props { (
     );
 
     test!(
-        t_code_c2,
+        po_code_c2,
         "code { \"plain\", \"run\", '' }",
         Doc {
             items: vec![DocItem::Code(Ok(CodeBlock{
@@ -2007,7 +2007,7 @@ props { (
     );
 
     test!(
-        t_code_c3,
+        po_code_c3,
         "code { \"plain\", \"replace\", '' }",
         Doc {
             items: vec![DocItem::Code(Ok(CodeBlock{
@@ -2020,7 +2020,7 @@ props { (
     );
 
     test!(
-        t_code_c4,
+        po_code_c4,
         "code { \"plain\", \"not a mode!\", '' }",
         Doc {
             items: vec![DocItem::Code(Ok(CodeBlock{
@@ -2032,7 +2032,7 @@ props { (
     );
 
     test!(
-        t_code_c5,
+        po_code_c5,
         "code {
             \"plain\",
             \"show\",
@@ -2051,7 +2051,7 @@ props { (
     );
 
     test!(
-        t_code_c6,
+        po_code_c6,
         "code {
             \"plain\",
             \"show\",
@@ -2069,7 +2069,7 @@ props { (
     );
 
     test!(
-        t_code_c7,
+        po_code_c7,
         "code {
             \"plain\",
             \"show\",
@@ -2088,7 +2088,7 @@ props { (
     );
 
     test!(
-        t_code_c8,
+        po_code_c8,
         "code {
             \"plain\",
             \"show\",
@@ -2108,7 +2108,7 @@ props { (
     );
 
     test!(
-        t_code_c9,
+        po_code_c9,
         "code {
             \"plain\",
             \"show\",
@@ -2128,7 +2128,7 @@ props { (
     );
 
     test!(
-        t_code_c10,
+        po_code_c10,
         "code {
             \"plain\",
             \"show\",
@@ -2150,7 +2150,7 @@ props { (
     );
 
     test!(
-        t_code_c11,
+        po_code_c11,
         "code {
             \"plain\",
             \"show\",
@@ -2165,7 +2165,7 @@ props { (
     );
 
     test!(
-        t_code_meta0,
+        po_code_meta0,
         "
         code {
             \"plain\",
@@ -2186,7 +2186,7 @@ props { (
     );
 
     test!(
-        t_code_meta1,
+        po_code_meta1,
         "
         code {
             \"plain\",
@@ -2210,7 +2210,7 @@ props { (
     );
 
     test!(
-        t_code_meta2,
+        po_code_meta2,
         "
         code {
             \"plain\",
@@ -2236,7 +2236,7 @@ props { (
     );
 
     test!(
-        t_code_trailing_comma0,
+        po_code_trailing_comma0,
         "
         code {
             \"plain\",
@@ -2255,7 +2255,7 @@ props { (
     );
 
     test!(
-        t_code_trailing_comma1,
+        po_code_trailing_comma1,
         "
         code {
             \"plain\",
@@ -2281,7 +2281,7 @@ props { (
     );
 
     test!(
-        t_code_comment,
+        po_code_comment,
         "/*c*/code/*c*/{//c
             /*c*/\"plain\"/*c*/,//c
             /*c*/\"show\"/*c*/,/*c*///c
@@ -2300,7 +2300,7 @@ props { (
     );
 
     test!(
-        t_paragraph,
+        po_paragraph,
         "
         par{
             'Some text.',
@@ -2357,7 +2357,7 @@ props { (
     );
 
     test!(
-        t_paragraph_meta,
+        po_paragraph_meta,
         "par {
             tags { \"a\", \"b\" },
             props { (\"a\", 0), (\"b\", 2000/13/01), (\"d\", 2000/13/01) },
@@ -2381,7 +2381,7 @@ props { (
     );
 
     test!(
-        t_paragraph_trailing_comma,
+        po_paragraph_trailing_comma,
         "par { 'text', }",
         Doc {
             items: vec![
@@ -2397,7 +2397,7 @@ props { (
     );
 
     test!(
-        t_paragraph_comment,
+        po_paragraph_comment,
         "/*c*/par/*c*/{/*c*/'/*c*/'/*c*/,/*c*/'//c'/*c*/,/*c*/}/*c*/",
         Doc {
             items: vec![
@@ -2414,7 +2414,7 @@ props { (
     );
 
     test!(
-        t_heading_c0,
+        po_heading_c0,
         "
         section {
             head { 0, \"h\" },
@@ -2447,7 +2447,7 @@ props { (
     );
 
     test!(
-        t_heading_c1,
+        po_heading_c1,
         "
         section {
             head { 1, \"h\" },
@@ -2480,7 +2480,7 @@ props { (
     );
 
     test!(
-        t_heading_c2,
+        po_heading_c2,
         "
         section {
             head { 256, \"h\" },
@@ -2513,7 +2513,7 @@ props { (
     );
 
     test!(
-        t_heading_c3,
+        po_heading_c3,
         "
         section {
             head { 9999999999999999999, \"h\" },
@@ -2546,7 +2546,7 @@ props { (
     );
 
     test!(
-        t_heading_c4,
+        po_heading_c4,
         "
         section {
             head { 0, \"hello\", em { md, \" world\" } },
@@ -2585,7 +2585,7 @@ props { (
     );
 
     test!(
-        t_heading_meta0,
+        po_heading_meta0,
         "
         section {
             head { 1, tags { \"a\" }, tags{ \"b\" } },
@@ -2617,7 +2617,7 @@ props { (
     );
 
     test!(
-        t_heading_meta1,
+        po_heading_meta1,
         "
         section {
             head { 1, props { (\"a\", 0), (\"b\", 0) }, props{ (\"b\", 1) } },
@@ -2652,7 +2652,7 @@ props { (
     );
 
     test!(
-        t_heading_meta2,
+        po_heading_meta2,
         "
         section {
             head { 1, props { (\"a\", 0), (\"b\", 0) }, tags { \"tag\" }, props{ (\"b\", 1) } },
@@ -2688,7 +2688,7 @@ props { (
     );
 
     test!(
-        t_heading_comment,
+        po_heading_comment,
         "
         section {
             /*c*/head /*c*/ {/*c*/0/*c*/,/**/\"a\"/*c*/,/*c*/\"b\"/*c*/},//c,
@@ -2722,7 +2722,7 @@ props { (
     );
 
     test!(
-        t_list_c0,
+        po_list_c0,
         "list { dl, par { 'test' } }",
         Doc {
             items: vec![
@@ -2742,7 +2742,7 @@ props { (
     );
 
     test!(
-        t_list_c0_trailing_comma,
+        po_list_c0_trailing_comma,
         "list { dl, par { 'test', }, }",
         Doc {
             items: vec![
@@ -2762,7 +2762,7 @@ props { (
     );
 
     test!(
-        t_list_c1,
+        po_list_c1,
         "list { il, par { 'test' } }",
         Doc {
             items: vec![
@@ -2782,7 +2782,7 @@ props { (
     );
 
     test!(
-        t_list_c2,
+        po_list_c2,
         "list { cl, par { 'test' } }",
         Doc {
             items: vec![
@@ -2802,7 +2802,7 @@ props { (
     );
 
     test!(
-        t_list_c3,
+        po_list_c3,
         "list { cl, par { 'a0', 'a1' }, par { 'b0', 'b1' }, par { 'c0', 'c1' } }",
         Doc {
             items: vec![
@@ -2839,7 +2839,7 @@ props { (
     );
 
     test!(
-        t_list_c4,
+        po_list_c4,
         "list { il, par { '0', list { dl, par { '1', list { cl, par { '2' } } } } } }",
         Doc {
             items: vec![
@@ -2879,7 +2879,7 @@ props { (
     );
 
     test!(
-        t_list_meta_c0,
+        po_list_meta_c0,
         "
         list {
             il,
@@ -2905,7 +2905,7 @@ props { (
     );
 
     test!(
-        t_list_meta_c1,
+        po_list_meta_c1,
         "
         list {
             il,
@@ -2934,7 +2934,7 @@ props { (
     );
 
     test!(
-        t_list_meta_c2,
+        po_list_meta_c2,
         "
         list {
             il,
@@ -2965,7 +2965,7 @@ props { (
     );
 
     test!(
-        t_list_comment,
+        po_list_comment,
         "/*c*/list/*c*/{/*c*/dl/*c*/,/*c*/par/*c*/{/*c*/'a'/*c*/,/*c*/'b'/*c*/}/*c*/}//c",
         Doc {
             items: vec![
@@ -2988,7 +2988,7 @@ props { (
     );
 
     test!(
-        t_section_c0_f0,
+        po_section_c0_f0,
         "
         section {
             head { 0, \"heading\" },
@@ -3021,7 +3021,7 @@ props { (
     );
 
     test!(
-        t_section_c0_trailing_comma,
+        po_section_c0_trailing_comma,
         "
         section {
             head { 0, \"heading\" },
@@ -3054,7 +3054,7 @@ props { (
     );
 
     test!(
-        t_section_c1,
+        po_section_c1,
         "
         section {
             head { 0, \"heading\" },
@@ -3097,7 +3097,7 @@ props { (
     );
 
     test!(
-        t_section_c2,
+        po_section_c2,
         "
         section {
             head { 0, \"heading\" },
@@ -3140,7 +3140,7 @@ props { (
     );
 
     test!(
-        t_section_c3,
+        po_section_c3,
         "
         section {
             head { 2, \"heading\" },
@@ -3183,7 +3183,7 @@ props { (
     );
 
     test!(
-        t_section_c4,
+        po_section_c4,
         "
         section {
             head { 2, \"heading\" },
@@ -3246,7 +3246,7 @@ props { (
     );
 
     test!(
-        t_section_meta,
+        po_section_meta,
         "
         section {
             head { 0, \"heading\" },
@@ -3288,7 +3288,7 @@ props { (
     );
 
     test!(
-        t_section_comment,
+        po_section_comment,
         "
         /*c*/section/*c*/{//c
             /*c*/head/*c*/{/*c*/0/*c*/,/*c*/\"h\"/*c*/,/*c*/}/*c*/,//c
@@ -3321,7 +3321,7 @@ props { (
     );
 
     test!(
-        t_link_c0,
+        po_link_c0,
         "link { \"url\", \"link\" }",
         Doc {
             items: vec![
@@ -3336,7 +3336,7 @@ props { (
     );
 
     test!(
-        t_link_c0_comment,
+        po_link_c0_comment,
         "/*c*/link/*c*/{/*c*/\"url\"/*c*/,/*c*/\"link\"/*c*/}//c",
         Doc {
             items: vec![
@@ -3351,7 +3351,7 @@ props { (
     );
 
     test!(
-        t_link_c1,
+        po_link_c1,
         "link { \"url\", em { le, \"em\" }, \"string\" }",
         Doc {
             items: vec![
@@ -3374,7 +3374,7 @@ props { (
     );
 
     test!(
-        t_link_meta0,
+        po_link_meta0,
         "link { \"url\", \"link\", tags { \"tag\" } }",
         Doc {
             items: vec![
@@ -3390,7 +3390,7 @@ props { (
     );
 
     test!(
-        t_link_meta1,
+        po_link_meta1,
         "link { \"url\", \"link\", props { (\"prop\", 0) } }",
         Doc {
             items: vec![
@@ -3408,7 +3408,7 @@ props { (
     );
 
     test!(
-        t_link_meta2,
+        po_link_meta2,
         "link { \"url\", \"link\", tags { \"tag\" }, props { (\"prop\", 0) } }",
         Doc {
             items: vec![
@@ -3426,7 +3426,7 @@ props { (
     );
 
     test!(
-        t_nav_c0,
+        po_nav_c0,
         "
         nav {
             snav {
@@ -3466,7 +3466,7 @@ props { (
     );
 
     test!(
-        t_nav_c0_comment,
+        po_nav_c0_comment,
         "
         /*c*/nav/*c*/{//c
             /*c*/snav/*c*/{//c
@@ -3506,7 +3506,7 @@ props { (
     );
 
     test!(
-        t_nav_c1,
+        po_nav_c1,
         "
         nav {
             snav {
@@ -3555,7 +3555,7 @@ props { (
     );
 
     test!(
-        t_nav_c1_trailing_comma,
+        po_nav_c1_trailing_comma,
         "
         nav {
             snav {
@@ -3604,7 +3604,7 @@ props { (
     );
 
     test!(
-        t_nav_c2,
+        po_nav_c2,
         "
         nav {
             snav {
@@ -3672,7 +3672,7 @@ props { (
     );
 
     test!(
-        t_nav_c3,
+        po_nav_c3,
         "
         nav {
             snav {
@@ -3706,7 +3706,7 @@ props { (
     );
 
     test!(
-        t_nav_meta0,
+        po_nav_meta0,
         "
         nav {
             snav {
@@ -3742,7 +3742,7 @@ props { (
     );
 
     test!(
-        t_nav_meta1,
+        po_nav_meta1,
         "
         nav {
             snav {
