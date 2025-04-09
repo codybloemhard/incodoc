@@ -27,16 +27,8 @@ pub struct Doc {
 /// Document item.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum DocItem {
-    Text(String),
-    /// Text with meta attached.
-    MText(TextWithMeta),
-    Em(Emphasis),
-    /// Code or an error.
-    Code(Result<CodeBlock, CodeIdentError>),
-    Link(Link),
     /// Navigation.
     Nav(Nav),
-    List(List),
     Paragraph(Paragraph),
     Section(Section),
 }

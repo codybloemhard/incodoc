@@ -170,13 +170,16 @@ macro_rules! impl_squash_text_em {
 }
 
 impl Doc {
-    impl_squash_text_mtext_em!(DocItem);
+    pub fn squash(&mut self) {
+        for item in &mut self.items {
+            item.squash();
+        }
+    }
 }
 
 impl PruneIncodoc for Doc {
     fn prune_errors(&mut self) {
         self.props.prune_errors();
-        self.items.retain(|i| !matches!(i, DocItem::Code(Err(_))));
         for item in &mut self.items {
             item.prune_errors();
         }
@@ -199,8 +202,7 @@ impl PruneIncodoc for Doc {
 impl DocItem {
     pub fn squash(&mut self) {
         match self {
-            DocItem::Link(link) => link.squash(),
-            DocItem::List(list) => list.squash(),
+            // TODO?
             DocItem::Paragraph(par) => par.squash(),
             _ => { },
         }
@@ -210,28 +212,15 @@ impl DocItem {
 impl PruneIncodoc for DocItem {
     fn prune_errors(&mut self) {
         match self {
-            DocItem::MText(mtext) => mtext.prune_errors(),
-            DocItem::Em(em) => em.prune_errors(),
-            DocItem::Code(Ok(code)) => code.prune_errors(),
-            DocItem::Link(link) => link.prune_errors(),
             DocItem::Nav(nav) => nav.prune_errors(),
-            DocItem::List(list) => list.prune_errors(),
             DocItem::Paragraph(par) => par.prune_errors(),
             DocItem::Section(section) => section.prune_errors(),
-            _ => { },
         }
     }
 
     fn prune_contentless(&mut self) {
         match self {
-            DocItem::Text(text) => text.prune_contentless(),
-            DocItem::MText(mtext) => mtext.prune_contentless(),
-            DocItem::Em(em) => em.prune_contentless(),
-            DocItem::Code(Ok(code)) => code.prune_contentless(),
-            DocItem::Code(Err(_)) => { },
-            DocItem::Link(link) => link.prune_contentless(),
             DocItem::Nav(nav) => nav.prune_contentless(),
-            DocItem::List(list) => list.prune_contentless(),
             DocItem::Paragraph(par) => par.prune_contentless(),
             DocItem::Section(section) => section.prune_contentless(),
         }
@@ -239,14 +228,7 @@ impl PruneIncodoc for DocItem {
 
     fn is_contentless(&self) -> bool {
         match self {
-            DocItem::Text(text) => text.is_empty(),
-            DocItem::MText(mtext) => mtext.is_contentless(),
-            DocItem::Em(em) => em.is_contentless(),
-            DocItem::Code(Ok(code)) => code.is_contentless(),
-            DocItem::Code(Err(_)) => true,
-            DocItem::Link(link) => link.is_contentless(),
             DocItem::Nav(nav) => nav.is_contentless(),
-            DocItem::List(list) => list.is_contentless(),
             DocItem::Paragraph(par) => par.is_contentless(),
             DocItem::Section(section) => section.is_contentless(),
         }

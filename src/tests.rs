@@ -25,9 +25,33 @@ mod tests {
                 assert_eq!(doc_a_raw, Ok($result));
                 if let Ok(mut doc_a) = doc_a_raw {
                     let mut output = String::new();
+                    doc_a.prune_errors();
+                    doc_a.prune_contentless();
                     doc_out(&doc_a, &mut output);
                     let doc_b = parse(&output).expect("test_out: could not parse doc b");
+                    assert_eq!(doc_a, doc_b);
+                }
+            }
+        }
+    }
+
+    macro_rules! test_par {
+        ($name:ident, $string:expr, $result:expr) => {
+            #[test]
+            fn $name() {
+                let final_string = format!("{}{}{}", "par {\n", $string, "\n}");
+                let final_res = Doc {
+                    items: vec![DocItem::Paragraph($result)],
+                    ..Default::default()
+                };
+                let doc_a_raw = parse(&final_string);
+                assert_eq!(doc_a_raw, Ok(final_res));
+                if let Ok(mut doc_a) = doc_a_raw {
+                    let mut output = String::new();
                     doc_a.prune_errors();
+                    doc_a.prune_contentless();
+                    doc_out(&doc_a, &mut output);
+                    let doc_b = parse(&output).expect("test_out: could not parse doc b");
                     assert_eq!(doc_a, doc_b);
                 }
             }
@@ -488,133 +512,139 @@ mod tests {
     test_squash!(
         sq_doc,
         Doc {
-            items: vec![
-                DocItem::Text("a".to_string()),
-                DocItem::Text("\n".to_string()),
-                DocItem::Text("b\n".to_string()),
-                DocItem::Em(Emphasis {
-                    text: "em".to_string(),
-                    ..Default::default()
-                }),
-                DocItem::Text("c\n".to_string()),
-                DocItem::MText(TextWithMeta {
-                    text: "A".to_string(),
-                    tags: hset!(["same"]),
-                    ..Default::default()
-                }),
-                DocItem::MText(TextWithMeta {
-                    text: "B".to_string(),
-                    tags: hset!(["same"]),
-                    ..Default::default()
-                }),
-                DocItem::MText(TextWithMeta {
-                    text: "C".to_string(),
-                    tags: hset!(["different"]),
-                    ..Default::default()
-                }),
-                DocItem::MText(TextWithMeta {
-                    text: "D".to_string(),
-                    tags: hset!(["same"]),
-                    ..Default::default()
-                }),
-                DocItem::MText(TextWithMeta {
-                    text: "E".to_string(),
-                    tags: hset!(["same"]),
-                    ..Default::default()
-                }),
-                DocItem::Em(Emphasis {
-                    strength: EmStrength::Strong,
-                    etype: EmType::Deemphasis,
-                    text: "de-em".to_string(),
-                    props: props!([("p".to_string(), PropVal::Int(0))]),
-                    ..Default::default()
-                }),
-                DocItem::Em(Emphasis {
-                    strength: EmStrength::Strong,
-                    etype: EmType::Deemphasis,
-                    text: "de-em".to_string(),
-                    props: props!([("p".to_string(), PropVal::Int(0))]),
-                    ..Default::default()
-                }),
-                DocItem::Em(Emphasis {
-                    strength: EmStrength::Medium,
-                    etype: EmType::Deemphasis,
-                    text: "de-em".to_string(),
-                    props: props!([("p".to_string(), PropVal::Int(0))]),
-                    ..Default::default()
-                }),
-                DocItem::Text("d\n".to_string()),
-                DocItem::MText(TextWithMeta {
-                    text: "F".to_string(),
-                    tags: hset!(["same"]),
-                    ..Default::default()
-                }),
-                DocItem::Em(Emphasis {
-                    strength: EmStrength::Strong,
-                    etype: EmType::Deemphasis,
-                    text: "de-em".to_string(),
-                    props: props!([("p".to_string(), PropVal::Int(0))]),
-                    ..Default::default()
-                }),
-                DocItem::MText(TextWithMeta {
-                    text: "G".to_string(),
-                    ..Default::default()
-                }),
-            ],
+            items: vec![DocItem::Paragraph(Paragraph {
+                items: vec![
+                    ParagraphItem::Text("a".to_string()),
+                    ParagraphItem::Text("\n".to_string()),
+                    ParagraphItem::Text("b\n".to_string()),
+                    ParagraphItem::Em(Emphasis {
+                        text: "em".to_string(),
+                        ..Default::default()
+                    }),
+                    ParagraphItem::Text("c\n".to_string()),
+                    ParagraphItem::MText(TextWithMeta {
+                        text: "A".to_string(),
+                        tags: hset!(["same"]),
+                        ..Default::default()
+                    }),
+                    ParagraphItem::MText(TextWithMeta {
+                        text: "B".to_string(),
+                        tags: hset!(["same"]),
+                        ..Default::default()
+                    }),
+                    ParagraphItem::MText(TextWithMeta {
+                        text: "C".to_string(),
+                        tags: hset!(["different"]),
+                        ..Default::default()
+                    }),
+                    ParagraphItem::MText(TextWithMeta {
+                        text: "D".to_string(),
+                        tags: hset!(["same"]),
+                        ..Default::default()
+                    }),
+                    ParagraphItem::MText(TextWithMeta {
+                        text: "E".to_string(),
+                        tags: hset!(["same"]),
+                        ..Default::default()
+                    }),
+                    ParagraphItem::Em(Emphasis {
+                        strength: EmStrength::Strong,
+                        etype: EmType::Deemphasis,
+                        text: "de-em".to_string(),
+                        props: props!([("p".to_string(), PropVal::Int(0))]),
+                        ..Default::default()
+                    }),
+                    ParagraphItem::Em(Emphasis {
+                        strength: EmStrength::Strong,
+                        etype: EmType::Deemphasis,
+                        text: "de-em".to_string(),
+                        props: props!([("p".to_string(), PropVal::Int(0))]),
+                        ..Default::default()
+                    }),
+                    ParagraphItem::Em(Emphasis {
+                        strength: EmStrength::Medium,
+                        etype: EmType::Deemphasis,
+                        text: "de-em".to_string(),
+                        props: props!([("p".to_string(), PropVal::Int(0))]),
+                        ..Default::default()
+                    }),
+                    ParagraphItem::Text("d\n".to_string()),
+                    ParagraphItem::MText(TextWithMeta {
+                        text: "F".to_string(),
+                        tags: hset!(["same"]),
+                        ..Default::default()
+                    }),
+                    ParagraphItem::Em(Emphasis {
+                        strength: EmStrength::Strong,
+                        etype: EmType::Deemphasis,
+                        text: "de-em".to_string(),
+                        props: props!([("p".to_string(), PropVal::Int(0))]),
+                        ..Default::default()
+                    }),
+                    ParagraphItem::MText(TextWithMeta {
+                        text: "G".to_string(),
+                        ..Default::default()
+                    }),
+                ],
+                ..Default::default()
+            })],
             ..Default::default()
         },
         Doc {
-            items: vec![
-                DocItem::Text("a\nb\n".to_string()),
-                DocItem::Em(Emphasis {
-                    text: "em".to_string(),
-                    ..Default::default()
-                }),
-                DocItem::Text("c\n".to_string()),
-                DocItem::MText(TextWithMeta {
-                    text: "AB".to_string(),
-                    tags: hset!(["same"]),
-                    ..Default::default()
-                }),
-                DocItem::MText(TextWithMeta {
-                    text: "C".to_string(),
-                    tags: hset!(["different"]),
-                    ..Default::default()
-                }),
-                DocItem::MText(TextWithMeta {
-                    text: "DE".to_string(),
-                    tags: hset!(["same"]),
-                    ..Default::default()
-                }),
-                DocItem::Em(Emphasis {
-                    strength: EmStrength::Strong,
-                    etype: EmType::Deemphasis,
-                    text: "de-emde-em".to_string(),
-                    props: props!([("p".to_string(), PropVal::Int(0))]),
-                    ..Default::default()
-                }),
-                DocItem::Em(Emphasis {
-                    strength: EmStrength::Medium,
-                    etype: EmType::Deemphasis,
-                    text: "de-em".to_string(),
-                    props: props!([("p".to_string(), PropVal::Int(0))]),
-                    ..Default::default()
-                }),
-                DocItem::Text("d\n".to_string()),
-                DocItem::MText(TextWithMeta {
-                    text: "F".to_string(),
-                    tags: hset!(["same"]),
-                    ..Default::default()
-                }),
-                DocItem::Em(Emphasis {
-                    strength: EmStrength::Strong,
-                    etype: EmType::Deemphasis,
-                    text: "de-em".to_string(),
-                    props: props!([("p".to_string(), PropVal::Int(0))]),
-                    ..Default::default()
-                }),
-                DocItem::Text("G".to_string()),
-            ],
+            items: vec![DocItem::Paragraph(Paragraph {
+                items: vec![
+                    ParagraphItem::Text("a\nb\n".to_string()),
+                    ParagraphItem::Em(Emphasis {
+                        text: "em".to_string(),
+                        ..Default::default()
+                    }),
+                    ParagraphItem::Text("c\n".to_string()),
+                    ParagraphItem::MText(TextWithMeta {
+                        text: "AB".to_string(),
+                        tags: hset!(["same"]),
+                        ..Default::default()
+                    }),
+                    ParagraphItem::MText(TextWithMeta {
+                        text: "C".to_string(),
+                        tags: hset!(["different"]),
+                        ..Default::default()
+                    }),
+                    ParagraphItem::MText(TextWithMeta {
+                        text: "DE".to_string(),
+                        tags: hset!(["same"]),
+                        ..Default::default()
+                    }),
+                    ParagraphItem::Em(Emphasis {
+                        strength: EmStrength::Strong,
+                        etype: EmType::Deemphasis,
+                        text: "de-emde-em".to_string(),
+                        props: props!([("p".to_string(), PropVal::Int(0))]),
+                        ..Default::default()
+                    }),
+                    ParagraphItem::Em(Emphasis {
+                        strength: EmStrength::Medium,
+                        etype: EmType::Deemphasis,
+                        text: "de-em".to_string(),
+                        props: props!([("p".to_string(), PropVal::Int(0))]),
+                        ..Default::default()
+                    }),
+                    ParagraphItem::Text("d\n".to_string()),
+                    ParagraphItem::MText(TextWithMeta {
+                        text: "F".to_string(),
+                        tags: hset!(["same"]),
+                        ..Default::default()
+                    }),
+                    ParagraphItem::Em(Emphasis {
+                        strength: EmStrength::Strong,
+                        etype: EmType::Deemphasis,
+                        text: "de-em".to_string(),
+                        props: props!([("p".to_string(), PropVal::Int(0))]),
+                        ..Default::default()
+                    }),
+                    ParagraphItem::Text("G".to_string()),
+                ],
+                ..Default::default()
+            })],
             ..Default::default()
         }
     );
@@ -1047,55 +1077,63 @@ mod tests {
         Doc::default()
     );
 
-    test!(
+    test_par!(
         po_text_c0,
         "'this is text'",
-        Doc {
-            items: vec![DocItem::Text("this is text".to_string())],
+        Paragraph {
+            items: vec![
+                ParagraphItem::Text("this is text".to_string())
+            ],
             ..Default::default()
         }
     );
 
-    test!(
+    test_par!(
         po_text_c1,
         "
         '
         this is text
         '
         ",
-        Doc {
-            items: vec![DocItem::Text("this is text".to_string())],
+        Paragraph {
+            items: vec![
+                ParagraphItem::Text("this is text".to_string())
+            ],
             ..Default::default()
         }
     );
 
-    test!(
+    test_par!(
         po_text_c2,
         "
         '
         this is text
         '
         ",
-        Doc {
-            items: vec![DocItem::Text("this is text".to_string())],
+        Paragraph {
+            items: vec![
+                ParagraphItem::Text("this is text".to_string())
+            ],
             ..Default::default()
         }
     );
 
-    test!(
+    test_par!(
         po_text_c3,
         "
         '
         this is     text
         '
         ",
-        Doc {
-            items: vec![DocItem::Text("this is text".to_string())],
+        Paragraph {
+            items: vec![
+                ParagraphItem::Text("this is text".to_string())
+            ],
             ..Default::default()
         }
     );
 
-    test!(
+    test_par!(
         po_text_c4,
         "
         '
@@ -1106,68 +1144,80 @@ mod tests {
 
         '
         ",
-        Doc {
-            items: vec![DocItem::Text("this\nis text".to_string())],
+        Paragraph {
+            items: vec![
+                ParagraphItem::Text("this\nis text".to_string())
+            ],
             ..Default::default()
         }
     );
 
-    test!(
+    test_par!(
         po_text_c5,
         "
         ' pre'
         ",
-        Doc {
-            items: vec![DocItem::Text(" pre".to_string())],
+        Paragraph {
+            items: vec![
+                ParagraphItem::Text(" pre".to_string())
+            ],
             ..Default::default()
         }
     );
 
-    test!(
+    test_par!(
         po_text_c6,
         "
         '    pre'
         ",
-        Doc {
-            items: vec![DocItem::Text(" pre".to_string())],
+        Paragraph {
+            items: vec![
+                ParagraphItem::Text(" pre".to_string())
+            ],
             ..Default::default()
         }
     );
 
-    test!(
+    test_par!(
         po_text_c7,
         "
         'post '
         ",
-        Doc {
-            items: vec![DocItem::Text("post ".to_string())],
+        Paragraph {
+            items: vec![
+                ParagraphItem::Text("post ".to_string())
+            ],
             ..Default::default()
         }
     );
 
-    test!(
+    test_par!(
         po_text_c8,
         "
         'post        '
         ",
-        Doc {
-            items: vec![DocItem::Text("post ".to_string())],
+        Paragraph {
+            items: vec![
+                ParagraphItem::Text("post ".to_string())
+            ],
             ..Default::default()
         }
     );
 
-    test!(
+    test_par!(
         po_text_c9,
         "
         '   prepost        '
         ",
-        Doc {
-            items: vec![DocItem::Text(" prepost ".to_string())],
+        Paragraph {
+            items: vec![
+                ParagraphItem::Text(" prepost ".to_string())
+            ],
             ..Default::default()
         }
     );
 
-    test!(
+    test_par!(
         po_text_c10,
         "
         '   pre
@@ -1175,52 +1225,54 @@ mod tests {
 
         '
         ",
-        Doc {
-            items: vec![DocItem::Text(" pre".to_string())],
+        Paragraph {
+            items: vec![
+                ParagraphItem::Text(" pre".to_string())
+            ],
             ..Default::default()
         }
     );
 
-    test!(
+    test_par!(
         po_text_meta0,
         "
         'text'{ tags { } }
         ",
-        Doc {
-            items: vec![DocItem::Text("text".to_string())],
+        Paragraph {
+            items: vec![ParagraphItem::Text("text".to_string())],
             ..Default::default()
         }
     );
 
-    test!(
+    test_par!(
         po_text_meta1,
         "
         'text'{ props { } }
         ",
-        Doc {
-            items: vec![DocItem::Text("text".to_string())],
+        Paragraph {
+            items: vec![ParagraphItem::Text("text".to_string())],
             ..Default::default()
         }
     );
 
-    test!(
+    test_par!(
         po_text_meta2,
         "
         'text'{ tags { }, props { } }
         ",
-        Doc {
-            items: vec![DocItem::Text("text".to_string())],
+        Paragraph {
+            items: vec![ParagraphItem::Text("text".to_string())],
             ..Default::default()
         }
     );
 
-    test!(
+    test_par!(
         po_text_meta3,
         "
         'text'{ tags { \"a\", \"b\" } }
         ",
-        Doc {
-            items: vec![DocItem::MText(TextWithMeta{
+        Paragraph {
+            items: vec![ParagraphItem::MText(TextWithMeta {
                 text: "text".to_string(),
                 tags: hset!(["a", "b"]),
                 props: Props::default(),
@@ -1229,13 +1281,13 @@ mod tests {
         }
     );
 
-    test!(
+    test_par!(
         po_text_meta4,
         "
         'text'{ props { (\"a\", 0), (\"b\", 1), (\"a\", 2) } }
         ",
-        Doc {
-            items: vec![DocItem::MText(TextWithMeta{
+        Paragraph {
+            items: vec![ParagraphItem::MText(TextWithMeta {
                 text: "text".to_string(),
                 tags: Tags::default(),
                 props: props!([
@@ -1247,13 +1299,13 @@ mod tests {
         }
     );
 
-    test!(
+    test_par!(
         po_text_meta5,
         "
         'text'{ tags { \"a\", \"b\" }, props { (\"a\", 0), (\"b\", 1), (\"a\", 2) } }
         ",
-        Doc {
-            items: vec![DocItem::MText(TextWithMeta{
+        Paragraph {
+            items: vec![ParagraphItem::MText(TextWithMeta {
                 text: "text".to_string(),
                 tags: hset!(["a", "b"]),
                 props: props!([
@@ -1265,33 +1317,33 @@ mod tests {
         }
     );
 
-    test!(
+    test_par!(
         po_text_comment0,
         "
         // comment
         'text' // comment
         // comment
         ",
-        Doc {
-            items: vec![DocItem::Text("text".to_string())],
+        Paragraph {
+            items: vec![ParagraphItem::Text("text".to_string())],
             ..Default::default()
         }
     );
 
-    test!(
+    test_par!(
         po_text_comment1,
         "
         /* comment */
         /* comment */ 'text' /* comment */
         /* comment */
         ",
-        Doc {
-            items: vec![DocItem::Text("text".to_string())],
+        Paragraph {
+            items: vec![ParagraphItem::Text("text".to_string())],
             ..Default::default()
         }
     );
 
-    test!(
+    test_par!(
         po_text_comment2,
         "
         // comment
@@ -1307,8 +1359,8 @@ mod tests {
         /* comment */}
         // comment
         ",
-        Doc {
-            items: vec![DocItem::MText(TextWithMeta{
+        Paragraph {
+            items: vec![ParagraphItem::MText(TextWithMeta {
                 text: "text".to_string(),
                 tags: hset!(["a", "b"]),
                 props: props!([
@@ -1320,7 +1372,7 @@ mod tests {
         }
     );
 
-    test!(
+    test_par!(
         po_text_comment3,
         "
         /* comment */
@@ -1328,10 +1380,10 @@ mod tests {
         /* comment */ '/*comment*/' /* comment */
         /* comment */
         ",
-        Doc {
+        Paragraph {
             items: vec![
-                DocItem::Text("//comment".to_string()),
-                DocItem::Text("/*comment*/".to_string()),
+                ParagraphItem::Text("//comment".to_string()),
+                ParagraphItem::Text("/*comment*/".to_string()),
             ],
             ..Default::default()
         }
@@ -1727,11 +1779,11 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_emphasis_c0_f0,
         "em{le, \"light emphasis\"}",
-        Doc {
-            items: vec![DocItem::Em(Emphasis{
+        Paragraph {
+            items: vec![ParagraphItem::Em(Emphasis {
                 strength: EmStrength::Light,
                 etype: EmType::Emphasis,
                 text: "light emphasis".to_string(),
@@ -1742,14 +1794,14 @@ props { (
 
     );
 
-    test!(
+    test_par!(
         po_emphasis_c0_f1,
         " em{
             le   ,
             \"light emphasis\"
         }",
-        Doc {
-            items: vec![DocItem::Em(Emphasis{
+        Paragraph {
+            items: vec![ParagraphItem::Em(Emphasis {
                 strength: EmStrength::Light,
                 etype: EmType::Emphasis,
                 text: "light emphasis".to_string(),
@@ -1760,11 +1812,11 @@ props { (
 
     );
 
-    test!(
+    test_par!(
         po_emphasis_c1,
         "em{me, \"medium emphasis\"}",
-        Doc {
-            items: vec![DocItem::Em(Emphasis{
+        Paragraph {
+            items: vec![ParagraphItem::Em(Emphasis {
                 strength: EmStrength::Medium,
                 etype: EmType::Emphasis,
                 text: "medium emphasis".to_string(),
@@ -1775,11 +1827,11 @@ props { (
 
     );
 
-    test!(
+    test_par!(
         po_emphasis_c2,
         "em{se, \"strong emphasis\"}",
-        Doc {
-            items: vec![DocItem::Em(Emphasis{
+        Paragraph {
+            items: vec![ParagraphItem::Em(Emphasis {
                 strength: EmStrength::Strong,
                 etype: EmType::Emphasis,
                 text: "strong emphasis".to_string(),
@@ -1790,11 +1842,11 @@ props { (
 
     );
 
-    test!(
+    test_par!(
         po_emphasis_c3,
         "em{ld, \"light deemphasis\"}",
-        Doc {
-            items: vec![DocItem::Em(Emphasis{
+        Paragraph {
+            items: vec![ParagraphItem::Em(Emphasis {
                 strength: EmStrength::Light,
                 etype: EmType::Deemphasis,
                 text: "light deemphasis".to_string(),
@@ -1805,11 +1857,11 @@ props { (
 
     );
 
-    test!(
+    test_par!(
         po_emphasis_c4,
         "em{md, \"medium deemphasis\"}",
-        Doc {
-            items: vec![DocItem::Em(Emphasis{
+        Paragraph {
+            items: vec![ParagraphItem::Em(Emphasis {
                 strength: EmStrength::Medium,
                 etype: EmType::Deemphasis,
                 text: "medium deemphasis".to_string(),
@@ -1820,11 +1872,11 @@ props { (
 
     );
 
-    test!(
+    test_par!(
         po_emphasis_c5,
         "em{sd, \"strong deemphasis\"}",
-        Doc {
-            items: vec![DocItem::Em(Emphasis{
+        Paragraph {
+            items: vec![ParagraphItem::Em(Emphasis {
                 strength: EmStrength::Strong,
                 etype: EmType::Deemphasis,
                 text: "strong deemphasis".to_string(),
@@ -1835,30 +1887,30 @@ props { (
 
     );
 
-    test!(
+    test_par!(
         po_emphasis_c6,
         "
         'This is a ',
         em{le, \"light\"},
         ' emphasis.',
         ",
-        Doc {
+        Paragraph {
             items: vec![
-                DocItem::Text("This is a ".to_string()),
-                DocItem::Em(Emphasis{
+                ParagraphItem::Text("This is a ".to_string()),
+                ParagraphItem::Em(Emphasis {
                     strength: EmStrength::Light,
                     etype: EmType::Emphasis,
                     text: "light".to_string(),
                     ..Default::default()
                 }),
-                DocItem::Text(" emphasis.".to_string()),
+                ParagraphItem::Text(" emphasis.".to_string()),
             ],
             ..Default::default()
         }
 
     );
 
-    test!(
+    test_par!(
         po_emphasis_c7,
         "
         em{
@@ -1867,9 +1919,9 @@ props { (
             tags { \"a\", \"b\" },
         }
         ",
-        Doc {
+        Paragraph {
             items: vec![
-                DocItem::Em(Emphasis{
+                ParagraphItem::Em(Emphasis {
                     strength: EmStrength::Light,
                     etype: EmType::Emphasis,
                     text: "light".to_string(),
@@ -1882,7 +1934,7 @@ props { (
 
     );
 
-    test!(
+    test_par!(
         po_emphasis_c8,
         "
         em{
@@ -1891,9 +1943,9 @@ props { (
             props { (\"a\", 0), (\"b\", 1) },
         }
         ",
-        Doc {
+        Paragraph {
             items: vec![
-                DocItem::Em(Emphasis{
+                ParagraphItem::Em(Emphasis {
                     strength: EmStrength::Light,
                     etype: EmType::Emphasis,
                     text: "light".to_string(),
@@ -1909,7 +1961,7 @@ props { (
 
     );
 
-    test!(
+    test_par!(
         po_emphasis_c9,
         "
         em{
@@ -1919,9 +1971,9 @@ props { (
             props { (\"a\", 0), (\"b\", 1) },
         }
         ",
-        Doc {
+        Paragraph {
             items: vec![
-                DocItem::Em(Emphasis{
+                ParagraphItem::Em(Emphasis {
                     strength: EmStrength::Light,
                     etype: EmType::Emphasis,
                     text: "light".to_string(),
@@ -1937,11 +1989,11 @@ props { (
 
     );
 
-    test!(
+    test_par!(
         po_emphasis_comment,
         "/*c*/em/*c*/{/*c*/le/*c*/,/*c*/\"le\"/*c*/,/*c*/tags{}/*c*/,/*c*/props{}/*c*/}//c",
-        Doc {
-            items: vec![DocItem::Em(Emphasis{
+        Paragraph {
+            items: vec![ParagraphItem::Em(Emphasis {
                 strength: EmStrength::Light,
                 etype: EmType::Emphasis,
                 text: "le".to_string(),
@@ -1952,11 +2004,11 @@ props { (
 
     );
 
-    test!(
+    test_par!(
         po_code_c0_f0,
         "code { \"plain\", \"show\", '' }",
-        Doc {
-            items: vec![DocItem::Code(Ok(CodeBlock{
+        Paragraph {
+            items: vec![ParagraphItem::Code(Ok(CodeBlock {
                 language: "plain".to_string(),
                 ..Default::default()
             }))],
@@ -1964,15 +2016,15 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_code_c0_f1,
         "code
         {
     \"plain\",
             \"show\",
                 ''}",
-        Doc {
-            items: vec![DocItem::Code(Ok(CodeBlock{
+        Paragraph {
+            items: vec![ParagraphItem::Code(Ok(CodeBlock {
                 language: "plain".to_string(),
                 ..Default::default()
             }))],
@@ -1980,11 +2032,11 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_code_c1,
         "code { \"plain\", \"runnable\", '' }",
-        Doc {
-            items: vec![DocItem::Code(Ok(CodeBlock{
+        Paragraph {
+            items: vec![ParagraphItem::Code(Ok(CodeBlock {
                 language: "plain".to_string(),
                 mode: CodeModeHint::Runnable,
                 ..Default::default()
@@ -1993,11 +2045,11 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_code_c2,
         "code { \"plain\", \"run\", '' }",
-        Doc {
-            items: vec![DocItem::Code(Ok(CodeBlock{
+        Paragraph {
+            items: vec![ParagraphItem::Code(Ok(CodeBlock {
                 language: "plain".to_string(),
                 mode: CodeModeHint::Run,
                 ..Default::default()
@@ -2006,11 +2058,11 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_code_c3,
         "code { \"plain\", \"replace\", '' }",
-        Doc {
-            items: vec![DocItem::Code(Ok(CodeBlock{
+        Paragraph {
+            items: vec![ParagraphItem::Code(Ok(CodeBlock {
                 language: "plain".to_string(),
                 mode: CodeModeHint::Replace,
                 ..Default::default()
@@ -2019,11 +2071,11 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_code_c4,
         "code { \"plain\", \"not a mode!\", '' }",
-        Doc {
-            items: vec![DocItem::Code(Ok(CodeBlock{
+        Paragraph {
+            items: vec![ParagraphItem::Code(Ok(CodeBlock {
                 language: "plain".to_string(),
                 ..Default::default()
             }))],
@@ -2031,7 +2083,7 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_code_c5,
         "code {
             \"plain\",
@@ -2040,8 +2092,8 @@ props { (
             this is code
             '
         }",
-        Doc {
-            items: vec![DocItem::Code(Ok(CodeBlock{
+        Paragraph {
+            items: vec![ParagraphItem::Code(Ok(CodeBlock {
                 language: "plain".to_string(),
                 code: "this is code".to_string(),
                 ..Default::default()
@@ -2050,7 +2102,7 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_code_c6,
         "code {
             \"plain\",
@@ -2058,8 +2110,8 @@ props { (
             'this is code
             '
         }",
-        Doc {
-            items: vec![DocItem::Code(Ok(CodeBlock{
+        Paragraph {
+            items: vec![ParagraphItem::Code(Ok(CodeBlock {
                 language: "plain".to_string(),
                 code: "this is code".to_string(),
                 ..Default::default()
@@ -2068,7 +2120,7 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_code_c7,
         "code {
             \"plain\",
@@ -2077,8 +2129,8 @@ props { (
                 this is code
             '
         }",
-        Doc {
-            items: vec![DocItem::Code(Ok(CodeBlock{
+        Paragraph {
+            items: vec![ParagraphItem::Code(Ok(CodeBlock {
                 language: "plain".to_string(),
                 code: "    this is code".to_string(),
                 ..Default::default()
@@ -2087,7 +2139,7 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_code_c8,
         "code {
             \"plain\",
@@ -2097,8 +2149,8 @@ props { (
                 this is code
             '
         }",
-        Doc {
-            items: vec![DocItem::Code(Ok(CodeBlock{
+        Paragraph {
+            items: vec![ParagraphItem::Code(Ok(CodeBlock {
                 language: "plain".to_string(),
                 code: "\n    this is code".to_string(),
                 ..Default::default()
@@ -2107,7 +2159,7 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_code_c9,
         "code {
             \"plain\",
@@ -2117,8 +2169,8 @@ props { (
 
             '
         }",
-        Doc {
-            items: vec![DocItem::Code(Ok(CodeBlock{
+        Paragraph {
+            items: vec![ParagraphItem::Code(Ok(CodeBlock {
                 language: "plain".to_string(),
                 code: "this is code\n".to_string(),
                 ..Default::default()
@@ -2127,7 +2179,7 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_code_c10,
         "code {
             \"plain\",
@@ -2139,8 +2191,8 @@ props { (
 
             '
         }",
-        Doc {
-            items: vec![DocItem::Code(Ok(CodeBlock{
+        Paragraph {
+            items: vec![ParagraphItem::Code(Ok(CodeBlock {
                 language: "plain".to_string(),
                 code: "\n    this is code\n     more code\n".to_string(),
                 ..Default::default()
@@ -2151,20 +2203,29 @@ props { (
 
     test!(
         po_code_c11,
-        "code {
-            \"plain\",
-            \"show\",
-            '
-           this is code
-            '
-        }",
+        "
+        par {
+            code {
+                \"plain\",
+                \"show\",
+                '
+               this is code
+                '
+            }
+        }
+        ",
         Doc {
-            items: vec![DocItem::Code(Err(CodeIdentError))],
+            items: vec![
+                DocItem::Paragraph(Paragraph {
+                    items: vec![ParagraphItem::Code(Err(CodeIdentError))],
+                    ..Default::default()
+                })
+            ],
             ..Default::default()
         }
     );
 
-    test!(
+    test_par!(
         po_code_meta0,
         "
         code {
@@ -2174,8 +2235,8 @@ props { (
             tags { \"a\", \"b\" }
         }
         ",
-        Doc {
-            items: vec![DocItem::Code(Ok(CodeBlock{
+        Paragraph {
+            items: vec![ParagraphItem::Code(Ok(CodeBlock {
                 language: "plain".to_string(),
                 code: "this is code".to_string(),
                 tags: hset!(["a", "b"]),
@@ -2185,7 +2246,7 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_code_meta1,
         "
         code {
@@ -2195,8 +2256,8 @@ props { (
             props { (\"a\", 0), (\"b\", 1), (\"a\", 2) }
         }
         ",
-        Doc {
-            items: vec![DocItem::Code(Ok(CodeBlock{
+        Paragraph {
+            items: vec![ParagraphItem::Code(Ok(CodeBlock {
                 language: "plain".to_string(),
                 code: "this is code".to_string(),
                 props: props!([
@@ -2209,7 +2270,7 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_code_meta2,
         "
         code {
@@ -2220,8 +2281,8 @@ props { (
             props { (\"a\", 0), (\"b\", 1), (\"a\", 2) }
         }
         ",
-        Doc {
-            items: vec![DocItem::Code(Ok(CodeBlock{
+        Paragraph {
+            items: vec![ParagraphItem::Code(Ok(CodeBlock {
                 language: "plain".to_string(),
                 code: "this is code".to_string(),
                 tags: hset!(["a", "b"]),
@@ -2235,7 +2296,7 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_code_trailing_comma0,
         "
         code {
@@ -2244,8 +2305,8 @@ props { (
             'this is code',
         }
         ",
-        Doc {
-            items: vec![DocItem::Code(Ok(CodeBlock{
+        Paragraph {
+            items: vec![ParagraphItem::Code(Ok(CodeBlock {
                 language: "plain".to_string(),
                 code: "this is code".to_string(),
                 ..Default::default()
@@ -2254,7 +2315,7 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_code_trailing_comma1,
         "
         code {
@@ -2265,8 +2326,8 @@ props { (
             props { (\"a\", 0), (\"b\", 1), (\"a\", 2) },
         }
         ",
-        Doc {
-            items: vec![DocItem::Code(Ok(CodeBlock{
+        Paragraph {
+            items: vec![ParagraphItem::Code(Ok(CodeBlock {
                 language: "plain".to_string(),
                 code: "this is code".to_string(),
                 tags: hset!(["a", "b"]),
@@ -2280,7 +2341,7 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_code_comment,
         "/*c*/code/*c*/{//c
             /*c*/\"plain\"/*c*/,//c
@@ -2289,8 +2350,8 @@ props { (
                  // comment
                  '//c
         /*c*/}/*c*/",
-        Doc {
-            items: vec![DocItem::Code(Ok(CodeBlock{
+        Paragraph {
+            items: vec![ParagraphItem::Code(Ok(CodeBlock {
                 language: "plain".to_string(),
                 code: "// comment".to_string(),
                 ..Default::default()
@@ -2316,7 +2377,6 @@ props { (
             },
             list { il, par { 'item' } }
         },
-        'Outside the paragraph.',
         ",
         Doc {
             items: vec![
@@ -2350,7 +2410,6 @@ props { (
                     ],
                     ..Default::default()
                 }),
-                DocItem::Text("Outside the paragraph.".to_string()),
             ],
             ..Default::default()
         }
@@ -2721,12 +2780,12 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_list_c0,
         "list { dl, par { 'test' } }",
-        Doc {
+        Paragraph {
             items: vec![
-                DocItem::List(List{
+                ParagraphItem::List(List {
                     items: vec![
                         Paragraph {
                             items: vec![ParagraphItem::Text("test".to_string())],
@@ -2741,12 +2800,12 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_list_c0_trailing_comma,
         "list { dl, par { 'test', }, }",
-        Doc {
+        Paragraph {
             items: vec![
-                DocItem::List(List {
+                ParagraphItem::List(List {
                     items: vec![
                         Paragraph {
                             items: vec![ParagraphItem::Text("test".to_string())],
@@ -2761,12 +2820,12 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_list_c1,
         "list { il, par { 'test' } }",
-        Doc {
+        Paragraph {
             items: vec![
-                DocItem::List(List {
+                ParagraphItem::List(List {
                     items: vec![
                         Paragraph {
                             items: vec![ParagraphItem::Text("test".to_string())],
@@ -2781,12 +2840,12 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_list_c2,
         "list { cl, par { 'test' } }",
-        Doc {
+        Paragraph {
             items: vec![
-                DocItem::List(List {
+                ParagraphItem::List(List {
                     items: vec![
                         Paragraph {
                             items: vec![ParagraphItem::Text("test".to_string())],
@@ -2801,12 +2860,12 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_list_c3,
         "list { cl, par { 'a0', 'a1' }, par { 'b0', 'b1' }, par { 'c0', 'c1' } }",
-        Doc {
+        Paragraph {
             items: vec![
-                DocItem::List(List {
+                ParagraphItem::List(List {
                     items: vec![
                         Paragraph {
                             items: vec![
@@ -2838,12 +2897,12 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_list_c4,
         "list { il, par { '0', list { dl, par { '1', list { cl, par { '2' } } } } } }",
-        Doc {
+        Paragraph {
             items: vec![
-                DocItem::List(List {
+                ParagraphItem::List(List {
                     ltype: ListType::Identical,
                     items: vec![Paragraph {
                         items: vec![
@@ -2878,7 +2937,7 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_list_meta_c0,
         "
         list {
@@ -2887,8 +2946,8 @@ props { (
             tags { \"a\", \"b\" },
         }
         ",
-        Doc {
-            items: vec![DocItem::List(List {
+        Paragraph {
+            items: vec![ParagraphItem::List(List {
                 ltype: ListType::Identical,
                 items: vec![
                     Paragraph {
@@ -2904,7 +2963,7 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_list_meta_c1,
         "
         list {
@@ -2913,8 +2972,8 @@ props { (
             props { (\"a\", 0), (\"b\", 1) },
         }
         ",
-        Doc {
-            items: vec![DocItem::List(List {
+        Paragraph {
+            items: vec![ParagraphItem::List(List {
                 ltype: ListType::Identical,
                 items: vec![
                     Paragraph {
@@ -2933,7 +2992,7 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_list_meta_c2,
         "
         list {
@@ -2943,8 +3002,8 @@ props { (
             props { (\"a\", 0), (\"b\", 1) },
         }
         ",
-        Doc {
-            items: vec![DocItem::List(List {
+        Paragraph {
+            items: vec![ParagraphItem::List(List {
                 ltype: ListType::Identical,
                 items: vec![
                     Paragraph {
@@ -2964,12 +3023,12 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_list_comment,
         "/*c*/list/*c*/{/*c*/dl/*c*/,/*c*/par/*c*/{/*c*/'a'/*c*/,/*c*/'b'/*c*/}/*c*/}//c",
-        Doc {
+        Paragraph {
             items: vec![
-                DocItem::List(List{
+                ParagraphItem::List(List {
                     items: vec![
                         Paragraph {
                             items: vec![
@@ -3320,12 +3379,12 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_link_c0,
         "link { \"url\", \"link\" }",
-        Doc {
+        Paragraph {
             items: vec![
-                DocItem::Link(Link {
+                ParagraphItem::Link(Link {
                     url: "url".to_string(),
                     items: vec![LinkItem::String("link".to_string())],
                     ..Default::default()
@@ -3335,12 +3394,12 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_link_c0_comment,
         "/*c*/link/*c*/{/*c*/\"url\"/*c*/,/*c*/\"link\"/*c*/}//c",
-        Doc {
+        Paragraph {
             items: vec![
-                DocItem::Link(Link {
+                ParagraphItem::Link(Link {
                     url: "url".to_string(),
                     items: vec![LinkItem::String("link".to_string())],
                     ..Default::default()
@@ -3350,12 +3409,12 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_link_c1,
         "link { \"url\", em { le, \"em\" }, \"string\" }",
-        Doc {
+        Paragraph {
             items: vec![
-                DocItem::Link(Link {
+                ParagraphItem::Link(Link {
                     url: "url".to_string(),
                     items: vec![
                         LinkItem::Em(Emphasis {
@@ -3373,12 +3432,12 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_link_meta0,
         "link { \"url\", \"link\", tags { \"tag\" } }",
-        Doc {
+        Paragraph {
             items: vec![
-                DocItem::Link(Link {
+                ParagraphItem::Link(Link {
                     url: "url".to_string(),
                     items: vec![LinkItem::String("link".to_string())],
                     tags: hset!(["tag"]),
@@ -3389,12 +3448,12 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_link_meta1,
         "link { \"url\", \"link\", props { (\"prop\", 0) } }",
-        Doc {
+        Paragraph {
             items: vec![
-                DocItem::Link(Link {
+                ParagraphItem::Link(Link {
                     url: "url".to_string(),
                     items: vec![LinkItem::String("link".to_string())],
                     props: props!([
@@ -3407,12 +3466,12 @@ props { (
         }
     );
 
-    test!(
+    test_par!(
         po_link_meta2,
         "link { \"url\", \"link\", tags { \"tag\" }, props { (\"prop\", 0) } }",
-        Doc {
+        Paragraph {
             items: vec![
-                DocItem::Link(Link {
+                ParagraphItem::Link(Link {
                     url: "url".to_string(),
                     items: vec![LinkItem::String("link".to_string())],
                     tags: hset!(["tag"]),

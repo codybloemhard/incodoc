@@ -81,16 +81,18 @@ par{
 ";
 
 const TEST: &str = "
-list {
-    il,
-    par { 'aaaaa', 'bbbbb', tags { \"a\" }, },
-    par { 'ccccc', 'ddddd', },
-    tags { \"b\" },
+par {
+    list {
+        il,
+        par { 'aaaaa', 'bbbbb', tags { \"a\" }, },
+        par { 'ccccc', 'ddddd', },
+        tags { \"b\" },
+    }
 }
 ";
 
 fn main() {
-    let res = parse(REF_DOC);
+    let res = parse(TEST);
     match res {
         Ok(res) => {
             // println!("{:#?}", res);

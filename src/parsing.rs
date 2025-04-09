@@ -27,20 +27,8 @@ pub fn parse(input: &str) -> Result<Doc, String> {
         match inner.as_rule() {
             Rule::tags => doc.tags.absorb(parse_tags(inner)),
             Rule::props => doc.props.absorb(parse_props(inner)),
-            Rule::text_item => {
-                let text = parse_text_item(inner);
-                if text.meta_is_empty() {
-                    doc.items.push(DocItem::Text(text.text));
-                } else {
-                    doc.items.push(DocItem::MText(text));
-                }
-            },
-            Rule::emphasis => doc.items.push(DocItem::Em(parse_emphasis(inner))),
-            Rule::code => doc.items.push(DocItem::Code(parse_code(inner))),
             Rule::paragraph => doc.items.push(DocItem::Paragraph(parse_paragraph(inner))),
-            Rule::list => doc.items.push(DocItem::List(parse_list(inner))),
             Rule::section => doc.items.push(DocItem::Section(parse_section(0, inner))),
-            Rule::link => doc.items.push(DocItem::Link(parse_link(inner))),
             Rule::nav => doc.items.push(DocItem::Nav(parse_nav(inner))),
             _ => {},
         }
