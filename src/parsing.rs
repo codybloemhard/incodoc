@@ -54,7 +54,7 @@ fn parse_props(pair: Pair<'_, Rule>) -> Props {
     for inner in pair.into_inner() {
         match inner.as_rule() {
             Rule::prop_tuple => insert_prop(&mut props, parse_prop_tuple(inner)),
-            r => panic!("IP: parse_props: illegal rule: {:?};", r),
+            r => panic!("IP: parse_props: illegal rule: {r:?};"),
         }
     }
     props
@@ -71,18 +71,19 @@ fn parse_prop_val(pair: Pair<'_, Rule>) -> PropVal {
     match pair.as_rule() {
         Rule::string => PropVal::String(parse_string(pair)),
         Rule::text => PropVal::Text(parse_text(pair)),
-        Rule::int => match parse_int(pair) {
+        Rule::int => match parse_int(&pair) {
             Ok(int) => PropVal::Int(int),
             Err(error) => PropVal::Error(PropValError::Int(error)),
         },
-        Rule::date => match parse_date(pair) {
+        Rule::date => match parse_date(&pair) {
             Ok(date) => PropVal::Date(date),
             Err(error) => PropVal::Error(PropValError::Date(error)),
         },
-        r => panic!("IP: parse_prop_val: illegal rule: {:?};", r),
+        r => panic!("IP: parse_prop_val: illegal rule: {r:?};"),
     }
 }
 
+#[must_use]
 pub fn parse_section(mut heading_level: u64, pair: Pair<'_, Rule>) -> Section {
     let mut iter = pair.into_inner();
     let heading
@@ -97,7 +98,7 @@ pub fn parse_section(mut heading_level: u64, pair: Pair<'_, Rule>) -> Section {
                 => items.push(SectionItem::Section(parse_section(heading_level + 1, inner))),
             Rule::tags => tags.absorb(parse_tags(inner)),
             Rule::props => props.absorb(parse_props(inner)),
-            r => panic!("IP: parse_section: illegal rule: {:?};", r),
+            r => panic!("IP: parse_section: illegal rule: {r:?};"),
         }
     }
 
@@ -114,16 +115,16 @@ pub fn parse_heading(heading_level: &mut u64, pair: Pair<'_, Rule>) -> Heading {
     let mut tags = Tags::default();
     let mut props = Props::default();
     let mut iter = pair.into_inner();
-    let rel_level = parse_uint_capped(iter.next().expect("IP: parse_heading: no strength;"));
+    let rel_level = parse_uint_capped(&iter.next().expect("IP: parse_heading: no strength;"));
     let level = (rel_level + *heading_level).min(255) as u8;
-    *heading_level = level as u64;
+    *heading_level = u64::from(level);
     for inner in iter {
         match inner.as_rule() {
             Rule::string => items.push(HeadingItem::String(parse_string(inner))),
             Rule::emphasis => items.push(HeadingItem::Em(parse_emphasis(inner))),
             Rule::tags => tags.absorb(parse_tags(inner)),
             Rule::props => props.absorb(parse_props(inner)),
-            r => panic!("IP: parse_heading: illegal rule: {:?};", r),
+            r => panic!("IP: parse_heading: illegal rule: {r:?};"),
         }
     }
     Heading {
@@ -134,6 +135,7 @@ pub fn parse_heading(heading_level: &mut u64, pair: Pair<'_, Rule>) -> Heading {
     }
 }
 
+#[must_use]
 pub fn parse_paragraph(pair: Pair<'_, Rule>) -> Paragraph {
     let mut items = Vec::new();
     let mut tags = Tags::default();
@@ -154,7 +156,7 @@ pub fn parse_paragraph(pair: Pair<'_, Rule>) -> Paragraph {
             Rule::link => items.push(ParagraphItem::Link(parse_link(inner))),
             Rule::tags => tags.absorb(parse_tags(inner)),
             Rule::props => props.absorb(parse_props(inner)),
-            r => panic!("IP: parse_paragraph: illegal rule: {:?};", r),
+            r => panic!("IP: parse_paragraph: illegal rule: {r:?};"),
         }
     }
     Paragraph {
@@ -164,6 +166,7 @@ pub fn parse_paragraph(pair: Pair<'_, Rule>) -> Paragraph {
     }
 }
 
+#[must_use]
 pub fn parse_emphasis(pair: Pair<'_, Rule>) -> Emphasis {
     let mut iter = pair.into_inner();
     let strength_type_raw = iter.next().expect("IP: parse_emphasis: no strength_type").as_str();
@@ -184,7 +187,7 @@ pub fn parse_emphasis(pair: Pair<'_, Rule>) -> Emphasis {
         match inner.as_rule() {
             Rule::tags => tags.absorb(parse_tags(inner)),
             Rule::props => props.absorb(parse_props(inner)),
-            r => panic!("IP: parse_emphasis: loop: illegal rule: {:?};", r),
+            r => panic!("IP: parse_emphasis: loop: illegal rule: {r:?};"),
         }
     }
     Emphasis {
@@ -196,6 +199,7 @@ pub fn parse_emphasis(pair: Pair<'_, Rule>) -> Emphasis {
     }
 }
 
+#[must_use]
 pub fn parse_list(pair: Pair<'_, Rule>) -> List {
     let mut items = Vec::new();
     let mut tags = Tags::default();
@@ -212,7 +216,7 @@ pub fn parse_list(pair: Pair<'_, Rule>) -> List {
             Rule::paragraph => items.push(parse_paragraph(inner)),
             Rule::tags => tags.absorb(parse_tags(inner)),
             Rule::props => props.absorb(parse_props(inner)),
-            r => panic!("IP: parse_list: illegal rule: {:?};", r),
+            r => panic!("IP: parse_list: illegal rule: {r:?};"),
         }
     }
     List {
@@ -244,7 +248,7 @@ fn parse_snav(pair: Pair<'_, Rule>) -> SNav {
             Rule::link => links.push(parse_link(inner)),
             Rule::tags => tags.absorb(parse_tags(inner)),
             Rule::props => props.absorb(parse_props(inner)),
-            r => panic!("IP: parse_snav: illegal rule: {:?};", r),
+            r => panic!("IP: parse_snav: illegal rule: {r:?};"),
         }
     }
     SNav {
@@ -268,7 +272,7 @@ fn parse_link(pair: Pair<'_, Rule>) -> Link {
             Rule::string => items.push(LinkItem::String(parse_string(inner))),
             Rule::tags => tags.absorb(parse_tags(inner)),
             Rule::props => props.absorb(parse_props(inner)),
-            r => panic!("IP: parse_link: illegal rule: {:?};", r),
+            r => panic!("IP: parse_link: illegal rule: {r:?};"),
         }
     }
     Link {
@@ -290,7 +294,7 @@ fn parse_code(pair: Pair<'_, Rule>) -> Result<CodeBlock, CodeIdentError> {
         match inner.as_rule() {
             Rule::tags => tags.absorb(parse_tags(inner)),
             Rule::props => props.absorb(parse_props(inner)),
-            r => panic!("IP: parse_code: loop: illegal rule: {:?};", r),
+            r => panic!("IP: parse_code: loop: illegal rule: {r:?};"),
         }
     }
     Ok(CodeBlock {
@@ -376,10 +380,8 @@ fn parse_text_string(string: &str) -> String {
             },
         }
     }
-    if let Some(last) = res.chars().last() {
-        if last == '\n' {
-            res.pop();
-        }
+    if let Some(last) = res.chars().last() && last == '\n' {
+        res.pop();
     }
     res
 }
@@ -414,9 +416,8 @@ fn parse_code_text(pair: Pair<'_, Rule>) -> Result<String, CodeIdentError> {
             _ => {
                 if identc < start_col - 1 {
                     return Err(CodeIdentError);
-                } else {
-                    res.push(c);
                 }
+                res.push(c);
             },
         }
     }
@@ -426,20 +427,20 @@ fn parse_code_text(pair: Pair<'_, Rule>) -> Result<String, CodeIdentError> {
     Ok(res)
 }
 
-fn _parse_uint(pair: Pair<'_, Rule>) -> Result<u64, ParseIntError> {
+fn _parse_uint(pair: &Pair<'_, Rule>) -> Result<u64, ParseIntError> {
     pair.as_str().parse()
 }
 
-fn parse_uint_capped(pair: Pair<'_, Rule>) -> u64 {
+fn parse_uint_capped(pair: &Pair<'_, Rule>) -> u64 {
     pair.as_str().parse().expect("IP: parse_uint_capped: uint with more than 19 numbers;")
 }
 
-fn parse_int(pair: Pair<'_, Rule>) -> Result<i64, ParseIntError> {
+fn parse_int(pair: &Pair<'_, Rule>) -> Result<i64, ParseIntError> {
     pair.as_str().parse()
 }
 
-fn parse_date(pair: Pair<'_, Rule>) -> Result<Date, DateError> {
-    let mut iter = pair.as_str().split("/");
+fn parse_date(pair: &Pair<'_, Rule>) -> Result<Date, DateError> {
+    let mut iter = pair.as_str().split('/');
     let ys = iter.next().expect("IP: parse_date: no year;");
     let ms = iter.next().expect("IP: parse_date: no month;");
     let ds = iter.next().expect("IP: parse_date: no day;");

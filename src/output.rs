@@ -1,5 +1,7 @@
 use crate::*;
 
+use std::fmt::Write;
+
 fn spaces_out(spaces: usize, output: &mut String) {
     for _ in 0..spaces {
         output.push(' ');
@@ -51,12 +53,12 @@ fn mtext_out(mtext: &TextWithMeta, spaces: usize, output: &mut String) {
     str_out("},\n", spaces, output);
 }
 
-fn date_out(date: &Date, output: &mut String) {
+fn date_out(date: Date, output: &mut String) {
     output.push_str(&date.year.to_string());
     output.push('/');
-    output.push_str(&format!("{:0>2}", date.month));
+    let _ = write!(output, "{:0>2}", date.month);
     output.push('/');
-    output.push_str(&format!("{:0>2}", date.day));
+    let _ = write!(output, "{:0>2}", date.day);
 }
 
 fn tags_out(tags: &Tags, spaces: usize, output: &mut String) {
@@ -90,7 +92,7 @@ fn kv_out((k, v): (&String, &PropVal), spaces: usize, output: &mut String) -> bo
         PropVal::String(string) => string_out(string, 0, output),
         PropVal::Text(text) => text_out(text, 0, output),
         PropVal::Int(int) => output.push_str(&int.to_string()),
-        PropVal::Date(date) => date_out(date, output),
+        PropVal::Date(date) => date_out(*date, output),
         PropVal::Error(_) => (),
     }
     output.push(')');
@@ -209,7 +211,7 @@ fn par_items_out(items: &[ParagraphItem], spaces: usize, output: &mut String) {
             ParagraphItem::Link(link) => link_out(link, spaces, output),
             ParagraphItem::Code(Ok(code)) => code_out(code, spaces, output),
             ParagraphItem::List(list) => list_out(list, spaces, output),
-            _ => { },
+            ParagraphItem::Code(_) => { },
         }
     }
 }

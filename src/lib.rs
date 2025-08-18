@@ -64,12 +64,8 @@ impl PropVal {
 
 fn insert_prop(props: &mut Props, (k, v): (String, PropVal)) {
     let mut insert = true;
-    if v.is_error() {
-        if let Some(ov) = props.get(&k) {
-            if !ov.is_error() {
-                insert = false;
-            }
-        }
+    if v.is_error() && let Some(ov) = props.get(&k) && !ov.is_error() {
+        insert = false;
     }
     if insert {
         props.insert(k, v);
@@ -202,7 +198,7 @@ pub enum LinkItem {
     Em(Emphasis),
 }
 
-/// CodeBlock contains computer code.
+/// `CodeBlock` contains computer code.
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct CodeBlock {
     /// Computer language in which the code is written.
@@ -271,10 +267,10 @@ impl Date {
         let year: i16 = y.try_into().map_err(|_| DateError::YearRange(y))?;
         let month: u8 = m.try_into()
             .map_err(|_| DateError::MonthRange(m))
-            .and_then(|m| if m == 0 { Err(DateError::MonthRange(m as u64)) } else { Ok(m) } )?;
+            .and_then(|m| if m == 0 { Err(DateError::MonthRange(d)) } else { Ok(m) } )?;
         let day: u8 = d.try_into()
             .map_err(|_| DateError::DayRange(d))
-            .and_then(|d| if d == 0 { Err(DateError::DayRange(d as u64)) } else { Ok(d) } )?;
+            .and_then(|d| if d == 0 { Err(DateError::DayRange(u64::from(d))) } else { Ok(d) } )?;
         if month > 12 { return Err(DateError::MonthRange(m)); }
         if day > 31 { return Err(DateError::DayRange(d)); }
         Ok(Self { year, month, day })

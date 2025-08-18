@@ -201,10 +201,8 @@ impl PruneIncodoc for Doc {
 
 impl DocItem {
     pub fn squash(&mut self) {
-        match self {
-            // TODO?
-            DocItem::Paragraph(par) => par.squash(),
-            _ => { },
+        if let DocItem::Paragraph(par) = self {
+            par.squash();
         }
     }
 }
@@ -266,8 +264,7 @@ impl PruneIncodoc for Tags {
 
     fn prune_contentless(&mut self) {
         self.retain(|t|
-            !t.is_empty() &&
-            !t.chars().all(|c| c.is_whitespace())
+            !t.is_empty() && !t.chars().all(char::is_whitespace)
         );
     }
 
@@ -280,7 +277,7 @@ impl Absorb for Props {
     type Other = Self;
     fn absorb(&mut self, other: Self::Other) {
         for prop in other {
-            insert_prop(self, prop)
+            insert_prop(self, prop);
         }
     }
 }
@@ -295,8 +292,7 @@ impl PruneIncodoc for Props {
             pval.prune_contentless();
         }
         self.retain(|k, v|
-            !k.is_empty() && !v.is_contentless() &&
-            !k.chars().all(|c| c.is_whitespace())
+            !k.is_empty() && !v.is_contentless() && !k.chars().all(char::is_whitespace)
         );
     }
 
@@ -310,7 +306,7 @@ impl PruneIncodoc for PropVal {
 
     fn prune_contentless(&mut self) {
         match self {
-            Self::String(string) => string.prune_contentless(),
+            Self::String(string) |
             Self::Text(string) => string.prune_contentless(),
             _ => { },
         }
@@ -318,7 +314,7 @@ impl PruneIncodoc for PropVal {
 
     fn is_contentless(&self) -> bool {
         match self {
-            Self::String(string) => string.is_empty(),
+            Self::String(string) |
             Self::Text(string) => string.is_empty(),
             _ => false,
         }
@@ -570,7 +566,7 @@ impl PruneIncodoc for Nav {
     }
 
     fn is_contentless(&self) -> bool {
-        self.is_empty() || self.iter().all(|s| s.is_contentless())
+        self.is_empty() || self.iter().all(PruneIncodoc::is_contentless)
     }
 }
 

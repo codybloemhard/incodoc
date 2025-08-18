@@ -42,6 +42,7 @@ things to write about
 
 - all the features and suggested use
 https://www.gnu.org/licenses/license-recommendations.html
+https://www.marginalia.nu/log/a_119_pdf/
 
 think about:
 

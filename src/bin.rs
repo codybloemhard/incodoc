@@ -98,8 +98,8 @@ fn main() {
             // println!("{:#?}", res);
             let mut output = String::new();
             doc_out(&res, &mut output);
-            println!("{}", output);
+            println!("{output}");
         },
-        Err(err) => println!("{}", err),
+        Err(err) => println!("{err}"),
     }
 }
