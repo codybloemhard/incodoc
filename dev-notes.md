@@ -38,6 +38,8 @@ link
 
 dedup nav, snav, par, section
 
+refactor Nav to be a Snav on top?
+
 things to write about
 
 - all the features and suggested use
