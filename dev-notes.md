@@ -36,7 +36,7 @@ heading
 link
   - empty items: fix by putting url as text
 
-dedup nav, snav, par, section
+dedup nav, par, section
 
 think about doing:
 

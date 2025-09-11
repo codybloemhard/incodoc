@@ -179,20 +179,20 @@ fn heading_out(head: &Heading, spaces: usize, plevel: usize, output: &mut String
     head.level as usize
 }
 
-fn nav_out(snav: &Nav, spaces: usize, output: &mut String) {
+fn nav_out(nav: &Nav, spaces: usize, output: &mut String) {
     str_out("nav {\n", spaces, output);
     if spaces > 0 {
-        string_out(&snav.description, spaces + 4, output);
+        string_out(&nav.description, spaces + 4, output);
         output.push_str(",\n");
     }
-    for link in &snav.links {
+    for link in &nav.links {
         link_out(link, spaces + 4, output);
     }
-    for sub in &snav.subs {
+    for sub in &nav.subs {
         nav_out(sub, spaces + 4, output);
     }
-    tags_out(&snav.tags, spaces, output);
-    props_out(&snav.props, spaces, output);
+    tags_out(&nav.tags, spaces, output);
+    props_out(&nav.props, spaces, output);
     str_out("},\n", spaces, output);
 }
 

@@ -10,14 +10,14 @@ props{
     (\"date\", 9999/12/31),
 },
 nav{
-    snav{
+    nav{
         \"top level\",
         link{\"/home\", \"home\"},
         link{\"/about\", \"about\"},
         link{\"/now\", \"now\"},
         link{\"/blog/index\", \"blog\"},
     },
-    snav{
+    nav{
         \"other articles\",
         link{\"./cheese\", \"I like cheese\"},
         link{\"./sosig\", \"Sosig is happiness\"},
@@ -88,7 +88,7 @@ nav {
 ";
 
 fn main() {
-    let res = parse(TEST);
+    let res = parse(REF_DOC);
     match res {
         Ok(res) => {
             // println!("{:#?}", res);

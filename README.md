@@ -53,7 +53,7 @@ props {
     ("language", "en"),
 },
 nav {
-    snav {
+    nav {
         "top level",
         link {
             "/home",
@@ -72,7 +72,7 @@ nav {
             "blog",
         },
     },
-    snav {
+    nav {
         "other articles",
         link {
             "./cheese",
@@ -343,7 +343,7 @@ Most webpages automatically download images and display them in the page.
 Consumers with slow internet can choose not to and only retrieve images on command.
 Consumers reading in a terminal can choose to only show images in a program of choice on command.
 A consumer might want to see an overview of all images on a page.
-A consumer might wish to have a slide show inserted into the page if multiple images are come one
+A consumer might wish to have a slide show inserted into the page if multiple images come one
 after the other.
 
 #### Emphasis
@@ -600,9 +600,8 @@ Strong points:
 - maps to incodoc with only small issues
 
 Markdown is important to incododoc.
-It will be the first document format convertible to incodoc
-(see: [md-to-incodoc](https://github.com/codybloemhard/md-to-incodoc))
-An incodoc flavoured markdown is planned.
+It is the first document format convertible to incodoc
+(see: [md-to-incodoc](https://github.com/codybloemhard/md-to-incodoc)).
 
 #### HTML
 
@@ -636,7 +635,7 @@ Incorporeal: `small`, `del`, `ins`, `bdo`
 
 Non document functionality: `button`
 
-It is desirable to both convert (HTML + CSS) to incodoc and render incodoc to (HTML + CSS).
+It is desirable to convert both (HTML + CSS) to incodoc and render incodoc to (HTML + CSS).
 Parsing HTML + CSS and stripping it down as best as we can will allow consumers to consume as much
 content as possible through incodoc, and thus via their preferred aesthetics and workflow which
 they have control over.

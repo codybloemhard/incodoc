@@ -63,15 +63,15 @@ pub const REF_DOC: &str = "
         }
     },
     nav {
-        snav {
+        nav {
             \"description A\",
             link { \"url-a\", \"link string a\" },
             link { \"url-b\", \"link string b\" },
         },
-        snav {
+        nav {
             \"description B\",
             link { \"url-c\", \"link string c\" },
-            snav {
+            nav {
                 \"description C\",
                 link { \"url-d\", \"link string d\" },
             },

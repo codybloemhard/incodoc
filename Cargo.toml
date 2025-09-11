@@ -1,6 +1,6 @@
 [package]
 name = "incodoc"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2024"
 authors = ["Cody Bloemhard <codybloemhard@gmail.com>"]
 description = "Incorporeal document format."
@@ -15,5 +15,5 @@ name = "testbin"
 path = "src/bin.rs"
 
 [dependencies]
-pest = "2.7.15"
-pest_derive = "2.7.15"
+pest = "2.8.1"
+pest_derive = "2.8.1"
