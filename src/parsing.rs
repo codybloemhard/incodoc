@@ -29,7 +29,7 @@ pub fn parse(input: &str) -> Result<Doc, String> {
             Rule::props => doc.props.absorb(parse_props(inner)),
             Rule::paragraph => doc.items.push(DocItem::Paragraph(parse_paragraph(inner))),
             Rule::section => doc.items.push(DocItem::Section(parse_section(0, inner))),
-            Rule::nav => doc.items.push(DocItem::Nav(parse_nav(inner))),
+            Rule::nav_top => doc.items.push(DocItem::Nav(parse_nav(inner, true))),
             _ => {},
         }
     }
@@ -227,31 +227,27 @@ pub fn parse_list(pair: Pair<'_, Rule>) -> List {
     }
 }
 
-fn parse_nav(pair: Pair<'_, Rule>) -> Nav {
-    let mut res = Vec::new();
-    for inner in pair.into_inner() {
-        res.push(parse_snav(inner));
-    }
-    res
-}
-
-fn parse_snav(pair: Pair<'_, Rule>) -> SNav {
+fn parse_nav(pair: Pair<'_, Rule>, top: bool) -> Nav {
     let mut iter = pair.into_inner();
     let mut tags = Tags::default();
     let mut props = Props::default();
     let mut subs = Vec::new();
     let mut links = Vec::new();
-    let description = parse_string(iter.next().expect("IP: parse_snav: no description;"));
+    let description = if top {
+        String::new()
+    } else {
+        parse_string(iter.next().expect("IP: parse_nav: no description;"))
+    };
     for inner in iter {
         match inner.as_rule() {
-            Rule::snav => subs.push(parse_snav(inner)),
+            Rule::nav => subs.push(parse_nav(inner, false)),
             Rule::link => links.push(parse_link(inner)),
             Rule::tags => tags.absorb(parse_tags(inner)),
             Rule::props => props.absorb(parse_props(inner)),
-            r => panic!("IP: parse_snav: illegal rule: {r:?};"),
+            r => panic!("IP: parse_nav: illegal rule: {r:?};"),
         }
     }
-    SNav {
+    Nav {
         description,
         subs,
         links,

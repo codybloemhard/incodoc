@@ -342,53 +342,10 @@ mod tests {
 
     test_prune_contentless!(
         pc_nav,
-        vec![
-            SNav {
-                description: "desc".to_string(),
-                subs: vec![],
-                links: vec![
-                    Link {
-                        url: "url".to_string(),
-                        items: vec![
-                            LinkItem::String("link".to_string()),
-                        ],
-                        ..Default::default()
-                    }
-                ],
-                ..Default::default()
-            },
-            SNav {
-                description: "empty".to_string(),
-                subs: vec![],
-                links: vec![],
-                tags: hset!(["not content".to_string()]),
-                ..Default::default()
-            }
-        ],
-        vec![
-            SNav {
-                description: "desc".to_string(),
-                subs: vec![],
-                links: vec![
-                    Link {
-                        url: "url".to_string(),
-                        items: vec![
-                            LinkItem::String("link".to_string()),
-                        ],
-                        ..Default::default()
-                    }
-                ],
-                ..Default::default()
-            },
-        ]
-    );
-
-    test_prune_contentless!(
-        pc_snav,
-        SNav {
+        Nav {
             description: "desc".to_string(),
             subs: vec![
-                SNav {
+                Nav {
                     description: "desc".to_string(),
                     subs: vec![],
                     links: vec![],
@@ -413,7 +370,7 @@ mod tests {
             ],
             ..Default::default()
         },
-        SNav {
+        Nav {
             description: "desc".to_string(),
             subs: vec![],
             links: vec![
@@ -3488,37 +3445,31 @@ props { (
         po_nav_c0,
         "
         nav {
-            snav {
-                \"desc\",
-                link { \"urla\", \"linka\" },
-                link { \"urlb\", \"linkb\" }
-            }
+            link { \"urla\", \"linka\" },
+            link { \"urlb\", \"linkb\" }
         }
         ",
         Doc {
             items: vec![
-                DocItem::Nav(vec![
-                    SNav {
-                        description: "desc".to_string(),
-                        links: vec![
-                            Link {
-                                url: "urla".to_string(),
-                                items: vec![
-                                    LinkItem::String("linka".to_string())
-                                ],
-                                ..Default::default()
-                            },
-                            Link {
-                                url: "urlb".to_string(),
-                                items: vec![
-                                    LinkItem::String("linkb".to_string())
-                                ],
-                                ..Default::default()
-                            }
-                        ],
-                        ..Default::default()
-                    }
-                ])
+                DocItem::Nav(Nav {
+                    links: vec![
+                        Link {
+                            url: "urla".to_string(),
+                            items: vec![
+                                LinkItem::String("linka".to_string())
+                            ],
+                            ..Default::default()
+                        },
+                        Link {
+                            url: "urlb".to_string(),
+                            items: vec![
+                                LinkItem::String("linkb".to_string())
+                            ],
+                            ..Default::default()
+                        }
+                    ],
+                    ..Default::default()
+                })
             ],
             ..Default::default()
         }
@@ -3528,37 +3479,31 @@ props { (
         po_nav_c0_comment,
         "
         /*c*/nav/*c*/{//c
-            /*c*/snav/*c*/{//c
-                /*c*/\"desc\"/*c*/,
-                /*c*/link/*c*/{/*c*/\"urla\"/*c*/,/*c*/\"linka\"/*c*/}/*c*/,//c
-                /*c*/link/*c*/{/*c*/\"urlb\"/*c*/,/*c*/\"linkb\"/*c*/}/*c*/,//c
-            /*c*/}/*c*/
-        /*c*/}//c
+            /*c*/link/*c*/{/*c*/\"urla\"/*c*/,/*c*/\"linka\"/*c*/}/*c*/,//c
+            /*c*/link/*c*/{/*c*/\"urlb\"/*c*/,/*c*/\"linkb\"/*c*/}/*c*/,//c
+        /*c*/}/*c*/
         ",
         Doc {
             items: vec![
-                DocItem::Nav(vec![
-                    SNav {
-                        description: "desc".to_string(),
-                        links: vec![
-                            Link {
-                                url: "urla".to_string(),
-                                items: vec![
-                                    LinkItem::String("linka".to_string())
-                                ],
-                                ..Default::default()
-                            },
-                            Link {
-                                url: "urlb".to_string(),
-                                items: vec![
-                                    LinkItem::String("linkb".to_string())
-                                ],
-                                ..Default::default()
-                            }
-                        ],
-                        ..Default::default()
-                    }
-                ])
+                DocItem::Nav(Nav {
+                    links: vec![
+                        Link {
+                            url: "urla".to_string(),
+                            items: vec![
+                                LinkItem::String("linka".to_string())
+                            ],
+                            ..Default::default()
+                        },
+                        Link {
+                            url: "urlb".to_string(),
+                            items: vec![
+                                LinkItem::String("linkb".to_string())
+                            ],
+                            ..Default::default()
+                        }
+                    ],
+                    ..Default::default()
+                })
             ],
             ..Default::default()
         }
@@ -3568,11 +3513,11 @@ props { (
         po_nav_c1,
         "
         nav {
-            snav {
+            nav {
                 \"desca\",
                 link { \"urla\", \"linka\" }
             },
-            snav {
+            nav {
                 \"descb\",
                 link { \"urlb\", \"linkb\" }
             }
@@ -3580,34 +3525,37 @@ props { (
         ",
         Doc {
             items: vec![
-                DocItem::Nav(vec![
-                    SNav {
-                        description: "desca".to_string(),
-                        links: vec![
-                            Link {
-                                url: "urla".to_string(),
-                                items: vec![
-                                    LinkItem::String("linka".to_string())
-                                ],
-                                ..Default::default()
-                            },
-                        ],
-                        ..Default::default()
-                    },
-                    SNav {
-                        description: "descb".to_string(),
-                        links: vec![
-                            Link {
-                                url: "urlb".to_string(),
-                                items: vec![
-                                    LinkItem::String("linkb".to_string())
-                                ],
-                                ..Default::default()
-                            },
-                        ],
-                        ..Default::default()
-                    }
-                ])
+                DocItem::Nav(Nav {
+                    subs: vec![
+                        Nav {
+                            description: "desca".to_string(),
+                            links: vec![
+                                Link {
+                                    url: "urla".to_string(),
+                                    items: vec![
+                                        LinkItem::String("linka".to_string())
+                                    ],
+                                    ..Default::default()
+                                },
+                            ],
+                            ..Default::default()
+                        },
+                        Nav {
+                            description: "descb".to_string(),
+                            links: vec![
+                                Link {
+                                    url: "urlb".to_string(),
+                                    items: vec![
+                                        LinkItem::String("linkb".to_string())
+                                    ],
+                                    ..Default::default()
+                                },
+                            ],
+                            ..Default::default()
+                        },
+                    ],
+                    ..Default::default()
+                })
             ],
             ..Default::default()
         }
@@ -3617,46 +3565,49 @@ props { (
         po_nav_c1_trailing_comma,
         "
         nav {
-            snav {
+            nav {
                 \"desca\",
                 link { \"urla\", \"linka\" },
             },
-            snav {
+            nav {
                 \"descb\",
                 link { \"urlb\", \"linkb\" },
             },
-        }
+        },
         ",
         Doc {
             items: vec![
-                DocItem::Nav(vec![
-                    SNav {
-                        description: "desca".to_string(),
-                        links: vec![
-                            Link {
-                                url: "urla".to_string(),
-                                items: vec![
-                                    LinkItem::String("linka".to_string())
-                                ],
-                                ..Default::default()
-                            },
-                        ],
-                        ..Default::default()
-                    },
-                    SNav {
-                        description: "descb".to_string(),
-                        links: vec![
-                            Link {
-                                url: "urlb".to_string(),
-                                items: vec![
-                                    LinkItem::String("linkb".to_string())
-                                ],
-                                ..Default::default()
-                            },
-                        ],
-                        ..Default::default()
-                    }
-                ])
+                DocItem::Nav(Nav {
+                    subs: vec![
+                        Nav {
+                            description: "desca".to_string(),
+                            links: vec![
+                                Link {
+                                    url: "urla".to_string(),
+                                    items: vec![
+                                        LinkItem::String("linka".to_string())
+                                    ],
+                                    ..Default::default()
+                                },
+                            ],
+                            ..Default::default()
+                        },
+                        Nav {
+                            description: "descb".to_string(),
+                            links: vec![
+                                Link {
+                                    url: "urlb".to_string(),
+                                    items: vec![
+                                        LinkItem::String("linkb".to_string())
+                                    ],
+                                    ..Default::default()
+                                },
+                            ],
+                            ..Default::default()
+                        },
+                    ],
+                    ..Default::default()
+                })
             ],
             ..Default::default()
         }
@@ -3666,99 +3617,59 @@ props { (
         po_nav_c2,
         "
         nav {
-            snav {
-                \"descx\",
-                snav {
-                    \"desca\",
-                    link { \"urla\", \"linka\" }
-                },
-                snav {
-                    \"descb\",
-                    link { \"urlb\", \"linkb\" }
-                },
-                link { \"urlc\", \"linkc\" }
+            nav {
+                \"desca\",
+                link { \"urla\", \"linka\" }
             },
+            nav {
+                \"descb\",
+                link { \"urlb\", \"linkb\" }
+            },
+            link { \"urlc\", \"linkc\" }
         }
         ",
         Doc {
             items: vec![
-                DocItem::Nav(vec![
-                    SNav {
-                        description: "descx".to_string(),
-                        subs: vec![
-                            SNav {
-                                description: "desca".to_string(),
-                                links: vec![
-                                    Link {
-                                        url: "urla".to_string(),
-                                        items: vec![
-                                            LinkItem::String("linka".to_string())
-                                        ],
-                                        ..Default::default()
-                                    },
-                                ],
-                                ..Default::default()
-                            },
-                            SNav {
-                                description: "descb".to_string(),
-                                links: vec![
-                                    Link {
-                                        url: "urlb".to_string(),
-                                        items: vec![
-                                            LinkItem::String("linkb".to_string())
-                                        ],
-                                        ..Default::default()
-                                    },
-                                ],
-                                ..Default::default()
-                            },
-                        ],
-                        links: vec![
-                            Link {
-                                url: "urlc".to_string(),
-                                items: vec![
-                                    LinkItem::String("linkc".to_string())
-                                ],
-                                ..Default::default()
-                            },
-                        ],
-                        ..Default::default()
-                    },
-                ])
-            ],
-            ..Default::default()
-        }
-    );
-
-    test!(
-        po_nav_c3,
-        "
-        nav {
-            snav {
-                \"desc\",
-                link { \"urla\", \"linka\" },
-                tags { \"tag\" }
-            }
-        }
-        ",
-        Doc {
-            items: vec![
-                DocItem::Nav(vec![
-                    SNav {
-                        description: "desc".to_string(),
-                        links: vec![
-                            Link {
-                                url: "urla".to_string(),
-                                items: vec![
-                                    LinkItem::String("linka".to_string())
-                                ],
-                                ..Default::default()
-                            },
-                        ],
-                        tags: hset!(["tag"]),
-                        ..Default::default()
-                    }
-                ])
+                DocItem::Nav(Nav {
+                    subs: vec![
+                        Nav {
+                            description: "desca".to_string(),
+                            links: vec![
+                                Link {
+                                    url: "urla".to_string(),
+                                    items: vec![
+                                        LinkItem::String("linka".to_string())
+                                    ],
+                                    ..Default::default()
+                                },
+                            ],
+                            ..Default::default()
+                        },
+                        Nav {
+                            description: "descb".to_string(),
+                            links: vec![
+                                Link {
+                                    url: "urlb".to_string(),
+                                    items: vec![
+                                        LinkItem::String("linkb".to_string())
+                                    ],
+                                    ..Default::default()
+                                },
+                            ],
+                            ..Default::default()
+                        },
+                    ],
+                    links: vec![
+                        Link {
+                            url: "urlc".to_string(),
+                            items: vec![
+                                LinkItem::String("linkc".to_string())
+                            ],
+                            ..Default::default()
+                        },
+                    ],
+                    ..Default::default()
+                })
             ],
             ..Default::default()
         }
@@ -3768,33 +3679,25 @@ props { (
         po_nav_meta0,
         "
         nav {
-            snav {
-                \"desc\",
-                link { \"urla\", \"linka\" },
-                props { (\"prop\", 0) }
-            }
+            link { \"urla\", \"linka\" },
+            tags { \"tag\" }
         }
         ",
         Doc {
             items: vec![
-                DocItem::Nav(vec![
-                    SNav {
-                        description: "desc".to_string(),
-                        links: vec![
-                            Link {
-                                url: "urla".to_string(),
-                                items: vec![
-                                    LinkItem::String("linka".to_string())
-                                ],
-                                ..Default::default()
-                            },
-                        ],
-                        props: props!([
-                            ("prop".to_string(), PropVal::Int(0)),
-                        ]),
-                        ..Default::default()
-                    }
-                ])
+                DocItem::Nav(Nav {
+                    links: vec![
+                        Link {
+                            url: "urla".to_string(),
+                            items: vec![
+                                LinkItem::String("linka".to_string())
+                            ],
+                            ..Default::default()
+                        },
+                    ],
+                    tags: hset!(["tag"]),
+                    ..Default::default()
+                })
             ],
             ..Default::default()
         }
@@ -3804,35 +3707,59 @@ props { (
         po_nav_meta1,
         "
         nav {
-            snav {
-                \"desc\",
-                link { \"urla\", \"linka\" },
-                tags { \"tag\" },
-                props { (\"prop\", 0) }
-            }
+            link { \"urla\", \"linka\" },
+            props { (\"prop\", 0) }
         }
         ",
         Doc {
             items: vec![
-                DocItem::Nav(vec![
-                    SNav {
-                        description: "desc".to_string(),
-                        links: vec![
-                            Link {
-                                url: "urla".to_string(),
-                                items: vec![
-                                    LinkItem::String("linka".to_string())
-                                ],
-                                ..Default::default()
-                            },
-                        ],
-                        tags: hset!(["tag"]),
-                        props: props!([
-                            ("prop".to_string(), PropVal::Int(0)),
-                        ]),
-                        ..Default::default()
-                    }
-                ])
+                DocItem::Nav(Nav {
+                    links: vec![
+                        Link {
+                            url: "urla".to_string(),
+                            items: vec![
+                                LinkItem::String("linka".to_string())
+                            ],
+                            ..Default::default()
+                        },
+                    ],
+                    props: props!([
+                        ("prop".to_string(), PropVal::Int(0)),
+                    ]),
+                    ..Default::default()
+                })
+            ],
+            ..Default::default()
+        }
+    );
+
+    test!(
+        po_nav_meta2,
+        "
+        nav {
+            link { \"urla\", \"linka\" },
+            tags { \"tag\" },
+            props { (\"prop\", 0) }
+        }
+        ",
+        Doc {
+            items: vec![
+                DocItem::Nav(Nav {
+                    links: vec![
+                        Link {
+                            url: "urla".to_string(),
+                            items: vec![
+                                LinkItem::String("linka".to_string())
+                            ],
+                            ..Default::default()
+                        },
+                    ],
+                    tags: hset!(["tag"]),
+                    props: props!([
+                        ("prop".to_string(), PropVal::Int(0)),
+                    ]),
+                    ..Default::default()
+                })
             ],
             ..Default::default()
         }

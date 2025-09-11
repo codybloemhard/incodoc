@@ -81,13 +81,9 @@ par{
 ";
 
 const TEST: &str = "
-par {
-    list {
-        il,
-        par { 'aaaaa', 'bbbbb', tags { \"a\" }, },
-        par { 'ccccc', 'ddddd', },
-        tags { \"b\" },
-    }
+nav {
+    link { \"urla\", \"linka\" },
+    link { \"urlb\", \"linkb\" }
 }
 ";
 

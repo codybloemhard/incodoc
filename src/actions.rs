@@ -553,25 +553,6 @@ impl PruneIncodoc for List {
 
 impl PruneIncodoc for Nav {
     fn prune_errors(&mut self) {
-        for snav in self {
-            snav.prune_errors();
-        }
-    }
-
-    fn prune_contentless(&mut self) {
-        for snav in self.iter_mut() {
-            snav.prune_contentless();
-        }
-        self.retain(|snav| !snav.is_contentless());
-    }
-
-    fn is_contentless(&self) -> bool {
-        self.is_empty() || self.iter().all(PruneIncodoc::is_contentless)
-    }
-}
-
-impl PruneIncodoc for SNav {
-    fn prune_errors(&mut self) {
         self.props.prune_errors();
         for link in &mut self.links {
             link.prune_errors();

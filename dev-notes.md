@@ -38,7 +38,9 @@ link
 
 dedup nav, snav, par, section
 
-refactor Nav to be a Snav on top?
+think about doing:
+
+recursive is_contentless? eg section with empty par
 
 things to write about
 
@@ -48,15 +50,16 @@ https://www.marginalia.nu/log/a_119_pdf/
 
 think about:
 
-citation?
-quotes generalization?
 common image
   string -> image
   user supplies the images
   emoji, stickers, gifs, etc
   fallback img
+  link with url convention?
 tables and graphs
-  as element? as code that executes?
+  regular table wiht incodoc items in it
+  data frames that can be rendered as tables or graphs
+  links to outside resources (csv, etc)
 
 anti features:
 

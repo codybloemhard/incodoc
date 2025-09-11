@@ -179,23 +179,17 @@ fn heading_out(head: &Heading, spaces: usize, plevel: usize, output: &mut String
     head.level as usize
 }
 
-fn nav_out(nav: &[SNav], spaces: usize, output: &mut String) {
+fn nav_out(snav: &Nav, spaces: usize, output: &mut String) {
     str_out("nav {\n", spaces, output);
-    for snav in nav {
-        snav_out(snav, spaces + 4, output);
+    if spaces > 0 {
+        string_out(&snav.description, spaces + 4, output);
+        output.push_str(",\n");
     }
-    str_out("},\n", spaces, output);
-}
-
-fn snav_out(snav: &SNav, spaces: usize, output: &mut String) {
-    str_out("snav {\n", spaces, output);
-    string_out(&snav.description, spaces + 4, output);
-    output.push_str(",\n");
     for link in &snav.links {
         link_out(link, spaces + 4, output);
     }
     for sub in &snav.subs {
-        snav_out(sub, spaces + 4, output);
+        nav_out(sub, spaces + 4, output);
     }
     tags_out(&snav.tags, spaces, output);
     props_out(&snav.props, spaces, output);

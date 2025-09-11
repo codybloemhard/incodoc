@@ -169,14 +169,11 @@ pub enum ListType {
     Checked,
 }
 
-/// Navigation structure contains sub-navigation structures.
-pub type Nav = Vec<SNav>;
-
-/// Sub-navigation structure has a description, sub-navigation structures and links to navigate to.
+/// Navigation structure has a description, sub-navigation structures and links to navigate to.
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
-pub struct SNav {
+pub struct Nav {
     pub description: String,
-    pub subs: Vec<SNav>,
+    pub subs: Vec<Nav>,
     pub links: Vec<Link>,
     pub tags: Tags,
     pub props: Props,

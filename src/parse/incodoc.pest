@@ -1,6 +1,6 @@
 top = _{ SOI ~ (top_structs ~ ",")* ~ top_structs? ~ EOI }
 top_structs = _{
-    tags | props | paragraph | section | nav
+    tags | props | paragraph | section | nav_top
 }
 
 tags = { "tags" ~ "{" ~ strings ~ "}" }
@@ -25,9 +25,10 @@ em_st = { "le" | "me" | "se" | "ld" | "md" | "sd" }
 list = { "list" ~ "{" ~ list_type ~ ("," ~ paragraph)+ ~ tp_postfix ~ "}" }
 list_type = { "dl" | "il" | "cl" }
 
-nav = { "nav" ~ "{" ~ snav ~ ("," ~ snav)* ~ ","? ~ "}" }
-snav = { "snav" ~ "{" ~ string ~ ("," ~ snav_item)+ ~ ","? ~ "}" }
-snav_item = _{ link | snav | tags | props }
+// nav = { "nav" ~ "{" ~ string ~ ("," ~ nav_item)+ ~ ","? ~ "}" }
+nav_top = { "nav" ~ "{" ~ nav_item ~ ("," ~ nav_item)* ~ ","? ~ "}" }
+nav = { "nav" ~ "{" ~ string ~ ("," ~ nav_item)+ ~ ","? ~ "}" }
+nav_item = _{ link | nav | tags | props }
 
 link = { "link" ~ "{" ~ string ~ ("," ~ link_item)+ ~ ","? ~ "}" }
 link_item = _{ string | emphasis | tags | props }
