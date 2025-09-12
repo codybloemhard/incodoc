@@ -121,6 +121,7 @@ pub enum ParagraphItem {
     Code(Result<CodeBlock, CodeIdentError>),
     Link(Link),
     List(List),
+    Table(Table),
 }
 
 /// Emphasised or de-emphasised piece of text.
@@ -219,6 +220,23 @@ pub enum CodeModeHint {
     Run,
     /// Hint to run the code and show the results in the document instead of the code itself.
     Replace,
+}
+
+/// `Table` contains rows of paragraphs.
+#[derive(Clone, Default, Debug, Eq, PartialEq)]
+pub struct Table {
+    pub items: Vec<TableRow>,
+    pub tags: Tags,
+    pub props: Props,
+}
+
+/// Tables contain rows of paragraphs
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct TableRow {
+    pub items: Vec<Paragraph>,
+    pub is_header: bool,
+    pub tags: Tags,
+    pub props: Props,
 }
 
 /// Text that has metadata: tags and/or properties.

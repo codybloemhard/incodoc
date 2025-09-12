@@ -154,6 +154,7 @@ pub fn parse_paragraph(pair: Pair<'_, Rule>) -> Paragraph {
             Rule::code => items.push(ParagraphItem::Code(parse_code(inner))),
             Rule::list => items.push(ParagraphItem::List(parse_list(inner))),
             Rule::link => items.push(ParagraphItem::Link(parse_link(inner))),
+            Rule::table => items.push(ParagraphItem::Table(parse_table(inner))),
             Rule::tags => tags.absorb(parse_tags(inner)),
             Rule::props => props.absorb(parse_props(inner)),
             r => panic!("IP: parse_paragraph: illegal rule: {r:?};"),
@@ -309,6 +310,48 @@ fn parse_code_mode(pair: Pair<'_, Rule>) -> CodeModeHint {
         "run" => CodeModeHint::Run,
         "replace" => CodeModeHint::Replace,
         _ => CodeModeHint::Show,
+    }
+}
+
+fn parse_table(pair: Pair<'_, Rule>) -> Table {
+    let iter = pair.into_inner();
+    let mut tags = Tags::default();
+    let mut props = Props::default();
+    let mut items = Vec::new();
+    for inner in iter {
+        match inner.as_rule() {
+            Rule::tags => tags.absorb(parse_tags(inner)),
+            Rule::props => props.absorb(parse_props(inner)),
+            Rule::table_header_row => items.push(parse_table_row(inner, true)),
+            Rule::table_regular_row => items.push(parse_table_row(inner, false)),
+            r => panic!("IP: parse_code: loop: illegal rule: {r:?};"),
+        }
+    }
+    Table {
+        items,
+        tags,
+        props,
+    }
+}
+
+fn parse_table_row(pair: Pair<'_, Rule>, is_header: bool) -> TableRow {
+    let iter = pair.into_inner();
+    let mut tags = Tags::default();
+    let mut props = Props::default();
+    let mut items = Vec::new();
+    for inner in iter {
+        match inner.as_rule() {
+            Rule::tags => tags.absorb(parse_tags(inner)),
+            Rule::props => props.absorb(parse_props(inner)),
+            Rule::paragraph => items.push(parse_paragraph(inner)),
+            r => panic!("IP: parse_code: loop: illegal rule: {r:?};"),
+        }
+    }
+    TableRow {
+        items,
+        is_header,
+        tags,
+        props,
     }
 }
 

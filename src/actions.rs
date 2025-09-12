@@ -489,6 +489,7 @@ impl PruneIncodoc for ParagraphItem {
             Self::Code(Err(_)) => { },
             Self::Link(link) => link.prune_contentless(),
             Self::List(list) => list.prune_contentless(),
+            Self::Table(_) => todo!(),
         }
     }
 
@@ -501,6 +502,7 @@ impl PruneIncodoc for ParagraphItem {
             Self::Code(Err(_)) => true,
             Self::Link(link) => link.is_contentless(),
             Self::List(list) => list.is_contentless(),
+            Self::Table(_) => todo!(),
         }
     }
 }

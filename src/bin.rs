@@ -81,14 +81,38 @@ par{
 ";
 
 const TEST: &str = "
-nav {
-    link { \"urla\", \"linka\" },
-    link { \"urlb\", \"linkb\" }
+par {
+    table {
+        throw {
+            par {
+                'cat a'
+            },
+            par {
+                'cat b'
+            },
+        },
+        trow {
+            par {
+                '4'
+            },
+            par {
+                '9'
+            },
+        },
+        trow {
+            par {
+                'text'
+            },
+            par {
+                list { il, par { 'item a' }, par { 'item b' } }
+            },
+        },
+    }
 }
 ";
 
 fn main() {
-    let res = parse(REF_DOC);
+    let res = parse(TEST);
     match res {
         Ok(res) => {
             // println!("{:#?}", res);

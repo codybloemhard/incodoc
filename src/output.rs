@@ -205,6 +205,7 @@ fn par_items_out(items: &[ParagraphItem], spaces: usize, output: &mut String) {
             ParagraphItem::Link(link) => link_out(link, spaces, output),
             ParagraphItem::Code(Ok(code)) => code_out(code, spaces, output),
             ParagraphItem::List(list) => list_out(list, spaces, output),
+            ParagraphItem::Table(table) => table_out(table, spaces, output),
             ParagraphItem::Code(_) => { },
         }
     }
@@ -225,6 +226,30 @@ fn list_out(list: &List, spaces: usize, output: &mut String) {
     }
     tags_out(&list.tags, spaces + 4, output);
     props_out(&list.props, spaces + 4, output);
+    str_out("},\n", spaces, output);
+}
+
+fn table_row_out(row: &TableRow, spaces: usize, output: &mut String) {
+    if row.is_header {
+        str_out("throw {\n", spaces, output);
+    } else {
+        str_out("trow {\n", spaces, output);
+    }
+    for par in &row.items {
+        paragraph_out(par, spaces + 4, output);
+    }
+    tags_out(&row.tags, spaces + 4, output);
+    props_out(&row.props, spaces + 4, output);
+    str_out("},\n", spaces, output);
+}
+
+fn table_out(table: &Table, spaces: usize, output: &mut String) {
+    str_out("table {\n", spaces, output);
+    for row in &table.items {
+        table_row_out(row, spaces + 4, output);
+    }
+    tags_out(&table.tags, spaces + 4, output);
+    props_out(&table.props, spaces + 4, output);
     str_out("},\n", spaces, output);
 }
 

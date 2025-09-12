@@ -1,6 +1,6 @@
 top = _{ SOI ~ (top_structs ~ ",")* ~ top_structs? ~ EOI }
 top_structs = _{
-    tags | props | paragraph | section | nav_top
+    meta | paragraph | section | nav_top
 }
 
 tags = { "tags" ~ "{" ~ strings ~ "}" }
@@ -11,13 +11,13 @@ prop_tuple = { ("(" ~ string ~ "," ~ prop_val ~ ")") }
 prop_val = _{ string | text | date | int }
 
 section = { "section" ~ "{" ~ heading ~ ("," ~ section_item)+ ~ ","? ~ "}" }
-section_item = _{ paragraph | section | tags | props }
+section_item = _{ paragraph | section | meta }
 
 heading = { "head" ~ "{" ~ uint_capped ~ ("," ~ head_item)+ ~ ","? ~ "}" }
-head_item = _{ string | emphasis | tags | props }
+head_item = _{ string | emphasis | meta }
 
 paragraph = { "par" ~ "{" ~ par_item ~ ("," ~ par_item)* ~ ","? ~ "}" }
-par_item = _{ text_item | emphasis | code | list | link | tags | props }
+par_item = _{ text_item | emphasis | code | list | link | table | meta }
 
 emphasis = { "em" ~ "{" ~ em_st ~ "," ~ string ~ tp_postfix ~ "}" }
 em_st = { "le" | "me" | "se" | "ld" | "md" | "sd" }
@@ -25,24 +25,32 @@ em_st = { "le" | "me" | "se" | "ld" | "md" | "sd" }
 list = { "list" ~ "{" ~ list_type ~ ("," ~ paragraph)+ ~ tp_postfix ~ "}" }
 list_type = { "dl" | "il" | "cl" }
 
-// nav = { "nav" ~ "{" ~ string ~ ("," ~ nav_item)+ ~ ","? ~ "}" }
 nav_top = { "nav" ~ "{" ~ nav_item ~ ("," ~ nav_item)* ~ ","? ~ "}" }
 nav = { "nav" ~ "{" ~ string ~ ("," ~ nav_item)+ ~ ","? ~ "}" }
-nav_item = _{ link | nav | tags | props }
+nav_item = _{ link | nav | meta }
 
 link = { "link" ~ "{" ~ string ~ ("," ~ link_item)+ ~ ","? ~ "}" }
-link_item = _{ string | emphasis | tags | props }
+link_item = _{ string | emphasis | meta }
 
 code = { "code" ~ "{" ~ string ~ "," ~ string ~ "," ~ code_text ~ tp_postfix ~ "}" }
 code_text = ${ code_txt ~ code_text_inner ~ code_txt }
 code_text_inner = { (!code_txt ~ ANY)* }
 code_txt = { "'" }
 
+table = { "table" ~ "{" ~ (meta | meta ~ ("," ~ meta)+)? ~ first_row ~ ("," ~ table_row)*~ ","? ~ "}" }
+first_row = _{ table_header_row | table_regular_row }
+table_row = _{ table_regular_row | meta }
+table_header_row = { "throw" ~ table_row_inner }
+table_regular_row = { "trow" ~ table_row_inner }
+table_row_inner = _{ "{" ~ table_item ~ ("," ~ table_item) ~ ","? ~ "}"}
+table_item = _{ paragraph | meta }
+
+meta = _{ tags | props }
 tp_postfix = _{ ("," ~ tags)? ~ ("," ~ props)? ~ ","? }
 
 text_item = { text ~ text_meta? }
 text = ${ txt ~ text_inner ~ txt }
-text_meta = _{ "{" ~ ((tags ~ "," ~ props) | tags | props) ~ ","? ~ "}" }
+text_meta = _{ "{" ~ ((tags ~ "," ~ props) | meta) ~ ","? ~ "}" }
 text_inner = { (!txt ~ ANY)* }
 txt = _{ "'" }
 

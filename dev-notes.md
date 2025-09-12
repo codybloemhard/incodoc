@@ -57,7 +57,7 @@ common image
   fallback img
   link with url convention?
 tables and graphs
-  regular table wiht incodoc items in it
+  regular table with incodoc items in it
   data frames that can be rendered as tables or graphs
   links to outside resources (csv, etc)
 
