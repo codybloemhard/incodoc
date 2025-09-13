@@ -466,6 +466,88 @@ mod tests {
         }
     );
 
+    test_prune_contentless!(
+        pc_table,
+        Table {
+            items: vec![
+                TableRow {
+                    items: vec![
+                        Paragraph {
+                            items: vec![
+                                ParagraphItem::Text(" ".to_string()),
+                                ParagraphItem::Text("p".to_string()),
+                            ],
+                            tags: hset!([
+                                "ok".to_string(),
+                                " \n".to_string()
+                            ]),
+                            props: props!([
+                                ("ok".to_string(), PropVal::Int(0)),
+                                (" ".to_string(), PropVal::Int(0)),
+                            ]),
+                        },
+                        Paragraph {
+                            items: vec![
+                                ParagraphItem::Text(" \n ".to_string()),
+                            ],
+                            tags: hset!(["not content".to_string()]),
+                            ..Default::default()
+                        },
+                    ],
+                    is_header: false,
+                    tags: hset!([
+                        "ok".to_string(),
+                        " \n".to_string()
+                    ]),
+                    props: props!([
+                        ("ok".to_string(), PropVal::Int(0)),
+                        (" ".to_string(), PropVal::Int(0)),
+                    ]),
+                },
+            ],
+            tags: hset!([
+                "ok".to_string(),
+                " \n".to_string()
+            ]),
+            props: props!([
+                ("ok".to_string(), PropVal::Int(0)),
+                (" ".to_string(), PropVal::Int(0)),
+            ]),
+        },
+        Table {
+            items: vec![
+                TableRow {
+                    items: vec![
+                        Paragraph {
+                            items: vec![
+                                ParagraphItem::Text("p".to_string()),
+                            ],
+                            tags: hset!([
+                                "ok".to_string(),
+                            ]),
+                            props: props!([
+                                ("ok".to_string(), PropVal::Int(0)),
+                            ]),
+                        },
+                    ],
+                    is_header: false,
+                    tags: hset!([
+                        "ok".to_string(),
+                    ]),
+                    props: props!([
+                        ("ok".to_string(), PropVal::Int(0)),
+                    ]),
+                },
+            ],
+            tags: hset!([
+                "ok".to_string(),
+            ]),
+            props: props!([
+                ("ok".to_string(), PropVal::Int(0)),
+            ]),
+        }
+    );
+
     test_squash!(
         sq_doc,
         Doc {
@@ -993,6 +1075,44 @@ mod tests {
                     tags: hset!(["A", "B"]),
                     ..Default::default()
                 }),
+            ],
+            ..Default::default()
+        }
+    );
+
+    test_squash!(
+        sq_table,
+        Table {
+            items: vec![
+                TableRow {
+                    items: vec![
+                        Paragraph {
+                            items: vec![
+                                ParagraphItem::Text("a".to_string()),
+                                ParagraphItem::Text("\n".to_string()),
+                                ParagraphItem::Text("b".to_string()),
+                            ],
+                            ..Default::default()
+                        },
+                    ],
+                    ..Default::default()
+                },
+            ],
+            ..Default::default()
+        },
+        Table {
+            items: vec![
+                TableRow {
+                    items: vec![
+                        Paragraph {
+                            items: vec![
+                                ParagraphItem::Text("a\nb".to_string()),
+                            ],
+                            ..Default::default()
+                        },
+                    ],
+                    ..Default::default()
+                },
             ],
             ..Default::default()
         }

@@ -231,7 +231,7 @@ pub struct Table {
 }
 
 /// Tables contain rows of paragraphs
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct TableRow {
     pub items: Vec<Paragraph>,
     pub is_header: bool,

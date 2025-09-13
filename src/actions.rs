@@ -553,6 +553,66 @@ impl PruneIncodoc for List {
     }
 }
 
+impl Table {
+    pub fn squash(&mut self) {
+        for row in &mut self.items {
+            row.squash();
+        }
+    }
+}
+
+impl TableRow {
+    pub fn squash(&mut self) {
+        for item in &mut self.items {
+            item.squash();
+        }
+    }
+}
+
+impl PruneIncodoc for Table {
+    fn prune_errors(&mut self) {
+        self.props.prune_errors();
+        for row in &mut self.items {
+            row.prune_errors();
+        }
+    }
+
+    fn prune_contentless(&mut self) {
+        for row in &mut self.items {
+            row.prune_contentless();
+        }
+        self.items.retain(|row| !row.is_contentless());
+        self.tags.prune_contentless();
+        self.props.prune_contentless();
+    }
+
+    fn is_contentless(&self) -> bool {
+        self.items.is_empty()
+    }
+}
+
+impl PruneIncodoc for TableRow {
+    fn prune_errors(&mut self) {
+        self.props.prune_errors();
+        for par in &mut self.items {
+            par.prune_errors();
+        }
+    }
+
+    fn prune_contentless(&mut self) {
+        for par in &mut self.items {
+            par.prune_contentless();
+        }
+        self.items.retain(|par| !par.is_contentless());
+        self.tags.prune_contentless();
+        self.props.prune_contentless();
+    }
+
+    fn is_contentless(&self) -> bool {
+        self.items.is_empty()
+    }
+}
+
 impl PruneIncodoc for Nav {
     fn prune_errors(&mut self) {
         self.props.prune_errors();
