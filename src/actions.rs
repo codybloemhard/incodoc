@@ -555,7 +555,7 @@ impl PruneIncodoc for List {
 
 impl Table {
     pub fn squash(&mut self) {
-        for row in &mut self.items {
+        for row in &mut self.rows {
             row.squash();
         }
     }
@@ -572,22 +572,22 @@ impl TableRow {
 impl PruneIncodoc for Table {
     fn prune_errors(&mut self) {
         self.props.prune_errors();
-        for row in &mut self.items {
+        for row in &mut self.rows {
             row.prune_errors();
         }
     }
 
     fn prune_contentless(&mut self) {
-        for row in &mut self.items {
+        for row in &mut self.rows {
             row.prune_contentless();
         }
-        self.items.retain(|row| !row.is_contentless());
+        self.rows.retain(|row| !row.is_contentless());
         self.tags.prune_contentless();
         self.props.prune_contentless();
     }
 
     fn is_contentless(&self) -> bool {
-        self.items.is_empty()
+        self.rows.is_empty()
     }
 }
 

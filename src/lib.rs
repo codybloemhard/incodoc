@@ -225,7 +225,7 @@ pub enum CodeModeHint {
 /// `Table` contains rows of paragraphs.
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct Table {
-    pub items: Vec<TableRow>,
+    pub rows: Vec<TableRow>,
     pub tags: Tags,
     pub props: Props,
 }

@@ -469,7 +469,7 @@ mod tests {
     test_prune_contentless!(
         pc_table,
         Table {
-            items: vec![
+            rows: vec![
                 TableRow {
                     items: vec![
                         Paragraph {
@@ -515,7 +515,7 @@ mod tests {
             ]),
         },
         Table {
-            items: vec![
+            rows: vec![
                 TableRow {
                     items: vec![
                         Paragraph {
@@ -1083,7 +1083,7 @@ mod tests {
     test_squash!(
         sq_table,
         Table {
-            items: vec![
+            rows: vec![
                 TableRow {
                     items: vec![
                         Paragraph {
@@ -1101,7 +1101,7 @@ mod tests {
             ..Default::default()
         },
         Table {
-            items: vec![
+            rows: vec![
                 TableRow {
                     items: vec![
                         Paragraph {

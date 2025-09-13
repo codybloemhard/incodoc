@@ -245,7 +245,7 @@ fn table_row_out(row: &TableRow, spaces: usize, output: &mut String) {
 
 fn table_out(table: &Table, spaces: usize, output: &mut String) {
     str_out("table {\n", spaces, output);
-    for row in &table.items {
+    for row in &table.rows {
         table_row_out(row, spaces + 4, output);
     }
     tags_out(&table.tags, spaces + 4, output);

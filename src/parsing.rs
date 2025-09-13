@@ -317,18 +317,18 @@ fn parse_table(pair: Pair<'_, Rule>) -> Table {
     let iter = pair.into_inner();
     let mut tags = Tags::default();
     let mut props = Props::default();
-    let mut items = Vec::new();
+    let mut rows = Vec::new();
     for inner in iter {
         match inner.as_rule() {
             Rule::tags => tags.absorb(parse_tags(inner)),
             Rule::props => props.absorb(parse_props(inner)),
-            Rule::table_header_row => items.push(parse_table_row(inner, true)),
-            Rule::table_regular_row => items.push(parse_table_row(inner, false)),
+            Rule::table_header_row => rows.push(parse_table_row(inner, true)),
+            Rule::table_regular_row => rows.push(parse_table_row(inner, false)),
             r => panic!("IP: parse_code: loop: illegal rule: {r:?};"),
         }
     }
     Table {
-        items,
+        rows,
         tags,
         props,
     }
