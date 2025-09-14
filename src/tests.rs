@@ -3884,4 +3884,337 @@ props { (
             ..Default::default()
         }
     );
+
+    test_par!(
+        po_table_c0,
+        "
+        table {
+            trow {
+                par { 'text' },
+            },
+        },
+        ",
+        Paragraph {
+            items: vec![
+                ParagraphItem::Table(Table {
+                    rows: vec![
+                        TableRow {
+                            items: vec![
+                                Paragraph {
+                                    items: vec![
+                                        ParagraphItem::Text("text".to_string()),
+                                    ],
+                                    ..Default::default()
+                                },
+                            ],
+                            ..Default::default()
+                        },
+                    ],
+                    ..Default::default()
+                }),
+            ],
+            ..Default::default()
+        }
+    );
+
+    test_par!(
+        po_table_c0_comment,
+        "
+        /*c*/table/*c*/{//c
+            /*c*/trow/*c*/{//c
+                /*c*/par/*c*/{/*c*/'text'/*c*/}/*c*/,//c
+            /*c*/}/*c*/,//c
+        /*c*/}/*c*/,//c
+        ",
+        Paragraph {
+            items: vec![
+                ParagraphItem::Table(Table {
+                    rows: vec![
+                        TableRow {
+                            items: vec![
+                                Paragraph {
+                                    items: vec![
+                                        ParagraphItem::Text("text".to_string()),
+                                    ],
+                                    ..Default::default()
+                                },
+                            ],
+                            ..Default::default()
+                        },
+                    ],
+                    ..Default::default()
+                }),
+            ],
+            ..Default::default()
+        }
+    );
+
+    test_par!(
+        po_table_c1,
+        "
+        table {
+            trow {
+                par { 'text' },
+                par { 'text' },
+            },
+        },
+        ",
+        Paragraph {
+            items: vec![
+                ParagraphItem::Table(Table {
+                    rows: vec![
+                        TableRow {
+                            items: vec![
+                                Paragraph {
+                                    items: vec![
+                                        ParagraphItem::Text("text".to_string()),
+                                    ],
+                                    ..Default::default()
+                                },
+                                Paragraph {
+                                    items: vec![
+                                        ParagraphItem::Text("text".to_string()),
+                                    ],
+                                    ..Default::default()
+                                },
+                            ],
+                            ..Default::default()
+                        },
+                    ],
+                    ..Default::default()
+                }),
+            ],
+            ..Default::default()
+        }
+    );
+
+    test_par!(
+        po_table_c2,
+        "
+        table {
+            throw {
+                par { 'text' },
+                par { 'text' },
+            },
+        },
+        ",
+        Paragraph {
+            items: vec![
+                ParagraphItem::Table(Table {
+                    rows: vec![
+                        TableRow {
+                            is_header: true,
+                            items: vec![
+                                Paragraph {
+                                    items: vec![
+                                        ParagraphItem::Text("text".to_string()),
+                                    ],
+                                    ..Default::default()
+                                },
+                                Paragraph {
+                                    items: vec![
+                                        ParagraphItem::Text("text".to_string()),
+                                    ],
+                                    ..Default::default()
+                                },
+                            ],
+                            ..Default::default()
+                        },
+                    ],
+                    ..Default::default()
+                }),
+            ],
+            ..Default::default()
+        }
+    );
+
+    test_par!(
+        po_table_c3,
+        "
+        table {
+            throw {
+                par { 'text' },
+                par { 'text' },
+            },
+            trow {
+                par { 'text' },
+                par { 'text' },
+            },
+        },
+        ",
+        Paragraph {
+            items: vec![
+                ParagraphItem::Table(Table {
+                    rows: vec![
+                        TableRow {
+                            is_header: true,
+                            items: vec![
+                                Paragraph {
+                                    items: vec![
+                                        ParagraphItem::Text("text".to_string()),
+                                    ],
+                                    ..Default::default()
+                                },
+                                Paragraph {
+                                    items: vec![
+                                        ParagraphItem::Text("text".to_string()),
+                                    ],
+                                    ..Default::default()
+                                },
+                            ],
+                            ..Default::default()
+                        },
+                        TableRow {
+                            items: vec![
+                                Paragraph {
+                                    items: vec![
+                                        ParagraphItem::Text("text".to_string()),
+                                    ],
+                                    ..Default::default()
+                                },
+                                Paragraph {
+                                    items: vec![
+                                        ParagraphItem::Text("text".to_string()),
+                                    ],
+                                    ..Default::default()
+                                },
+                            ],
+                            ..Default::default()
+                        },
+                    ],
+                    ..Default::default()
+                }),
+            ],
+            ..Default::default()
+        }
+    );
+
+    test_par!(
+        po_table_c4,
+        "
+        table {
+            tags { \"a\" },
+            props { (\"a\", 0) },
+            throw {
+                tags { \"a\" },
+                props { (\"a\", 0) },
+                par { 'text' },
+                par { 'text' },
+                tags { \"b\" },
+                props { (\"b\", 0) },
+            },
+            tags { \"b\" },
+            props { (\"b\", 0) },
+            trow {
+                par { 'text' },
+            },
+        },
+        ",
+        Paragraph {
+            items: vec![
+                ParagraphItem::Table(Table {
+                    rows: vec![
+                        TableRow {
+                            is_header: true,
+                            items: vec![
+                                Paragraph {
+                                    items: vec![
+                                        ParagraphItem::Text("text".to_string()),
+                                    ],
+                                    ..Default::default()
+                                },
+                                Paragraph {
+                                    items: vec![
+                                        ParagraphItem::Text("text".to_string()),
+                                    ],
+                                    ..Default::default()
+                                },
+                            ],
+                            tags: hset!(["a", "b"]),
+                            props: props!([
+                                ("a".to_string(), PropVal::Int(0)),
+                                ("b".to_string(), PropVal::Int(0)),
+                            ]),
+                        },
+                        TableRow {
+                            items: vec![
+                                Paragraph {
+                                    items: vec![
+                                        ParagraphItem::Text("text".to_string()),
+                                    ],
+                                    ..Default::default()
+                                },
+                            ],
+                            ..Default::default()
+                        },
+                    ],
+                    tags: hset!(["a", "b"]),
+                    props: props!([
+                        ("a".to_string(), PropVal::Int(0)),
+                        ("b".to_string(), PropVal::Int(0)),
+                    ]),
+                    ..Default::default()
+                }),
+            ],
+            ..Default::default()
+        }
+    );
+
+    test_par!(
+        po_table_c5,
+        "
+        table {
+            throw {
+                par {
+                    table {
+                        trow {
+                            par {
+                                'text'
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        ",
+        Paragraph {
+            items: vec![
+                ParagraphItem::Table(Table {
+                    rows: vec![
+                        TableRow {
+                            is_header: true,
+                            items: vec![
+                                Paragraph {
+                                    items: vec![
+                                        ParagraphItem::Table(Table {
+                                            rows: vec![
+                                                TableRow {
+                                                    items: vec![
+                                                        Paragraph {
+                                                            items: vec![
+                                                                ParagraphItem::Text(
+                                                                    "text".to_string()
+                                                                ),
+                                                            ],
+                                                            ..Default::default()
+                                                        },
+                                                    ],
+                                                    ..Default::default()
+                                                },
+                                            ],
+                                            ..Default::default()
+                                        }),
+                                    ],
+                                    ..Default::default()
+                                },
+                            ],
+                            ..Default::default()
+                        },
+                    ],
+                    ..Default::default()
+                }),
+            ],
+            ..Default::default()
+        }
+    );
 }

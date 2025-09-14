@@ -84,30 +84,15 @@ const TEST: &str = "
 par {
     table {
         throw {
-            par {
-                'cat a'
-            },
-            par {
-                'cat b'
-            },
+            tags { \"a\" },
         },
         trow {
-            par {
-                '4'
-            },
-            par {
-                '9'
-            },
+            tags { \"b\" },
         },
         trow {
-            par {
-                'text'
-            },
-            par {
-                list { il, par { 'item a' }, par { 'item b' } }
-            },
+            tags { \"c\" },
         },
-    }
+    },
 }
 ";
 
