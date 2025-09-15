@@ -34,7 +34,7 @@ section {
         link{\"#questions\", \"questions\"},
         '.',
     },
-    section {
+    section{
         head{1, \"questions\", tags{\"#questions\"}},
         par{
             '
@@ -70,6 +70,23 @@ section {
             ',
         },
     },
+    par{
+        'A very logical table:',
+        table{
+            throw{
+                par { 'φ' },
+                par { '¬φ' },
+            },
+            trow {
+                par { 'T' },
+                par { 'F' },
+            },
+            trow {
+                par { 'F' },
+                par { 'T' },
+            },
+        },
+    },
 },
 par{
     props{(\"type\", \"footer\")},
@@ -97,7 +114,7 @@ par {
 ";
 
 fn main() {
-    let res = parse(TEST);
+    let res = parse(REF_DOC);
     match res {
         Ok(res) => {
             // println!("{:#?}", res);

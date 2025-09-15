@@ -156,6 +156,23 @@ Only if you want to.',
         },
     },
 },
+par{
+    'A very logical table:',
+    table{
+        throw{
+            par { 'φ' },
+            par { '¬φ' },
+        },
+        trow {
+            par { 'T' },
+            par { 'F' },
+        },
+        trow {
+            par { 'F' },
+            par { 'T' },
+        },
+    },
+},
 par {
     'Copyright (c) 1337 me',
     props {

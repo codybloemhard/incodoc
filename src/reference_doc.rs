@@ -26,14 +26,20 @@ pub const REF_DOC: &str = "
         code { \"rust\", \"auto\", 'let x = 0;', tags { \"tag\" }, props { (\"prop\", 0) } },
         code { \"rust\", \"replace\", 'let x = 0;', tags { \"tag\" }, props { (\"prop\", 0) } },
         link { \"url\", \"link string\", tags { \"tag\" }, props { (\"prop\", 0) } },
+        list { dl, par { 'item 0' }, par { 'item 1' }, par { 'item 2' }, },
+        list { il, par { 'item 0' }, par { 'item 1' }, par { 'item 2' }, },
+        list { cl, par { 'item 0' }, par { 'item 1' }, par { 'item 2', tags { \"checked\" }, }, },
         list {
             il,
-            par {
-                'text',
-                em { le, \"light emphasis\" },
-                code { \"rust\", \"show\", 'let x = 0' },
-                link { \"url\", \"link\" },
-                list { il, par { 'item 0' }, par { 'item 1' } },
+            par { 'text' },
+            tags { \"tag\" },
+            props { (\"prop\", 0) },
+        },
+        table {
+            throw { par { 'A' }, par { 'B' }, par { 'C' }, },
+            trow { par { 'a0' }, par { 'b0' }, par { 'c0' }, },
+            trow {
+                par { 'a1' }, par { 'b1' }, par { 'c1' },
                 tags { \"tag\" },
                 props { (\"prop\", 0) },
             },

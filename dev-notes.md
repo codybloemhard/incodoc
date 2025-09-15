@@ -18,6 +18,9 @@ features:
   - ordered, unordered, checked, recursive
 - [x] paragraphs
   - single lines by hinting in meta
+- [x] tables
+  - header rows and regular rows
+  - rows of paragraphs
 - [x] code
   - language hint
   - mode hint: show, executable, replace with result, ...
