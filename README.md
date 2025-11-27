@@ -45,6 +45,13 @@ In this README:
 [md-to-incodoc](https://github.com/codybloemhard/md-to-incodoc)
 Parse markdown and yield an incodoc data structure.
 
+[incodoc-to-ansi](https://github.com/codybloemhard/incodoc-to-ansi)
+Unparse incodoc and yield ANSI text ready for display in terminals.
+
+
+[incodoc-to-html-css](https://github.com/codybloemhard/incodoc-to-html-css)
+Unparse incodoc and yield HTML + CSS documents ready for display in browsers.
+
 ## Quick example
 
 ``` incodoc
