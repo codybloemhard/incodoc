@@ -48,9 +48,8 @@ Parse markdown and yield an incodoc data structure.
 [incodoc-to-ansi](https://github.com/codybloemhard/incodoc-to-ansi)
 Unparse incodoc and yield ANSI text ready for display in terminals.
 
-
-[incodoc-to-html-css](https://github.com/codybloemhard/incodoc-to-html-css)
-Unparse incodoc and yield HTML + CSS documents ready for display in browsers.
+[incodoc-to-html](https://github.com/codybloemhard/incodoc-to-html)
+Unparse incodoc and yield HTML documents ready for display in browsers.
 
 ## Quick example
 
@@ -208,7 +207,7 @@ as per <https://dictionary.cambridge.org/dictionary/english/incorporeal> (March 
 Describes the document as not having a physical body as the consumer decides what it looks like.
 Yet describes the document as having form.
 This refers to abstract form and structure like sections, paragraphs, lists, etc.
-For motivation on the choice of words see the "Name" section.
+For motivation on the choice of words see the [Name](#name) section.
 
 Some incorporeal elements a document can have:
 
@@ -490,7 +489,7 @@ The user may be severely impeded by the design but could otherwise consume the d
 
 Furthermore, it can be said that many contemporary documents are really applications.
 PDFs are basically programs. HTML + CSS + JS pages are web applications rather than web documents.
-See also the "Existing document formats" section.
+See also the [Existing document formats](#existing-document-formats) section.
 Documents are more accessible and give the user more freedom, security and privacy.
 If something can be a document instead of an application, it should be strongly considered.
 

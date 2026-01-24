@@ -14,6 +14,40 @@ pub trait PruneIncodoc {
     fn is_contentless(&self) -> bool;
 }
 
+/// A recursive table of contents.
+#[derive(Clone, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
+pub struct TableOfContentsItem {
+    /// Title of this item.
+    title: String,
+    /// Link to the items destination in the document.
+    link: String,
+    /// What type of content this item refers to.
+    item_type: TableOfContentsItemType,
+    /// Sub items in this table.
+    children: Vec<TableOfContentsItem>,
+}
+
+/// Describes the type of content an item in a table of contents refers to.
+#[derive(Clone, Copy, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
+pub enum TableOfContentsItemType {
+    Document,
+    Section,
+    Paragraph,
+    Nav,
+    Quote,
+    FootnoteDefinition,
+    List,
+    Table,
+    CodeBlock,
+    Link,
+    Emphasis,
+    MText,
+}
+
+pub trait GetTableOfContents {
+    fn get_table_of_contents(&self) -> Option<TableOfContentsItem>;
+}
+
 fn squash_alg_text_case<'a>(
     ltext: &mut Option<&'a mut String>,
     lmtext: &mut Option<&mut TextWithMeta>,
@@ -722,6 +756,244 @@ impl PruneIncodoc for TextWithMeta {
 
     fn is_contentless(&self) -> bool {
         self.text.is_empty()
+    }
+}
+
+fn push_toci(children: &mut Vec<TableOfContentsItem>, res: Option<TableOfContentsItem>) {
+    if let Some(item) = res {
+        children.push(item);
+    }
+}
+
+impl GetTableOfContents for Doc {
+    fn get_table_of_contents(&self) -> Option<TableOfContentsItem> {
+        let mut children = Vec::new();
+        for item in &self.items {
+            match item {
+                DocItem::Nav(nav) => push_toci(&mut children, nav.get_table_of_contents()),
+                DocItem::Paragraph(par) => push_toci(&mut children, par.get_table_of_contents()),
+                DocItem::Section(section) => push_toci(
+                    &mut children,
+                    section.get_table_of_contents()
+                ),
+            }
+        }
+        Some(TableOfContentsItem {
+            title: "Table of Contents".to_string(),
+            link: ".".to_string(),
+            item_type: TableOfContentsItemType::Document,
+            children,
+        })
+    }
+}
+
+impl GetTableOfContents for Section {
+    fn get_table_of_contents(&self) -> Option<TableOfContentsItem> {
+        let mut children = Vec::new();
+        for item in &self.items {
+            match item {
+                SectionItem::Paragraph(par) => push_toci(
+                    &mut children,
+                    par.get_table_of_contents()
+                ),
+                SectionItem::Section(section) => push_toci(
+                    &mut children,
+                    section.get_table_of_contents()
+                ),
+            }
+        }
+        let mut title = String::new();
+        let mut link = String::new();
+        let item_type = if self.tags.contains("footnote-def") {
+            title += "Footnote definition: ";
+            TableOfContentsItemType::FootnoteDefinition
+        } else if self.tags.contains("blockquote") || self.tags.contains("blockquote-typed") {
+            title += "Quote: ";
+            TableOfContentsItemType::Quote
+        } else {
+            TableOfContentsItemType::Section
+        };
+        for item in &self.heading.items {
+            match item {
+                HeadingItem::String(string) => {
+                    title += string;
+                    link += &string.to_lowercase();
+                },
+                HeadingItem::Em(em) => {
+                    title += &em.text;
+                    link += &em.text.to_lowercase();
+                },
+            }
+        }
+        if title.ends_with(": ") {
+            title.pop();
+            title.pop();
+        }
+        Some(TableOfContentsItem {
+            title,
+            link,
+            item_type,
+            children,
+        })
+    }
+}
+
+impl GetTableOfContents for Paragraph {
+    fn get_table_of_contents(&self) -> Option<TableOfContentsItem> {
+        let mut children = Vec::new();
+        for item in &self.items {
+            match item {
+                ParagraphItem::Text(_) => { },
+                ParagraphItem::MText(mtext) => push_toci(
+                    &mut children,
+                    mtext.get_table_of_contents()
+                ),
+                ParagraphItem::Em(em) => push_toci(&mut children, em.get_table_of_contents()),
+                ParagraphItem::Code(code_result) => push_toci(
+                    &mut children,
+                    code_result.get_table_of_contents()
+                ),
+                ParagraphItem::Link(link) => push_toci(&mut children, link.get_table_of_contents()),
+                ParagraphItem::List(list) => push_toci(&mut children, list.get_table_of_contents()),
+                ParagraphItem::Table(table) => push_toci(
+                    &mut children,
+                    table.get_table_of_contents()
+                ),
+            }
+        }
+        if let Some(PropVal::String(id)) = self.props.get("id") {
+            Some(TableOfContentsItem {
+                title: id.to_string(),
+                link: id.to_string(),
+                item_type: TableOfContentsItemType::Paragraph,
+                children,
+            })
+        } else if !children.is_empty() {
+            Some(TableOfContentsItem {
+                title: "paragraph".to_string(),
+                link: "".to_string(),
+                item_type: TableOfContentsItemType::Paragraph,
+                children,
+            })
+        } else {
+            None
+        }
+    }
+}
+
+impl GetTableOfContents for Emphasis {
+    fn get_table_of_contents(&self) -> Option<TableOfContentsItem> {
+        if let Some(PropVal::String(id)) = self.props.get("id") {
+            Some(TableOfContentsItem {
+                title: self.text.to_string(),
+                link: id.to_string(),
+                item_type: TableOfContentsItemType::Emphasis,
+                children: vec![],
+            })
+        } else {
+            None
+        }
+    }
+}
+
+impl GetTableOfContents for List {
+    fn get_table_of_contents(&self) -> Option<TableOfContentsItem> {
+        if let Some(PropVal::String(id)) = self.props.get("id") {
+            Some(TableOfContentsItem {
+                title: id.to_string(),
+                link: id.to_string(),
+                item_type: TableOfContentsItemType::List,
+                children: vec![],
+            })
+        } else {
+            None
+        }
+    }
+}
+
+impl GetTableOfContents for Nav {
+    fn get_table_of_contents(&self) -> Option<TableOfContentsItem> {
+        if let Some(PropVal::String(id)) = self.props.get("id") {
+            Some(TableOfContentsItem {
+                title: self.description.to_string(),
+                link: id.to_string(),
+                item_type: TableOfContentsItemType::Nav,
+                children: vec![],
+            })
+        } else {
+            None
+        }
+    }
+}
+
+impl GetTableOfContents for Link {
+    fn get_table_of_contents(&self) -> Option<TableOfContentsItem> {
+        if let Some(PropVal::String(id)) = self.props.get("id") {
+            let mut title = String::new();
+            for item in &self.items {
+                match item {
+                    LinkItem::String(string) => title += string,
+                    LinkItem::Em(em) => title += &em.text,
+                }
+            }
+            Some(TableOfContentsItem {
+                title,
+                link: id.to_string(),
+                item_type: TableOfContentsItemType::Link,
+                children: vec![],
+            })
+        } else {
+            None
+        }
+    }
+}
+
+impl GetTableOfContents for Result<CodeBlock, CodeIdentError> {
+    fn get_table_of_contents(&self) -> Option<TableOfContentsItem> {
+        if let Ok(code_block) = self {
+            if let Some(PropVal::String(id)) = code_block.props.get("id") {
+                Some(TableOfContentsItem {
+                    title: id.to_string(),
+                    link: id.to_string(),
+                    item_type: TableOfContentsItemType::CodeBlock,
+                    children: vec![],
+                })
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
+}
+
+impl GetTableOfContents for Table {
+    fn get_table_of_contents(&self) -> Option<TableOfContentsItem> {
+        if let Some(PropVal::String(id)) = self.props.get("id") {
+            Some(TableOfContentsItem {
+                title: id.to_string(),
+                link: id.to_string(),
+                item_type: TableOfContentsItemType::Table,
+                children: vec![],
+            })
+        } else {
+            None
+        }
+    }
+}
+
+impl GetTableOfContents for TextWithMeta {
+    fn get_table_of_contents(&self) -> Option<TableOfContentsItem> {
+        if let Some(PropVal::String(id)) = self.props.get("id") {
+            Some(TableOfContentsItem {
+                title: id.to_string(),
+                link: id.to_string(),
+                item_type: TableOfContentsItemType::MText,
+                children: vec![],
+            })
+        } else {
+            None
+        }
     }
 }
 

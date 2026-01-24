@@ -2,6 +2,7 @@ use incodoc::{
     parsing::parse,
     output::doc_out,
     reference_doc::REF_DOC,
+    actions::*,
 };
 
 const README: &str = "
@@ -121,6 +122,7 @@ fn main() {
             let mut output = String::new();
             doc_out(&res, &mut output);
             println!("{output}");
+            println!("{:?}", res.get_table_of_contents());
         },
         Err(err) => println!("{err}"),
     }
