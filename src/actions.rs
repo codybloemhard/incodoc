@@ -826,8 +826,19 @@ impl GetTableOfContents for Section {
         &self,
         filter: &Option<(HashSet<TableOfContentsItemType>, TableOfContentsFilterType)>,
     ) -> Option<TableOfContentsItem> {
+        let mut title = String::new();
+        let mut link = String::new();
+        let item_type = if self.tags.contains("footnote-def") {
+            title += "Footnote definition: ";
+            TableOfContentsItemType::FootnoteDefinition
+        } else if self.tags.contains("blockquote") || self.tags.contains("blockquote-typed") {
+            title += "Quote: ";
+            TableOfContentsItemType::Quote
+        } else {
+            TableOfContentsItemType::Section
+        };
         if let Some((filter, ftype)) = filter
-            && !filter.contains(&TableOfContentsItemType::Section)
+            && !filter.contains(&item_type)
             && *ftype == TableOfContentsFilterType::HardStop
         {
             return None;
@@ -847,22 +858,11 @@ impl GetTableOfContents for Section {
         }
         if children.is_empty()
             && let Some((filter, ftype)) = filter
-            && !filter.contains(&TableOfContentsItemType::Section)
+            && !filter.contains(&item_type)
             && *ftype == TableOfContentsFilterType::IncludeWithChildren
         {
             return None;
         }
-        let mut title = String::new();
-        let mut link = String::new();
-        let item_type = if self.tags.contains("footnote-def") {
-            title += "Footnote definition: ";
-            TableOfContentsItemType::FootnoteDefinition
-        } else if self.tags.contains("blockquote") || self.tags.contains("blockquote-typed") {
-            title += "Quote: ";
-            TableOfContentsItemType::Quote
-        } else {
-            TableOfContentsItemType::Section
-        };
         for item in &self.heading.items {
             match item {
                 HeadingItem::String(string) => {
