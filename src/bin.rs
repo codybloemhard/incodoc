@@ -5,6 +5,8 @@ use incodoc::{
     actions::*,
 };
 
+use std::collections::HashSet;
+
 const README: &str = "
 props{
     (\"language\", \"en\"),
@@ -122,7 +124,13 @@ fn main() {
             let mut output = String::new();
             doc_out(&res, &mut output);
             println!("{output}");
-            println!("{:?}", res.get_table_of_contents());
+            println!("{:#?}", res.get_table_of_contents(&Some((
+                HashSet::from([
+                    TableOfContentsItemType::Document,
+                    TableOfContentsItemType::Section,
+                ]),
+                TableOfContentsFilterType::IncludeWithChildren
+            ))));
         },
         Err(err) => println!("{err}"),
     }

@@ -44,8 +44,23 @@ pub enum TableOfContentsItemType {
     MText,
 }
 
+/// Defines the behaviour of the filter when generating a table of contents.
+#[derive(Clone, Copy, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
+pub enum TableOfContentsFilterType {
+    /// Stop when a type is not in the filter, don't look any further.
+    HardStop,
+    /// Include a vertex when its children need including, even when its type is absent from the
+    /// filter.
+    IncludeWithChildren,
+}
+
+/// Generate a table of contents from a part of a document.
 pub trait GetTableOfContents {
-    fn get_table_of_contents(&self) -> Option<TableOfContentsItem>;
+    /// If a filter is supplied, an item must be of a type present in the filter to get included.
+    fn get_table_of_contents(
+        &self,
+        filter: &Option<(HashSet<TableOfContentsItemType>, TableOfContentsFilterType)>,
+    ) -> Option<TableOfContentsItem>;
 }
 
 fn squash_alg_text_case<'a>(
@@ -766,17 +781,36 @@ fn push_toci(children: &mut Vec<TableOfContentsItem>, res: Option<TableOfContent
 }
 
 impl GetTableOfContents for Doc {
-    fn get_table_of_contents(&self) -> Option<TableOfContentsItem> {
+    fn get_table_of_contents(
+        &self,
+        filter: &Option<(HashSet<TableOfContentsItemType>, TableOfContentsFilterType)>,
+    ) -> Option<TableOfContentsItem> {
+        if let Some((filter, ftype)) = filter
+            && !filter.contains(&TableOfContentsItemType::Document)
+            && *ftype == TableOfContentsFilterType::HardStop
+        {
+            return None;
+        }
         let mut children = Vec::new();
         for item in &self.items {
             match item {
-                DocItem::Nav(nav) => push_toci(&mut children, nav.get_table_of_contents()),
-                DocItem::Paragraph(par) => push_toci(&mut children, par.get_table_of_contents()),
+                DocItem::Nav(nav) => push_toci(&mut children, nav.get_table_of_contents(filter)),
+                DocItem::Paragraph(par) => push_toci(
+                    &mut children,
+                    par.get_table_of_contents(filter)
+                ),
                 DocItem::Section(section) => push_toci(
                     &mut children,
-                    section.get_table_of_contents()
+                    section.get_table_of_contents(filter)
                 ),
             }
+        }
+        if children.is_empty()
+            && let Some((filter, ftype)) = filter
+            && !filter.contains(&TableOfContentsItemType::Document)
+            && *ftype == TableOfContentsFilterType::IncludeWithChildren
+        {
+            return None;
         }
         Some(TableOfContentsItem {
             title: "Table of Contents".to_string(),
@@ -788,19 +822,35 @@ impl GetTableOfContents for Doc {
 }
 
 impl GetTableOfContents for Section {
-    fn get_table_of_contents(&self) -> Option<TableOfContentsItem> {
+    fn get_table_of_contents(
+        &self,
+        filter: &Option<(HashSet<TableOfContentsItemType>, TableOfContentsFilterType)>,
+    ) -> Option<TableOfContentsItem> {
+        if let Some((filter, ftype)) = filter
+            && !filter.contains(&TableOfContentsItemType::Section)
+            && *ftype == TableOfContentsFilterType::HardStop
+        {
+            return None;
+        }
         let mut children = Vec::new();
         for item in &self.items {
             match item {
                 SectionItem::Paragraph(par) => push_toci(
                     &mut children,
-                    par.get_table_of_contents()
+                    par.get_table_of_contents(filter)
                 ),
                 SectionItem::Section(section) => push_toci(
                     &mut children,
-                    section.get_table_of_contents()
+                    section.get_table_of_contents(filter)
                 ),
             }
+        }
+        if children.is_empty()
+            && let Some((filter, ftype)) = filter
+            && !filter.contains(&TableOfContentsItemType::Section)
+            && *ftype == TableOfContentsFilterType::IncludeWithChildren
+        {
+            return None;
         }
         let mut title = String::new();
         let mut link = String::new();
@@ -839,27 +889,49 @@ impl GetTableOfContents for Section {
 }
 
 impl GetTableOfContents for Paragraph {
-    fn get_table_of_contents(&self) -> Option<TableOfContentsItem> {
+    fn get_table_of_contents(
+        &self,
+        filter: &Option<(HashSet<TableOfContentsItemType>, TableOfContentsFilterType)>,
+    ) -> Option<TableOfContentsItem> {
+        if let Some((filter, ftype)) = filter
+            && !filter.contains(&TableOfContentsItemType::Paragraph)
+            && *ftype == TableOfContentsFilterType::HardStop
+        {
+            return None;
+        }
         let mut children = Vec::new();
         for item in &self.items {
             match item {
                 ParagraphItem::Text(_) => { },
                 ParagraphItem::MText(mtext) => push_toci(
                     &mut children,
-                    mtext.get_table_of_contents()
+                    mtext.get_table_of_contents(filter)
                 ),
-                ParagraphItem::Em(em) => push_toci(&mut children, em.get_table_of_contents()),
+                ParagraphItem::Em(em) => push_toci(&mut children, em.get_table_of_contents(filter)),
                 ParagraphItem::Code(code_result) => push_toci(
                     &mut children,
-                    code_result.get_table_of_contents()
+                    code_result.get_table_of_contents(filter)
                 ),
-                ParagraphItem::Link(link) => push_toci(&mut children, link.get_table_of_contents()),
-                ParagraphItem::List(list) => push_toci(&mut children, list.get_table_of_contents()),
+                ParagraphItem::Link(link) => push_toci(
+                    &mut children,
+                    link.get_table_of_contents(filter)
+                ),
+                ParagraphItem::List(list) => push_toci(
+                    &mut children,
+                    list.get_table_of_contents(filter)
+                ),
                 ParagraphItem::Table(table) => push_toci(
                     &mut children,
-                    table.get_table_of_contents()
+                    table.get_table_of_contents(filter)
                 ),
             }
+        }
+        if children.is_empty()
+            && let Some((filter, ftype)) = filter
+            && !filter.contains(&TableOfContentsItemType::Section)
+            && *ftype == TableOfContentsFilterType::IncludeWithChildren
+        {
+            return None;
         }
         if let Some(PropVal::String(id)) = self.props.get("id") {
             Some(TableOfContentsItem {
@@ -882,7 +954,16 @@ impl GetTableOfContents for Paragraph {
 }
 
 impl GetTableOfContents for Emphasis {
-    fn get_table_of_contents(&self) -> Option<TableOfContentsItem> {
+    fn get_table_of_contents(
+        &self,
+        filter: &Option<(HashSet<TableOfContentsItemType>, TableOfContentsFilterType)>,
+    ) -> Option<TableOfContentsItem> {
+        if let Some((filter, ftype)) = filter
+            && !filter.contains(&TableOfContentsItemType::Emphasis)
+            && *ftype == TableOfContentsFilterType::HardStop
+        {
+            return None;
+        }
         if let Some(PropVal::String(id)) = self.props.get("id") {
             Some(TableOfContentsItem {
                 title: self.text.to_string(),
@@ -897,7 +978,16 @@ impl GetTableOfContents for Emphasis {
 }
 
 impl GetTableOfContents for List {
-    fn get_table_of_contents(&self) -> Option<TableOfContentsItem> {
+    fn get_table_of_contents(
+        &self,
+        filter: &Option<(HashSet<TableOfContentsItemType>, TableOfContentsFilterType)>,
+    ) -> Option<TableOfContentsItem> {
+        if let Some((filter, ftype)) = filter
+            && !filter.contains(&TableOfContentsItemType::List)
+            && *ftype == TableOfContentsFilterType::HardStop
+        {
+            return None;
+        }
         if let Some(PropVal::String(id)) = self.props.get("id") {
             Some(TableOfContentsItem {
                 title: id.to_string(),
@@ -912,7 +1002,16 @@ impl GetTableOfContents for List {
 }
 
 impl GetTableOfContents for Nav {
-    fn get_table_of_contents(&self) -> Option<TableOfContentsItem> {
+    fn get_table_of_contents(
+        &self,
+        filter: &Option<(HashSet<TableOfContentsItemType>, TableOfContentsFilterType)>,
+    ) -> Option<TableOfContentsItem> {
+        if let Some((filter, ftype)) = filter
+            && !filter.contains(&TableOfContentsItemType::Nav)
+            && *ftype == TableOfContentsFilterType::HardStop
+        {
+            return None;
+        }
         if let Some(PropVal::String(id)) = self.props.get("id") {
             Some(TableOfContentsItem {
                 title: self.description.to_string(),
@@ -927,7 +1026,16 @@ impl GetTableOfContents for Nav {
 }
 
 impl GetTableOfContents for Link {
-    fn get_table_of_contents(&self) -> Option<TableOfContentsItem> {
+    fn get_table_of_contents(
+        &self,
+        filter: &Option<(HashSet<TableOfContentsItemType>, TableOfContentsFilterType)>,
+    ) -> Option<TableOfContentsItem> {
+        if let Some((filter, ftype)) = filter
+            && !filter.contains(&TableOfContentsItemType::Link)
+            && *ftype == TableOfContentsFilterType::HardStop
+        {
+            return None;
+        }
         if let Some(PropVal::String(id)) = self.props.get("id") {
             let mut title = String::new();
             for item in &self.items {
@@ -949,7 +1057,16 @@ impl GetTableOfContents for Link {
 }
 
 impl GetTableOfContents for Result<CodeBlock, CodeIdentError> {
-    fn get_table_of_contents(&self) -> Option<TableOfContentsItem> {
+    fn get_table_of_contents(
+        &self,
+        filter: &Option<(HashSet<TableOfContentsItemType>, TableOfContentsFilterType)>,
+    ) -> Option<TableOfContentsItem> {
+        if let Some((filter, ftype)) = filter
+            && !filter.contains(&TableOfContentsItemType::CodeBlock)
+            && *ftype == TableOfContentsFilterType::HardStop
+        {
+            return None;
+        }
         if let Ok(code_block) = self {
             if let Some(PropVal::String(id)) = code_block.props.get("id") {
                 Some(TableOfContentsItem {
@@ -968,7 +1085,16 @@ impl GetTableOfContents for Result<CodeBlock, CodeIdentError> {
 }
 
 impl GetTableOfContents for Table {
-    fn get_table_of_contents(&self) -> Option<TableOfContentsItem> {
+    fn get_table_of_contents(
+        &self,
+        filter: &Option<(HashSet<TableOfContentsItemType>, TableOfContentsFilterType)>,
+    ) -> Option<TableOfContentsItem> {
+        if let Some((filter, ftype)) = filter
+            && !filter.contains(&TableOfContentsItemType::Table)
+            && *ftype == TableOfContentsFilterType::HardStop
+        {
+            return None;
+        }
         if let Some(PropVal::String(id)) = self.props.get("id") {
             Some(TableOfContentsItem {
                 title: id.to_string(),
@@ -983,7 +1109,16 @@ impl GetTableOfContents for Table {
 }
 
 impl GetTableOfContents for TextWithMeta {
-    fn get_table_of_contents(&self) -> Option<TableOfContentsItem> {
+    fn get_table_of_contents(
+        &self,
+        filter: &Option<(HashSet<TableOfContentsItemType>, TableOfContentsFilterType)>,
+    ) -> Option<TableOfContentsItem> {
+        if let Some((filter, ftype)) = filter
+            && !filter.contains(&TableOfContentsItemType::MText)
+            && *ftype == TableOfContentsFilterType::HardStop
+        {
+            return None;
+        }
         if let Some(PropVal::String(id)) = self.props.get("id") {
             Some(TableOfContentsItem {
                 title: id.to_string(),
