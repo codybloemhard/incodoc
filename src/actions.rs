@@ -867,11 +867,11 @@ impl GetTableOfContents for Section {
             match item {
                 HeadingItem::String(string) => {
                     title += string;
-                    link += &string.to_lowercase();
+                    link += &string.to_lowercase().replace(" ", "-");
                 },
                 HeadingItem::Em(em) => {
                     title += &em.text;
-                    link += &em.text.to_lowercase();
+                    link += &em.text.to_lowercase().replace(" ", "-");
                 },
             }
         }
