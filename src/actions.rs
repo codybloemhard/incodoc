@@ -18,13 +18,13 @@ pub trait PruneIncodoc {
 #[derive(Clone, Hash, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub struct TableOfContentsItem {
     /// Title of this item.
-    title: String,
+    pub title: String,
     /// Link to the items destination in the document.
-    link: String,
+    pub link: String,
     /// What type of content this item refers to.
-    item_type: TableOfContentsItemType,
+    pub item_type: TableOfContentsItemType,
     /// Sub items in this table.
-    children: Vec<TableOfContentsItem>,
+    pub children: Vec<TableOfContentsItem>,
 }
 
 /// Describes the type of content an item in a table of contents refers to.
@@ -960,7 +960,6 @@ impl GetTableOfContents for Emphasis {
     ) -> Option<TableOfContentsItem> {
         if let Some((filter, ftype)) = filter
             && !filter.contains(&TableOfContentsItemType::Emphasis)
-            && *ftype == TableOfContentsFilterType::HardStop
         {
             return None;
         }
@@ -982,10 +981,7 @@ impl GetTableOfContents for List {
         &self,
         filter: &Option<(HashSet<TableOfContentsItemType>, TableOfContentsFilterType)>,
     ) -> Option<TableOfContentsItem> {
-        if let Some((filter, ftype)) = filter
-            && !filter.contains(&TableOfContentsItemType::List)
-            && *ftype == TableOfContentsFilterType::HardStop
-        {
+        if let Some((filter, ftype)) = filter && !filter.contains(&TableOfContentsItemType::List) {
             return None;
         }
         if let Some(PropVal::String(id)) = self.props.get("id") {
@@ -1006,10 +1002,7 @@ impl GetTableOfContents for Nav {
         &self,
         filter: &Option<(HashSet<TableOfContentsItemType>, TableOfContentsFilterType)>,
     ) -> Option<TableOfContentsItem> {
-        if let Some((filter, ftype)) = filter
-            && !filter.contains(&TableOfContentsItemType::Nav)
-            && *ftype == TableOfContentsFilterType::HardStop
-        {
+        if let Some((filter, ftype)) = filter && !filter.contains(&TableOfContentsItemType::Nav) {
             return None;
         }
         if let Some(PropVal::String(id)) = self.props.get("id") {
@@ -1030,10 +1023,7 @@ impl GetTableOfContents for Link {
         &self,
         filter: &Option<(HashSet<TableOfContentsItemType>, TableOfContentsFilterType)>,
     ) -> Option<TableOfContentsItem> {
-        if let Some((filter, ftype)) = filter
-            && !filter.contains(&TableOfContentsItemType::Link)
-            && *ftype == TableOfContentsFilterType::HardStop
-        {
+        if let Some((filter, ftype)) = filter && !filter.contains(&TableOfContentsItemType::Link) {
             return None;
         }
         if let Some(PropVal::String(id)) = self.props.get("id") {
@@ -1063,7 +1053,6 @@ impl GetTableOfContents for Result<CodeBlock, CodeIdentError> {
     ) -> Option<TableOfContentsItem> {
         if let Some((filter, ftype)) = filter
             && !filter.contains(&TableOfContentsItemType::CodeBlock)
-            && *ftype == TableOfContentsFilterType::HardStop
         {
             return None;
         }
@@ -1089,10 +1078,7 @@ impl GetTableOfContents for Table {
         &self,
         filter: &Option<(HashSet<TableOfContentsItemType>, TableOfContentsFilterType)>,
     ) -> Option<TableOfContentsItem> {
-        if let Some((filter, ftype)) = filter
-            && !filter.contains(&TableOfContentsItemType::Table)
-            && *ftype == TableOfContentsFilterType::HardStop
-        {
+        if let Some((filter, ftype)) = filter && !filter.contains(&TableOfContentsItemType::Table) {
             return None;
         }
         if let Some(PropVal::String(id)) = self.props.get("id") {
@@ -1113,10 +1099,7 @@ impl GetTableOfContents for TextWithMeta {
         &self,
         filter: &Option<(HashSet<TableOfContentsItemType>, TableOfContentsFilterType)>,
     ) -> Option<TableOfContentsItem> {
-        if let Some((filter, ftype)) = filter
-            && !filter.contains(&TableOfContentsItemType::MText)
-            && *ftype == TableOfContentsFilterType::HardStop
-        {
+        if let Some((filter, ftype)) = filter && !filter.contains(&TableOfContentsItemType::MText) {
             return None;
         }
         if let Some(PropVal::String(id)) = self.props.get("id") {

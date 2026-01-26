@@ -1118,6 +1118,104 @@ mod tests {
         }
     );
 
+    macro_rules! test_toc {
+        ($name:ident, $filter:expr, $output:expr) => {
+            #[test]
+            fn $name() {
+                let doc = toc_doc();
+                let toc = doc.get_table_of_contents(&$filter);
+                assert_eq!(toc, $output);
+            }
+        }
+    }
+
+    fn toc_doc() -> Doc {
+        Doc {
+            items: vec![
+                DocItem::Nav(Nav {
+                    description: "nav".to_string(),
+                    ..Default::default()
+                }),
+                DocItem::Paragraph(Paragraph {
+                    items: vec![ParagraphItem::Text("this is some text".to_string())],
+                    ..Default::default()
+                }),
+                DocItem::Section(Section {
+                    heading: Heading {
+                        level: 0,
+                        items: vec![HeadingItem::String("A H1 heading".to_string())],
+                        ..Default::default()
+                    },
+                    items: vec![
+                        SectionItem::Section(Section {
+                            heading: Heading {
+                                level: 0,
+                                items: vec![HeadingItem::String("H2 heading".to_string())],
+                                ..Default::default()
+                            },
+                            items: vec![
+                                SectionItem::Section(Section {
+                                    heading: Heading {
+                                        level: 0,
+                                        items: vec![HeadingItem::String("H3".to_string())],
+                                        ..Default::default()
+                                    },
+                                    items: vec![],
+                                    ..Default::default()
+                                }),
+                            ],
+                            ..Default::default()
+                        }),
+                        SectionItem::Section(Section {
+                            heading: Heading {
+                                level: 0,
+                                items: vec![HeadingItem::String("Another H2".to_string())],
+                                ..Default::default()
+                            },
+                            items: vec![
+                                SectionItem::Paragraph(Paragraph {
+                                    items: vec![
+                                        ParagraphItem::MText(TextWithMeta {
+                                            text: "mtext a".to_string(),
+                                            ..Default::default()
+                                        }),
+                                        ParagraphItem::MText(TextWithMeta {
+                                            text: "mtext a".to_string(),
+                                            props: props!([
+                                                ("id".to_string(), PropVal::String("id0".to_string())),
+                                            ]),
+                                            ..Default::default()
+                                        }),
+                                    ],
+                                    ..Default::default()
+                                }),
+                            ],
+                            ..Default::default()
+                        }),
+                    ],
+                    ..Default::default()
+                }),
+            ],
+            ..Default::default()
+        }
+    }
+
+    test_toc!(
+        toc_just_doc,
+        Some((
+            HashSet::from([
+                TableOfContentsItemType::Document,
+            ]),
+            TableOfContentsFilterType::IncludeWithChildren
+        )),
+        Some(TableOfContentsItem {
+            title: "Table of Contents".to_string(),
+            link: ".".to_string(),
+            item_type: TableOfContentsItemType::Document,
+            children: vec![],
+        })
+    );
+
     test!(
         po_empty,
         "",
