@@ -958,7 +958,7 @@ impl GetTableOfContents for Emphasis {
         &self,
         filter: &Option<(HashSet<TableOfContentsItemType>, TableOfContentsFilterType)>,
     ) -> Option<TableOfContentsItem> {
-        if let Some((filter, ftype)) = filter
+        if let Some((filter, _)) = filter
             && !filter.contains(&TableOfContentsItemType::Emphasis)
         {
             return None;
@@ -981,7 +981,7 @@ impl GetTableOfContents for List {
         &self,
         filter: &Option<(HashSet<TableOfContentsItemType>, TableOfContentsFilterType)>,
     ) -> Option<TableOfContentsItem> {
-        if let Some((filter, ftype)) = filter && !filter.contains(&TableOfContentsItemType::List) {
+        if let Some((filter, _)) = filter && !filter.contains(&TableOfContentsItemType::List) {
             return None;
         }
         if let Some(PropVal::String(id)) = self.props.get("id") {
@@ -1002,7 +1002,7 @@ impl GetTableOfContents for Nav {
         &self,
         filter: &Option<(HashSet<TableOfContentsItemType>, TableOfContentsFilterType)>,
     ) -> Option<TableOfContentsItem> {
-        if let Some((filter, ftype)) = filter && !filter.contains(&TableOfContentsItemType::Nav) {
+        if let Some((filter, _)) = filter && !filter.contains(&TableOfContentsItemType::Nav) {
             return None;
         }
         if let Some(PropVal::String(id)) = self.props.get("id") {
@@ -1023,7 +1023,7 @@ impl GetTableOfContents for Link {
         &self,
         filter: &Option<(HashSet<TableOfContentsItemType>, TableOfContentsFilterType)>,
     ) -> Option<TableOfContentsItem> {
-        if let Some((filter, ftype)) = filter && !filter.contains(&TableOfContentsItemType::Link) {
+        if let Some((filter, _)) = filter && !filter.contains(&TableOfContentsItemType::Link) {
             return None;
         }
         if let Some(PropVal::String(id)) = self.props.get("id") {
@@ -1051,7 +1051,7 @@ impl GetTableOfContents for Result<CodeBlock, CodeIdentError> {
         &self,
         filter: &Option<(HashSet<TableOfContentsItemType>, TableOfContentsFilterType)>,
     ) -> Option<TableOfContentsItem> {
-        if let Some((filter, ftype)) = filter
+        if let Some((filter, _)) = filter
             && !filter.contains(&TableOfContentsItemType::CodeBlock)
         {
             return None;
@@ -1078,7 +1078,7 @@ impl GetTableOfContents for Table {
         &self,
         filter: &Option<(HashSet<TableOfContentsItemType>, TableOfContentsFilterType)>,
     ) -> Option<TableOfContentsItem> {
-        if let Some((filter, ftype)) = filter && !filter.contains(&TableOfContentsItemType::Table) {
+        if let Some((filter, _)) = filter && !filter.contains(&TableOfContentsItemType::Table) {
             return None;
         }
         if let Some(PropVal::String(id)) = self.props.get("id") {
@@ -1099,7 +1099,7 @@ impl GetTableOfContents for TextWithMeta {
         &self,
         filter: &Option<(HashSet<TableOfContentsItemType>, TableOfContentsFilterType)>,
     ) -> Option<TableOfContentsItem> {
-        if let Some((filter, ftype)) = filter && !filter.contains(&TableOfContentsItemType::MText) {
+        if let Some((filter, _)) = filter && !filter.contains(&TableOfContentsItemType::MText) {
             return None;
         }
         if let Some(PropVal::String(id)) = self.props.get("id") {

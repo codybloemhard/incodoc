@@ -80,6 +80,17 @@ mod tests {
         }
     }
 
+    macro_rules! test_toc {
+        ($name:ident, $filter:expr, $output:expr) => {
+            #[test]
+            fn $name() {
+                let doc = toc_doc();
+                let toc = doc.get_table_of_contents(&$filter);
+                assert_eq!(toc, $output);
+            }
+        }
+    }
+
     test_prune_contentless!(
         pc_string_c0,
         "stay the same".to_string(),
@@ -1118,17 +1129,6 @@ mod tests {
         }
     );
 
-    macro_rules! test_toc {
-        ($name:ident, $filter:expr, $output:expr) => {
-            #[test]
-            fn $name() {
-                let doc = toc_doc();
-                let toc = doc.get_table_of_contents(&$filter);
-                assert_eq!(toc, $output);
-            }
-        }
-    }
-
     fn toc_doc() -> Doc {
         Doc {
             items: vec![
@@ -1176,13 +1176,68 @@ mod tests {
                                 SectionItem::Paragraph(Paragraph {
                                     items: vec![
                                         ParagraphItem::MText(TextWithMeta {
-                                            text: "mtext a".to_string(),
+                                            text: "mtext".to_string(),
+                                            props: props!([
+                                                (
+                                                    "id".to_string(),
+                                                    PropVal::String("mtext-id".to_string())
+                                                ),
+                                            ]),
                                             ..Default::default()
                                         }),
-                                        ParagraphItem::MText(TextWithMeta {
-                                            text: "mtext a".to_string(),
+                                        ParagraphItem::Em(Emphasis {
+                                            strength: EmStrength::Light,
+                                            etype: EmType::Emphasis,
+                                            text: "emphasis".to_string(),
                                             props: props!([
-                                                ("id".to_string(), PropVal::String("id0".to_string())),
+                                                (
+                                                    "id".to_string(),
+                                                    PropVal::String("emphasis-id".to_string())
+                                                ),
+                                            ]),
+                                            ..Default::default()
+                                        }),
+                                        ParagraphItem::Code(Ok(CodeBlock {
+                                            language: "rust".to_string(),
+                                            mode: CodeModeHint::Show,
+                                            code: "let x = 0;".to_string(),
+                                            props: props!([
+                                                (
+                                                    "id".to_string(),
+                                                    PropVal::String("codeblock-id".to_string())
+                                                ),
+                                            ]),
+                                            ..Default::default()
+                                        })),
+                                        ParagraphItem::Link(Link {
+                                            url: "url".to_string(),
+                                            items: vec![LinkItem::String("link".to_string())],
+                                            props: props!([
+                                                (
+                                                    "id".to_string(),
+                                                    PropVal::String("link-id".to_string())
+                                                ),
+                                            ]),
+                                            ..Default::default()
+                                        }),
+                                        ParagraphItem::List(List {
+                                            ltype: ListType::Identical,
+                                            items: vec![],
+                                            props: props!([
+                                                (
+                                                    "id".to_string(),
+                                                    PropVal::String("list-id".to_string())
+                                                ),
+                                            ]),
+                                            ..Default::default()
+                                        }),
+                                        ParagraphItem::Table(Table {
+                                            rows: vec![],
+                                            props: props!([
+                                                (
+                                                    "id".to_string(),
+                                                    PropVal::String("table-id".to_string())
+                                                ),
                                             ]),
                                             ..Default::default()
                                         }),
@@ -1201,7 +1256,268 @@ mod tests {
     }
 
     test_toc!(
-        toc_just_doc,
+        toc_hs_doc,
+        Some((
+            HashSet::from([
+                TableOfContentsItemType::Document,
+            ]),
+            TableOfContentsFilterType::HardStop
+        )),
+        Some(TableOfContentsItem {
+            title: "Table of Contents".to_string(),
+            link: ".".to_string(),
+            item_type: TableOfContentsItemType::Document,
+            children: vec![],
+        })
+    );
+
+    test_toc!(
+        toc_hs_doc_section,
+        Some((
+            HashSet::from([
+                TableOfContentsItemType::Document,
+                TableOfContentsItemType::Section,
+            ]),
+            TableOfContentsFilterType::HardStop
+        )),
+        Some(TableOfContentsItem {
+            title: "Table of Contents".to_string(),
+            link: ".".to_string(),
+            item_type: TableOfContentsItemType::Document,
+            children: vec![
+                TableOfContentsItem {
+                    title: "A H1 heading".to_string(),
+                    link: "a-h1-heading".to_string(),
+                    item_type: TableOfContentsItemType::Section,
+                    children: vec![
+                        TableOfContentsItem {
+                            title: "H2 heading".to_string(),
+                            link: "h2-heading".to_string(),
+                            item_type: TableOfContentsItemType::Section,
+                            children: vec![
+                                TableOfContentsItem {
+                                    title: "H3".to_string(),
+                                    link: "h3".to_string(),
+                                    item_type: TableOfContentsItemType::Section,
+                                    children: vec![
+                                    ],
+                                },
+                            ],
+                        },
+                        TableOfContentsItem {
+                            title: "Another H2".to_string(),
+                            link: "another-h2".to_string(),
+                            item_type: TableOfContentsItemType::Section,
+                            children: vec![
+                            ],
+                        },
+                    ],
+                },
+            ],
+        })
+    );
+
+    // MText leaf cannot be seen through paragraph
+    test_toc!(
+        toc_hs_doc_section_mtext,
+        Some((
+            HashSet::from([
+                TableOfContentsItemType::Document,
+                TableOfContentsItemType::Section,
+                TableOfContentsItemType::MText,
+            ]),
+            TableOfContentsFilterType::HardStop
+        )),
+        Some(TableOfContentsItem {
+            title: "Table of Contents".to_string(),
+            link: ".".to_string(),
+            item_type: TableOfContentsItemType::Document,
+            children: vec![
+                TableOfContentsItem {
+                    title: "A H1 heading".to_string(),
+                    link: "a-h1-heading".to_string(),
+                    item_type: TableOfContentsItemType::Section,
+                    children: vec![
+                        TableOfContentsItem {
+                            title: "H2 heading".to_string(),
+                            link: "h2-heading".to_string(),
+                            item_type: TableOfContentsItemType::Section,
+                            children: vec![
+                                TableOfContentsItem {
+                                    title: "H3".to_string(),
+                                    link: "h3".to_string(),
+                                    item_type: TableOfContentsItemType::Section,
+                                    children: vec![
+                                    ],
+                                },
+                            ],
+                        },
+                        TableOfContentsItem {
+                            title: "Another H2".to_string(),
+                            link: "another-h2".to_string(),
+                            item_type: TableOfContentsItemType::Section,
+                            children: vec![
+                            ],
+                        },
+                    ],
+                },
+            ],
+        })
+    );
+
+    test_toc!(
+        toc_hs_doc_section_par_mtext,
+        Some((
+            HashSet::from([
+                TableOfContentsItemType::Document,
+                TableOfContentsItemType::Section,
+                TableOfContentsItemType::Paragraph,
+                TableOfContentsItemType::MText,
+            ]),
+            TableOfContentsFilterType::HardStop
+        )),
+        Some(TableOfContentsItem {
+            title: "Table of Contents".to_string(),
+            link: ".".to_string(),
+            item_type: TableOfContentsItemType::Document,
+            children: vec![
+                TableOfContentsItem {
+                    title: "A H1 heading".to_string(),
+                    link: "a-h1-heading".to_string(),
+                    item_type: TableOfContentsItemType::Section,
+                    children: vec![
+                        TableOfContentsItem {
+                            title: "H2 heading".to_string(),
+                            link: "h2-heading".to_string(),
+                            item_type: TableOfContentsItemType::Section,
+                            children: vec![
+                                TableOfContentsItem {
+                                    title: "H3".to_string(),
+                                    link: "h3".to_string(),
+                                    item_type: TableOfContentsItemType::Section,
+                                    children: vec![
+                                    ],
+                                },
+                            ],
+                        },
+                        TableOfContentsItem {
+                            title: "Another H2".to_string(),
+                            link: "another-h2".to_string(),
+                            item_type: TableOfContentsItemType::Section,
+                            children: vec![
+                                TableOfContentsItem {
+                                    title: "paragraph".to_string(),
+                                    link: "".to_string(),
+                                    item_type: TableOfContentsItemType::Paragraph,
+                                    children: vec![
+                                        TableOfContentsItem {
+                                            title: "mtext-id".to_string(),
+                                            link: "mtext-id".to_string(),
+                                            item_type: TableOfContentsItemType::MText,
+                                            children: vec![
+                                            ],
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                    ],
+                },
+            ],
+        })
+    );
+
+    test_toc!(
+        toc_hs_doc_section_par_all_but_mtext,
+        Some((
+            HashSet::from([
+                TableOfContentsItemType::Document,
+                TableOfContentsItemType::Section,
+                TableOfContentsItemType::Paragraph,
+                TableOfContentsItemType::Emphasis,
+                TableOfContentsItemType::CodeBlock,
+                TableOfContentsItemType::Link,
+                TableOfContentsItemType::List,
+                TableOfContentsItemType::Table,
+            ]),
+            TableOfContentsFilterType::HardStop
+        )),
+        Some(TableOfContentsItem {
+            title: "Table of Contents".to_string(),
+            link: ".".to_string(),
+            item_type: TableOfContentsItemType::Document,
+            children: vec![
+                TableOfContentsItem {
+                    title: "A H1 heading".to_string(),
+                    link: "a-h1-heading".to_string(),
+                    item_type: TableOfContentsItemType::Section,
+                    children: vec![
+                        TableOfContentsItem {
+                            title: "H2 heading".to_string(),
+                            link: "h2-heading".to_string(),
+                            item_type: TableOfContentsItemType::Section,
+                            children: vec![
+                                TableOfContentsItem {
+                                    title: "H3".to_string(),
+                                    link: "h3".to_string(),
+                                    item_type: TableOfContentsItemType::Section,
+                                    children: vec![
+                                    ],
+                                },
+                            ],
+                        },
+                        TableOfContentsItem {
+                            title: "Another H2".to_string(),
+                            link: "another-h2".to_string(),
+                            item_type: TableOfContentsItemType::Section,
+                            children: vec![
+                                TableOfContentsItem {
+                                    title: "paragraph".to_string(),
+                                    link: "".to_string(),
+                                    item_type: TableOfContentsItemType::Paragraph,
+                                    children: vec![
+                                        TableOfContentsItem {
+                                            title: "emphasis".to_string(),
+                                            link: "emphasis-id".to_string(),
+                                            item_type: TableOfContentsItemType::Emphasis,
+                                            children: vec![],
+                                        },
+                                        TableOfContentsItem {
+                                            title: "codeblock-id".to_string(),
+                                            link: "codeblock-id".to_string(),
+                                            item_type: TableOfContentsItemType::CodeBlock,
+                                            children: vec![],
+                                        },
+                                        TableOfContentsItem {
+                                            title: "link".to_string(),
+                                            link: "link-id".to_string(),
+                                            item_type: TableOfContentsItemType::Link,
+                                            children: vec![],
+                                        },
+                                        TableOfContentsItem {
+                                            title: "list-id".to_string(),
+                                            link: "list-id".to_string(),
+                                            item_type: TableOfContentsItemType::List,
+                                            children: vec![],
+                                        },
+                                        TableOfContentsItem {
+                                            title: "table-id".to_string(),
+                                            link: "table-id".to_string(),
+                                            item_type: TableOfContentsItemType::Table,
+                                            children: vec![],
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                    ],
+                },
+            ],
+        })
+    );
+
+    test_toc!(
+        toc_iwc_doc,
         Some((
             HashSet::from([
                 TableOfContentsItemType::Document,
@@ -1213,6 +1529,188 @@ mod tests {
             link: ".".to_string(),
             item_type: TableOfContentsItemType::Document,
             children: vec![],
+        })
+    );
+
+    test_toc!(
+        toc_iwc_doc_section,
+        Some((
+            HashSet::from([
+                TableOfContentsItemType::Document,
+                TableOfContentsItemType::Section,
+            ]),
+            TableOfContentsFilterType::IncludeWithChildren
+        )),
+        Some(TableOfContentsItem {
+            title: "Table of Contents".to_string(),
+            link: ".".to_string(),
+            item_type: TableOfContentsItemType::Document,
+            children: vec![
+                TableOfContentsItem {
+                    title: "A H1 heading".to_string(),
+                    link: "a-h1-heading".to_string(),
+                    item_type: TableOfContentsItemType::Section,
+                    children: vec![
+                        TableOfContentsItem {
+                            title: "H2 heading".to_string(),
+                            link: "h2-heading".to_string(),
+                            item_type: TableOfContentsItemType::Section,
+                            children: vec![
+                                TableOfContentsItem {
+                                    title: "H3".to_string(),
+                                    link: "h3".to_string(),
+                                    item_type: TableOfContentsItemType::Section,
+                                    children: vec![
+                                    ],
+                                },
+                            ],
+                        },
+                        TableOfContentsItem {
+                            title: "Another H2".to_string(),
+                            link: "another-h2".to_string(),
+                            item_type: TableOfContentsItemType::Section,
+                            children: vec![
+                            ],
+                        },
+                    ],
+                },
+            ],
+        })
+    );
+
+    // MText leaf can be seen through paragraph
+    test_toc!(
+        toc_iwc_doc_section_mtext,
+        Some((
+            HashSet::from([
+                TableOfContentsItemType::Document,
+                TableOfContentsItemType::MText,
+            ]),
+            TableOfContentsFilterType::IncludeWithChildren
+        )),
+        Some(TableOfContentsItem {
+            title: "Table of Contents".to_string(),
+            link: ".".to_string(),
+            item_type: TableOfContentsItemType::Document,
+            children: vec![
+                TableOfContentsItem {
+                    title: "A H1 heading".to_string(),
+                    link: "a-h1-heading".to_string(),
+                    item_type: TableOfContentsItemType::Section,
+                    children: vec![
+                        TableOfContentsItem {
+                            title: "Another H2".to_string(),
+                            link: "another-h2".to_string(),
+                            item_type: TableOfContentsItemType::Section,
+                            children: vec![
+                                TableOfContentsItem {
+                                    title: "paragraph".to_string(),
+                                    link: "".to_string(),
+                                    item_type: TableOfContentsItemType::Paragraph,
+                                    children: vec![
+                                        TableOfContentsItem {
+                                            title: "mtext-id".to_string(),
+                                            link: "mtext-id".to_string(),
+                                            item_type: TableOfContentsItemType::MText,
+                                            children: vec![
+                                            ],
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                    ],
+                },
+            ],
+        })
+    );
+
+    test_toc!(
+        toc_iwc_doc_section_par_all_but_mtext,
+        Some((
+            HashSet::from([
+                TableOfContentsItemType::Document,
+                TableOfContentsItemType::Section,
+                TableOfContentsItemType::Paragraph,
+                TableOfContentsItemType::Emphasis,
+                TableOfContentsItemType::CodeBlock,
+                TableOfContentsItemType::Link,
+                TableOfContentsItemType::List,
+                TableOfContentsItemType::Table,
+            ]),
+            TableOfContentsFilterType::IncludeWithChildren
+        )),
+        Some(TableOfContentsItem {
+            title: "Table of Contents".to_string(),
+            link: ".".to_string(),
+            item_type: TableOfContentsItemType::Document,
+            children: vec![
+                TableOfContentsItem {
+                    title: "A H1 heading".to_string(),
+                    link: "a-h1-heading".to_string(),
+                    item_type: TableOfContentsItemType::Section,
+                    children: vec![
+                        TableOfContentsItem {
+                            title: "H2 heading".to_string(),
+                            link: "h2-heading".to_string(),
+                            item_type: TableOfContentsItemType::Section,
+                            children: vec![
+                                TableOfContentsItem {
+                                    title: "H3".to_string(),
+                                    link: "h3".to_string(),
+                                    item_type: TableOfContentsItemType::Section,
+                                    children: vec![
+                                    ],
+                                },
+                            ],
+                        },
+                        TableOfContentsItem {
+                            title: "Another H2".to_string(),
+                            link: "another-h2".to_string(),
+                            item_type: TableOfContentsItemType::Section,
+                            children: vec![
+                                TableOfContentsItem {
+                                    title: "paragraph".to_string(),
+                                    link: "".to_string(),
+                                    item_type: TableOfContentsItemType::Paragraph,
+                                    children: vec![
+                                        TableOfContentsItem {
+                                            title: "emphasis".to_string(),
+                                            link: "emphasis-id".to_string(),
+                                            item_type: TableOfContentsItemType::Emphasis,
+                                            children: vec![],
+                                        },
+                                        TableOfContentsItem {
+                                            title: "codeblock-id".to_string(),
+                                            link: "codeblock-id".to_string(),
+                                            item_type: TableOfContentsItemType::CodeBlock,
+                                            children: vec![],
+                                        },
+                                        TableOfContentsItem {
+                                            title: "link".to_string(),
+                                            link: "link-id".to_string(),
+                                            item_type: TableOfContentsItemType::Link,
+                                            children: vec![],
+                                        },
+                                        TableOfContentsItem {
+                                            title: "list-id".to_string(),
+                                            link: "list-id".to_string(),
+                                            item_type: TableOfContentsItemType::List,
+                                            children: vec![],
+                                        },
+                                        TableOfContentsItem {
+                                            title: "table-id".to_string(),
+                                            link: "table-id".to_string(),
+                                            item_type: TableOfContentsItemType::Table,
+                                            children: vec![],
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                    ],
+                },
+            ],
         })
     );
 
