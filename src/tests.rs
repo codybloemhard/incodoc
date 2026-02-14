@@ -1222,7 +1222,23 @@ mod tests {
                                         }),
                                         ParagraphItem::List(List {
                                             ltype: ListType::Identical,
-                                            items: vec![],
+                                            items: vec![Paragraph {
+                                                items: vec![
+                                                    ParagraphItem::MText(TextWithMeta {
+                                                        text: "list-mtext".to_string(),
+                                                        props: props!([
+                                                            (
+                                                                "id".to_string(),
+                                                                PropVal::String(
+                                                                    "list-mtext-id".to_string()
+                                                                )
+                                                            ),
+                                                        ]),
+                                                        ..Default::default()
+                                                    }),
+                                                ],
+                                                ..Default::default()
+                                            }],
                                             props: props!([
                                                 (
                                                     "id".to_string(),
@@ -1232,7 +1248,27 @@ mod tests {
                                             ..Default::default()
                                         }),
                                         ParagraphItem::Table(Table {
-                                            rows: vec![],
+                                            rows: vec![TableRow {
+                                                is_header: false,
+                                                items: vec![Paragraph {
+                                                    items: vec![
+                                                        ParagraphItem::MText(TextWithMeta {
+                                                            text: "table-mtext".to_string(),
+                                                            props: props!([
+                                                                (
+                                                                    "id".to_string(),
+                                                                    PropVal::String(
+                                                                        "table-mtext-id".to_string()
+                                                                    )
+                                                                ),
+                                                            ]),
+                                                            ..Default::default()
+                                                        }),
+                                                    ],
+                                                    ..Default::default()
+                                                }],
+                                                ..Default::default()
+                                            }],
                                             props: props!([
                                                 (
                                                     "id".to_string(),
@@ -1613,6 +1649,50 @@ mod tests {
                                             link: "mtext-id".to_string(),
                                             item_type: TableOfContentsItemType::MText,
                                             children: vec![
+                                            ],
+                                        },
+                                        TableOfContentsItem {
+                                            title: "list-id".to_string(),
+                                            link: "list-id".to_string(),
+                                            item_type: TableOfContentsItemType::List,
+                                            children: vec![
+                                                TableOfContentsItem {
+                                                    title: "paragraph".to_string(),
+                                                    link: "".to_string(),
+                                                    item_type: TableOfContentsItemType::Paragraph,
+                                                    children: vec![
+                                                        TableOfContentsItem {
+                                                            title: "list-mtext-id".to_string(),
+                                                            link: "list-mtext-id".to_string(),
+                                                            item_type:
+                                                                TableOfContentsItemType::MText,
+                                                            children: vec![
+                                                            ],
+                                                        },
+                                                    ],
+                                                },
+                                            ],
+                                        },
+                                        TableOfContentsItem {
+                                            title: "table-id".to_string(),
+                                            link: "table-id".to_string(),
+                                            item_type: TableOfContentsItemType::Table,
+                                            children: vec![
+                                                TableOfContentsItem {
+                                                    title: "paragraph".to_string(),
+                                                    link: "".to_string(),
+                                                    item_type: TableOfContentsItemType::Paragraph,
+                                                    children: vec![
+                                                        TableOfContentsItem {
+                                                            title: "table-mtext-id".to_string(),
+                                                            link: "table-mtext-id".to_string(),
+                                                            item_type:
+                                                                TableOfContentsItemType::MText,
+                                                            children: vec![
+                                                            ],
+                                                        },
+                                                    ],
+                                                },
                                             ],
                                         },
                                     ],

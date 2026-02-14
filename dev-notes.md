@@ -34,6 +34,8 @@ features:
   - anything can have a tag
   - links can link to tags
 
+test: toc iwc with list/table without id
+
 heading
   - wrong level: auto fix?
 link
@@ -43,7 +45,8 @@ dedup nav, par, section
 
 think about doing:
 
-recursive is_contentless? eg section with empty par
+- recursive is_contentless? eg section with empty par
+- table of contents: when no id, link to last id known from parents
 
 things to write about
 

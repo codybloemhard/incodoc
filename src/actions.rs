@@ -928,7 +928,7 @@ impl GetTableOfContents for Paragraph {
         }
         if children.is_empty()
             && let Some((filter, ftype)) = filter
-            && !filter.contains(&TableOfContentsItemType::Section)
+            && !filter.contains(&TableOfContentsItemType::Paragraph)
             && *ftype == TableOfContentsFilterType::IncludeWithChildren
         {
             return None;
@@ -981,7 +981,21 @@ impl GetTableOfContents for List {
         &self,
         filter: &Option<(HashSet<TableOfContentsItemType>, TableOfContentsFilterType)>,
     ) -> Option<TableOfContentsItem> {
-        if let Some((filter, _)) = filter && !filter.contains(&TableOfContentsItemType::List) {
+        if let Some((filter, ftype)) = filter
+            && !filter.contains(&TableOfContentsItemType::List)
+            && *ftype == TableOfContentsFilterType::HardStop
+        {
+            return None;
+        }
+        let mut children = Vec::new();
+        for par in &self.items {
+            push_toci(&mut children, par.get_table_of_contents(filter));
+        }
+        if children.is_empty()
+            && let Some((filter, ftype)) = filter
+            && !filter.contains(&TableOfContentsItemType::List)
+            && *ftype == TableOfContentsFilterType::IncludeWithChildren
+        {
             return None;
         }
         if let Some(PropVal::String(id)) = self.props.get("id") {
@@ -989,7 +1003,14 @@ impl GetTableOfContents for List {
                 title: id.to_string(),
                 link: id.to_string(),
                 item_type: TableOfContentsItemType::List,
-                children: vec![],
+                children,
+            })
+        } else if !children.is_empty() {
+            Some(TableOfContentsItem {
+                title: "list".to_string(),
+                link: "".to_string(),
+                item_type: TableOfContentsItemType::List,
+                children,
             })
         } else {
             None
@@ -1078,7 +1099,23 @@ impl GetTableOfContents for Table {
         &self,
         filter: &Option<(HashSet<TableOfContentsItemType>, TableOfContentsFilterType)>,
     ) -> Option<TableOfContentsItem> {
-        if let Some((filter, _)) = filter && !filter.contains(&TableOfContentsItemType::Table) {
+        if let Some((filter, ftype)) = filter
+            && !filter.contains(&TableOfContentsItemType::Table)
+            && *ftype == TableOfContentsFilterType::HardStop
+        {
+            return None;
+        }
+        let mut children = Vec::new();
+        for row in &self.rows {
+            for par in &row.items {
+                push_toci(&mut children, par.get_table_of_contents(filter));
+            }
+        }
+        if children.is_empty()
+            && let Some((filter, ftype)) = filter
+            && !filter.contains(&TableOfContentsItemType::Table)
+            && *ftype == TableOfContentsFilterType::IncludeWithChildren
+        {
             return None;
         }
         if let Some(PropVal::String(id)) = self.props.get("id") {
@@ -1086,7 +1123,14 @@ impl GetTableOfContents for Table {
                 title: id.to_string(),
                 link: id.to_string(),
                 item_type: TableOfContentsItemType::Table,
-                children: vec![],
+                children,
+            })
+        } else if !children.is_empty() {
+            Some(TableOfContentsItem {
+                title: "table".to_string(),
+                link: "".to_string(),
+                item_type: TableOfContentsItemType::Table,
+                children,
             })
         } else {
             None
