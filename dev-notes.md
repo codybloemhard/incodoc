@@ -34,8 +34,6 @@ features:
   - anything can have a tag
   - links can link to tags
 
-test: toc iwc with list/table without id
-
 heading
   - wrong level: auto fix?
 link

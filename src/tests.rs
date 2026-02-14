@@ -81,11 +81,10 @@ mod tests {
     }
 
     macro_rules! test_toc {
-        ($name:ident, $filter:expr, $output:expr) => {
+        ($name:ident, $input:expr, $filter:expr, $output:expr) => {
             #[test]
             fn $name() {
-                let doc = toc_doc();
-                let toc = doc.get_table_of_contents(&$filter);
+                let toc = $input.get_table_of_contents(&$filter);
                 assert_eq!(toc, $output);
             }
         }
@@ -1129,7 +1128,7 @@ mod tests {
         }
     );
 
-    fn toc_doc() -> Doc {
+    fn toc_doc_0() -> Doc {
         Doc {
             items: vec![
                 DocItem::Nav(Nav {
@@ -1291,8 +1290,67 @@ mod tests {
         }
     }
 
+    fn toc_doc_1() -> Doc {
+        Doc {
+            items: vec![
+                DocItem::Paragraph(Paragraph {
+                    items: vec![
+                        ParagraphItem::List(List {
+                            ltype: ListType::Identical,
+                            items: vec![Paragraph {
+                                items: vec![
+                                    ParagraphItem::MText(TextWithMeta {
+                                        text: "list-mtext".to_string(),
+                                        props: props!([
+                                            (
+                                                "id".to_string(),
+                                                PropVal::String(
+                                                    "list-mtext-id".to_string()
+                                                )
+                                            ),
+                                        ]),
+                                        ..Default::default()
+                                    }),
+                                ],
+                                ..Default::default()
+                            }],
+                            ..Default::default()
+                        }),
+                        ParagraphItem::Table(Table {
+                            rows: vec![TableRow {
+                                is_header: false,
+                                items: vec![Paragraph {
+                                    items: vec![
+                                        ParagraphItem::MText(TextWithMeta {
+                                            text: "table-mtext".to_string(),
+                                            props: props!([
+                                                (
+                                                    "id".to_string(),
+                                                    PropVal::String(
+                                                        "table-mtext-id".to_string()
+                                                    )
+                                                ),
+                                            ]),
+                                            ..Default::default()
+                                        }),
+                                    ],
+                                    ..Default::default()
+                                }],
+                                ..Default::default()
+                            }],
+                            ..Default::default()
+                        }),
+                    ],
+                    ..Default::default()
+                }),
+            ],
+            ..Default::default()
+        }
+    }
+
     test_toc!(
         toc_hs_doc,
+        toc_doc_0(),
         Some((
             HashSet::from([
                 TableOfContentsItemType::Document,
@@ -1309,6 +1367,7 @@ mod tests {
 
     test_toc!(
         toc_hs_doc_section,
+        toc_doc_0(),
         Some((
             HashSet::from([
                 TableOfContentsItemType::Document,
@@ -1356,6 +1415,7 @@ mod tests {
     // MText leaf cannot be seen through paragraph
     test_toc!(
         toc_hs_doc_section_mtext,
+        toc_doc_0(),
         Some((
             HashSet::from([
                 TableOfContentsItemType::Document,
@@ -1403,6 +1463,7 @@ mod tests {
 
     test_toc!(
         toc_hs_doc_section_par_mtext,
+        toc_doc_0(),
         Some((
             HashSet::from([
                 TableOfContentsItemType::Document,
@@ -1465,6 +1526,7 @@ mod tests {
 
     test_toc!(
         toc_hs_doc_section_par_all_but_mtext,
+        toc_doc_0(),
         Some((
             HashSet::from([
                 TableOfContentsItemType::Document,
@@ -1554,6 +1616,7 @@ mod tests {
 
     test_toc!(
         toc_iwc_doc,
+        toc_doc_0(),
         Some((
             HashSet::from([
                 TableOfContentsItemType::Document,
@@ -1570,6 +1633,7 @@ mod tests {
 
     test_toc!(
         toc_iwc_doc_section,
+        toc_doc_0(),
         Some((
             HashSet::from([
                 TableOfContentsItemType::Document,
@@ -1617,6 +1681,7 @@ mod tests {
     // MText leaf can be seen through paragraph
     test_toc!(
         toc_iwc_doc_section_mtext,
+        toc_doc_0(),
         Some((
             HashSet::from([
                 TableOfContentsItemType::Document,
@@ -1707,6 +1772,7 @@ mod tests {
 
     test_toc!(
         toc_iwc_doc_section_par_all_but_mtext,
+        toc_doc_0(),
         Some((
             HashSet::from([
                 TableOfContentsItemType::Document,
@@ -1783,6 +1849,74 @@ mod tests {
                                             link: "table-id".to_string(),
                                             item_type: TableOfContentsItemType::Table,
                                             children: vec![],
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                    ],
+                },
+            ],
+        })
+    );
+
+    test_toc!(
+        toc_iwc_through_id_less_list_and_table,
+        toc_doc_1(),
+        Some((
+            HashSet::from([
+                TableOfContentsItemType::Document,
+                TableOfContentsItemType::MText,
+            ]),
+            TableOfContentsFilterType::IncludeWithChildren
+        )),
+        Some(TableOfContentsItem {
+            title: "Table of Contents".to_string(),
+            link: ".".to_string(),
+            item_type: TableOfContentsItemType::Document,
+            children: vec![
+                TableOfContentsItem {
+                    title: "paragraph".to_string(),
+                    link: "".to_string(),
+                    item_type: TableOfContentsItemType::Paragraph,
+                    children: vec![
+                        TableOfContentsItem {
+                            title: "list".to_string(),
+                            link: "".to_string(),
+                            item_type: TableOfContentsItemType::List,
+                            children: vec![
+                                TableOfContentsItem {
+                                    title: "paragraph".to_string(),
+                                    link: "".to_string(),
+                                    item_type: TableOfContentsItemType::Paragraph,
+                                    children: vec![
+                                        TableOfContentsItem {
+                                            title: "list-mtext-id".to_string(),
+                                            link: "list-mtext-id".to_string(),
+                                            item_type: TableOfContentsItemType::MText,
+                                            children: vec![
+                                            ],
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                        TableOfContentsItem {
+                            title: "table".to_string(),
+                            link: "".to_string(),
+                            item_type: TableOfContentsItemType::Table,
+                            children: vec![
+                                TableOfContentsItem {
+                                    title: "paragraph".to_string(),
+                                    link: "".to_string(),
+                                    item_type: TableOfContentsItemType::Paragraph,
+                                    children: vec![
+                                        TableOfContentsItem {
+                                            title: "table-mtext-id".to_string(),
+                                            link: "table-mtext-id".to_string(),
+                                            item_type: TableOfContentsItemType::MText,
+                                            children: vec![
+                                            ],
                                         },
                                     ],
                                 },
