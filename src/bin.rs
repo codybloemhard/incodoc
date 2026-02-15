@@ -2,7 +2,7 @@ use incodoc::{
     parsing::parse,
     output::doc_out,
     reference_doc::REF_DOC,
-    actions::*,
+    actions::toc::*,
 };
 
 use std::collections::HashSet;

@@ -1,4 +1,4 @@
-use crate::actions::Absorb;
+use crate::actions::absorb::Absorb;
 
 use std::{
     num::ParseIntError,
