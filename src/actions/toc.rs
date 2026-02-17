@@ -49,9 +49,28 @@ pub trait GetTableOfContents {
     ) -> Option<TableOfContentsItem>;
 }
 
+pub trait InsertTableOfContentsSectionIDs {
+    fn insert_table_of_contents_section_ids(&mut self);
+}
+
 fn push_toci(children: &mut Vec<TableOfContentsItem>, res: Option<TableOfContentsItem>) {
     if let Some(item) = res {
         children.push(item);
+    }
+}
+
+fn heading_title_and_link(heading: &Heading, title: &mut String, link: &mut String) {
+    for item in &heading.items {
+        match item {
+            HeadingItem::String(string) => {
+                title.push_str(string);
+                link.push_str(&string.to_lowercase().replace(" ", "-"));
+            },
+            HeadingItem::Em(em) => {
+                title.push_str(&em.text);
+                link.push_str(&em.text.to_lowercase().replace(" ", "-"));
+            },
+        }
     }
 }
 
@@ -138,18 +157,7 @@ impl GetTableOfContents for Section {
         {
             return None;
         }
-        for item in &self.heading.items {
-            match item {
-                HeadingItem::String(string) => {
-                    title += string;
-                    link += &string.to_lowercase().replace(" ", "-");
-                },
-                HeadingItem::Em(em) => {
-                    title += &em.text;
-                    link += &em.text.to_lowercase().replace(" ", "-");
-                },
-            }
-        }
+        heading_title_and_link(&self.heading, &mut title, &mut link);
         if let Some(PropVal::String(id)) = self.props.get("id") {
             link = id.to_string();
         }
@@ -433,6 +441,31 @@ impl GetTableOfContents for TextWithMeta {
             })
         } else {
             None
+        }
+    }
+}
+
+impl InsertTableOfContentsSectionIDs for Doc {
+    fn insert_table_of_contents_section_ids(&mut self) {
+        for item in &mut self.items {
+            if let DocItem::Section(section) = item {
+                section.insert_table_of_contents_section_ids();
+            }
+        }
+    }
+}
+
+impl InsertTableOfContentsSectionIDs for Section {
+    fn insert_table_of_contents_section_ids(&mut self) {
+        let (mut title, mut link) = (String::new(), String::new());
+        if !self.props.contains_key("id") {
+            heading_title_and_link(&self.heading, &mut title, &mut link);
+            self.props.insert("id".to_string(), PropVal::String(link));
+        }
+        for item in &mut self.items {
+            if let SectionItem::Section(section) = item {
+                section.insert_table_of_contents_section_ids();
+            }
         }
     }
 }
