@@ -273,17 +273,17 @@ mod toc {
             children: vec![
                 TableOfContentsItem {
                     title: "A H1 heading".to_string(),
-                    link: "a-h1-heading".to_string(),
+                    link: "#a-h1-heading".to_string(),
                     item_type: TableOfContentsItemType::Section,
                     children: vec![
                         TableOfContentsItem {
                             title: "H2 heading".to_string(),
-                            link: "h2-id".to_string(),
+                            link: "#h2-id".to_string(),
                             item_type: TableOfContentsItemType::Section,
                             children: vec![
                                 TableOfContentsItem {
                                     title: "H3".to_string(),
-                                    link: "h3".to_string(),
+                                    link: "#h3".to_string(),
                                     item_type: TableOfContentsItemType::Section,
                                     children: vec![
                                     ],
@@ -292,7 +292,7 @@ mod toc {
                         },
                         TableOfContentsItem {
                             title: "Another H2".to_string(),
-                            link: "another-h2".to_string(),
+                            link: "#another-h2".to_string(),
                             item_type: TableOfContentsItemType::Section,
                             children: vec![
                             ],
@@ -322,17 +322,17 @@ mod toc {
             children: vec![
                 TableOfContentsItem {
                     title: "A H1 heading".to_string(),
-                    link: "a-h1-heading".to_string(),
+                    link: "#a-h1-heading".to_string(),
                     item_type: TableOfContentsItemType::Section,
                     children: vec![
                         TableOfContentsItem {
                             title: "H2 heading".to_string(),
-                            link: "h2-id".to_string(),
+                            link: "#h2-id".to_string(),
                             item_type: TableOfContentsItemType::Section,
                             children: vec![
                                 TableOfContentsItem {
                                     title: "H3".to_string(),
-                                    link: "h3".to_string(),
+                                    link: "#h3".to_string(),
                                     item_type: TableOfContentsItemType::Section,
                                     children: vec![
                                     ],
@@ -341,7 +341,7 @@ mod toc {
                         },
                         TableOfContentsItem {
                             title: "Another H2".to_string(),
-                            link: "another-h2".to_string(),
+                            link: "#another-h2".to_string(),
                             item_type: TableOfContentsItemType::Section,
                             children: vec![
                             ],
@@ -371,17 +371,17 @@ mod toc {
             children: vec![
                 TableOfContentsItem {
                     title: "A H1 heading".to_string(),
-                    link: "a-h1-heading".to_string(),
+                    link: "#a-h1-heading".to_string(),
                     item_type: TableOfContentsItemType::Section,
                     children: vec![
                         TableOfContentsItem {
                             title: "H2 heading".to_string(),
-                            link: "h2-id".to_string(),
+                            link: "#h2-id".to_string(),
                             item_type: TableOfContentsItemType::Section,
                             children: vec![
                                 TableOfContentsItem {
                                     title: "H3".to_string(),
-                                    link: "h3".to_string(),
+                                    link: "#h3".to_string(),
                                     item_type: TableOfContentsItemType::Section,
                                     children: vec![
                                     ],
@@ -390,7 +390,7 @@ mod toc {
                         },
                         TableOfContentsItem {
                             title: "Another H2".to_string(),
-                            link: "another-h2".to_string(),
+                            link: "#another-h2".to_string(),
                             item_type: TableOfContentsItemType::Section,
                             children: vec![
                                 TableOfContentsItem {
@@ -400,7 +400,7 @@ mod toc {
                                     children: vec![
                                         TableOfContentsItem {
                                             title: "mtext-id".to_string(),
-                                            link: "mtext-id".to_string(),
+                                            link: "#mtext-id".to_string(),
                                             item_type: TableOfContentsItemType::MText,
                                             children: vec![
                                             ],
@@ -438,17 +438,17 @@ mod toc {
             children: vec![
                 TableOfContentsItem {
                     title: "A H1 heading".to_string(),
-                    link: "a-h1-heading".to_string(),
+                    link: "#a-h1-heading".to_string(),
                     item_type: TableOfContentsItemType::Section,
                     children: vec![
                         TableOfContentsItem {
                             title: "H2 heading".to_string(),
-                            link: "h2-id".to_string(),
+                            link: "#h2-id".to_string(),
                             item_type: TableOfContentsItemType::Section,
                             children: vec![
                                 TableOfContentsItem {
                                     title: "H3".to_string(),
-                                    link: "h3".to_string(),
+                                    link: "#h3".to_string(),
                                     item_type: TableOfContentsItemType::Section,
                                     children: vec![
                                     ],
@@ -457,7 +457,7 @@ mod toc {
                         },
                         TableOfContentsItem {
                             title: "Another H2".to_string(),
-                            link: "another-h2".to_string(),
+                            link: "#another-h2".to_string(),
                             item_type: TableOfContentsItemType::Section,
                             children: vec![
                                 TableOfContentsItem {
@@ -467,31 +467,31 @@ mod toc {
                                     children: vec![
                                         TableOfContentsItem {
                                             title: "emphasis".to_string(),
-                                            link: "emphasis-id".to_string(),
+                                            link: "#emphasis-id".to_string(),
                                             item_type: TableOfContentsItemType::Emphasis,
                                             children: vec![],
                                         },
                                         TableOfContentsItem {
                                             title: "codeblock-id".to_string(),
-                                            link: "codeblock-id".to_string(),
+                                            link: "#codeblock-id".to_string(),
                                             item_type: TableOfContentsItemType::CodeBlock,
                                             children: vec![],
                                         },
                                         TableOfContentsItem {
                                             title: "link".to_string(),
-                                            link: "link-id".to_string(),
+                                            link: "#link-id".to_string(),
                                             item_type: TableOfContentsItemType::Link,
                                             children: vec![],
                                         },
                                         TableOfContentsItem {
                                             title: "list-id".to_string(),
-                                            link: "list-id".to_string(),
+                                            link: "#list-id".to_string(),
                                             item_type: TableOfContentsItemType::List,
                                             children: vec![],
                                         },
                                         TableOfContentsItem {
                                             title: "table-id".to_string(),
-                                            link: "table-id".to_string(),
+                                            link: "#table-id".to_string(),
                                             item_type: TableOfContentsItemType::Table,
                                             children: vec![],
                                         },
@@ -539,17 +539,17 @@ mod toc {
             children: vec![
                 TableOfContentsItem {
                     title: "A H1 heading".to_string(),
-                    link: "a-h1-heading".to_string(),
+                    link: "#a-h1-heading".to_string(),
                     item_type: TableOfContentsItemType::Section,
                     children: vec![
                         TableOfContentsItem {
                             title: "H2 heading".to_string(),
-                            link: "h2-id".to_string(),
+                            link: "#h2-id".to_string(),
                             item_type: TableOfContentsItemType::Section,
                             children: vec![
                                 TableOfContentsItem {
                                     title: "H3".to_string(),
-                                    link: "h3".to_string(),
+                                    link: "#h3".to_string(),
                                     item_type: TableOfContentsItemType::Section,
                                     children: vec![
                                     ],
@@ -558,7 +558,7 @@ mod toc {
                         },
                         TableOfContentsItem {
                             title: "Another H2".to_string(),
-                            link: "another-h2".to_string(),
+                            link: "#another-h2".to_string(),
                             item_type: TableOfContentsItemType::Section,
                             children: vec![
                             ],
@@ -587,12 +587,12 @@ mod toc {
             children: vec![
                 TableOfContentsItem {
                     title: "A H1 heading".to_string(),
-                    link: "a-h1-heading".to_string(),
+                    link: "#a-h1-heading".to_string(),
                     item_type: TableOfContentsItemType::Section,
                     children: vec![
                         TableOfContentsItem {
                             title: "Another H2".to_string(),
-                            link: "another-h2".to_string(),
+                            link: "#another-h2".to_string(),
                             item_type: TableOfContentsItemType::Section,
                             children: vec![
                                 TableOfContentsItem {
@@ -602,14 +602,14 @@ mod toc {
                                     children: vec![
                                         TableOfContentsItem {
                                             title: "mtext-id".to_string(),
-                                            link: "mtext-id".to_string(),
+                                            link: "#mtext-id".to_string(),
                                             item_type: TableOfContentsItemType::MText,
                                             children: vec![
                                             ],
                                         },
                                         TableOfContentsItem {
                                             title: "list-id".to_string(),
-                                            link: "list-id".to_string(),
+                                            link: "#list-id".to_string(),
                                             item_type: TableOfContentsItemType::List,
                                             children: vec![
                                                 TableOfContentsItem {
@@ -619,7 +619,7 @@ mod toc {
                                                     children: vec![
                                                         TableOfContentsItem {
                                                             title: "list-mtext-id".to_string(),
-                                                            link: "list-mtext-id".to_string(),
+                                                            link: "#list-mtext-id".to_string(),
                                                             item_type:
                                                                 TableOfContentsItemType::MText,
                                                             children: vec![
@@ -631,7 +631,7 @@ mod toc {
                                         },
                                         TableOfContentsItem {
                                             title: "table-id".to_string(),
-                                            link: "table-id".to_string(),
+                                            link: "#table-id".to_string(),
                                             item_type: TableOfContentsItemType::Table,
                                             children: vec![
                                                 TableOfContentsItem {
@@ -641,7 +641,7 @@ mod toc {
                                                     children: vec![
                                                         TableOfContentsItem {
                                                             title: "table-mtext-id".to_string(),
-                                                            link: "table-mtext-id".to_string(),
+                                                            link: "#table-mtext-id".to_string(),
                                                             item_type:
                                                                 TableOfContentsItemType::MText,
                                                             children: vec![
@@ -684,17 +684,17 @@ mod toc {
             children: vec![
                 TableOfContentsItem {
                     title: "A H1 heading".to_string(),
-                    link: "a-h1-heading".to_string(),
+                    link: "#a-h1-heading".to_string(),
                     item_type: TableOfContentsItemType::Section,
                     children: vec![
                         TableOfContentsItem {
                             title: "H2 heading".to_string(),
-                            link: "h2-id".to_string(),
+                            link: "#h2-id".to_string(),
                             item_type: TableOfContentsItemType::Section,
                             children: vec![
                                 TableOfContentsItem {
                                     title: "H3".to_string(),
-                                    link: "h3".to_string(),
+                                    link: "#h3".to_string(),
                                     item_type: TableOfContentsItemType::Section,
                                     children: vec![
                                     ],
@@ -703,7 +703,7 @@ mod toc {
                         },
                         TableOfContentsItem {
                             title: "Another H2".to_string(),
-                            link: "another-h2".to_string(),
+                            link: "#another-h2".to_string(),
                             item_type: TableOfContentsItemType::Section,
                             children: vec![
                                 TableOfContentsItem {
@@ -713,31 +713,31 @@ mod toc {
                                     children: vec![
                                         TableOfContentsItem {
                                             title: "emphasis".to_string(),
-                                            link: "emphasis-id".to_string(),
+                                            link: "#emphasis-id".to_string(),
                                             item_type: TableOfContentsItemType::Emphasis,
                                             children: vec![],
                                         },
                                         TableOfContentsItem {
                                             title: "codeblock-id".to_string(),
-                                            link: "codeblock-id".to_string(),
+                                            link: "#codeblock-id".to_string(),
                                             item_type: TableOfContentsItemType::CodeBlock,
                                             children: vec![],
                                         },
                                         TableOfContentsItem {
                                             title: "link".to_string(),
-                                            link: "link-id".to_string(),
+                                            link: "#link-id".to_string(),
                                             item_type: TableOfContentsItemType::Link,
                                             children: vec![],
                                         },
                                         TableOfContentsItem {
                                             title: "list-id".to_string(),
-                                            link: "list-id".to_string(),
+                                            link: "#list-id".to_string(),
                                             item_type: TableOfContentsItemType::List,
                                             children: vec![],
                                         },
                                         TableOfContentsItem {
                                             title: "table-id".to_string(),
-                                            link: "table-id".to_string(),
+                                            link: "#table-id".to_string(),
                                             item_type: TableOfContentsItemType::Table,
                                             children: vec![],
                                         },
@@ -783,7 +783,7 @@ mod toc {
                                     children: vec![
                                         TableOfContentsItem {
                                             title: "list-mtext-id".to_string(),
-                                            link: "list-mtext-id".to_string(),
+                                            link: "#list-mtext-id".to_string(),
                                             item_type: TableOfContentsItemType::MText,
                                             children: vec![
                                             ],
@@ -804,7 +804,7 @@ mod toc {
                                     children: vec![
                                         TableOfContentsItem {
                                             title: "table-mtext-id".to_string(),
-                                            link: "table-mtext-id".to_string(),
+                                            link: "#table-mtext-id".to_string(),
                                             item_type: TableOfContentsItemType::MText,
                                             children: vec![
                                             ],

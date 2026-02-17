@@ -59,19 +59,28 @@ fn push_toci(children: &mut Vec<TableOfContentsItem>, res: Option<TableOfContent
     }
 }
 
-fn heading_title_and_link(heading: &Heading, title: &mut String, link: &mut String) {
+fn heading_title_and_id(heading: &Heading, title: &mut String, id: &mut String, id_is_link: bool) {
+    if id_is_link {
+        id.push('#');
+    }
     for item in &heading.items {
         match item {
             HeadingItem::String(string) => {
                 title.push_str(string);
-                link.push_str(&string.to_lowercase().replace(" ", "-"));
+                id.push_str(&string.to_lowercase().replace(" ", "-"));
             },
             HeadingItem::Em(em) => {
                 title.push_str(&em.text);
-                link.push_str(&em.text.to_lowercase().replace(" ", "-"));
+                id.push_str(&em.text.to_lowercase().replace(" ", "-"));
             },
         }
     }
+}
+
+fn id_to_link(id: &str) -> String {
+    let mut res = String::from("#");
+    res.push_str(id);
+    res
 }
 
 impl GetTableOfContents for Doc {
@@ -157,9 +166,9 @@ impl GetTableOfContents for Section {
         {
             return None;
         }
-        heading_title_and_link(&self.heading, &mut title, &mut link);
+        heading_title_and_id(&self.heading, &mut title, &mut link, true);
         if let Some(PropVal::String(id)) = self.props.get("id") {
-            link = id.to_string();
+            link = id_to_link(id);
         }
         if title.ends_with(": ") {
             title.pop();
@@ -222,7 +231,7 @@ impl GetTableOfContents for Paragraph {
         if let Some(PropVal::String(id)) = self.props.get("id") {
             Some(TableOfContentsItem {
                 title: id.to_string(),
-                link: id.to_string(),
+                link: id_to_link(id),
                 item_type: TableOfContentsItemType::Paragraph,
                 children,
             })
@@ -252,7 +261,7 @@ impl GetTableOfContents for Emphasis {
         if let Some(PropVal::String(id)) = self.props.get("id") {
             Some(TableOfContentsItem {
                 title: self.text.to_string(),
-                link: id.to_string(),
+                link: id_to_link(id),
                 item_type: TableOfContentsItemType::Emphasis,
                 children: vec![],
             })
@@ -287,7 +296,7 @@ impl GetTableOfContents for List {
         if let Some(PropVal::String(id)) = self.props.get("id") {
             Some(TableOfContentsItem {
                 title: id.to_string(),
-                link: id.to_string(),
+                link: id_to_link(id),
                 item_type: TableOfContentsItemType::List,
                 children,
             })
@@ -315,7 +324,7 @@ impl GetTableOfContents for Nav {
         if let Some(PropVal::String(id)) = self.props.get("id") {
             Some(TableOfContentsItem {
                 title: self.description.to_string(),
-                link: id.to_string(),
+                link: id_to_link(id),
                 item_type: TableOfContentsItemType::Nav,
                 children: vec![],
             })
@@ -343,7 +352,7 @@ impl GetTableOfContents for Link {
             }
             Some(TableOfContentsItem {
                 title,
-                link: id.to_string(),
+                link: id_to_link(id),
                 item_type: TableOfContentsItemType::Link,
                 children: vec![],
             })
@@ -367,7 +376,7 @@ impl GetTableOfContents for Result<CodeBlock, CodeIdentError> {
             if let Some(PropVal::String(id)) = code_block.props.get("id") {
                 Some(TableOfContentsItem {
                     title: id.to_string(),
-                    link: id.to_string(),
+                    link: id_to_link(id),
                     item_type: TableOfContentsItemType::CodeBlock,
                     children: vec![],
                 })
@@ -407,7 +416,7 @@ impl GetTableOfContents for Table {
         if let Some(PropVal::String(id)) = self.props.get("id") {
             Some(TableOfContentsItem {
                 title: id.to_string(),
-                link: id.to_string(),
+                link: id_to_link(id),
                 item_type: TableOfContentsItemType::Table,
                 children,
             })
@@ -435,7 +444,7 @@ impl GetTableOfContents for TextWithMeta {
         if let Some(PropVal::String(id)) = self.props.get("id") {
             Some(TableOfContentsItem {
                 title: id.to_string(),
-                link: id.to_string(),
+                link: id_to_link(id),
                 item_type: TableOfContentsItemType::MText,
                 children: vec![],
             })
@@ -459,7 +468,7 @@ impl InsertTableOfContentsSectionIDs for Section {
     fn insert_table_of_contents_section_ids(&mut self) {
         let (mut title, mut link) = (String::new(), String::new());
         if !self.props.contains_key("id") {
-            heading_title_and_link(&self.heading, &mut title, &mut link);
+            heading_title_and_id(&self.heading, &mut title, &mut link, false);
             self.props.insert("id".to_string(), PropVal::String(link));
         }
         for item in &mut self.items {
