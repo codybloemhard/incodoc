@@ -150,6 +150,9 @@ impl GetTableOfContents for Section {
                 },
             }
         }
+        if let Some(PropVal::String(id)) = self.props.get("id") {
+            link = id.to_string();
+        }
         if title.ends_with(": ") {
             title.pop();
             title.pop();
