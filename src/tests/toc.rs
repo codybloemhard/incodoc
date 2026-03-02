@@ -15,11 +15,13 @@ mod toc {
 
     fn toc_doc_0() -> Doc {
         Doc {
-            items: vec![
-                DocItem::Nav(Nav {
+            navs: vec![
+                Nav {
                     description: "nav".to_string(),
                     ..Default::default()
-                }),
+                },
+            ],
+            items: vec![
                 DocItem::Paragraph(Paragraph {
                     items: vec![ParagraphItem::Text("this is some text".to_string())],
                     ..Default::default()

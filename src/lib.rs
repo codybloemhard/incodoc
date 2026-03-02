@@ -21,14 +21,13 @@ pub struct IncodocParser;
 pub struct Doc {
     pub tags: Tags,
     pub props: Props,
+    pub navs: Vec<Nav>,
     pub items: Vec<DocItem>,
 }
 
 /// Document item.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum DocItem {
-    /// Navigation.
-    Nav(Nav),
     Paragraph(Paragraph),
     Section(Section),
 }

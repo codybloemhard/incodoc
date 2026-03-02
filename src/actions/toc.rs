@@ -95,9 +95,11 @@ impl GetTableOfContents for Doc {
             return None;
         }
         let mut children = Vec::new();
+        for nav in &self.navs {
+            push_toci(&mut children, nav.get_table_of_contents(filter));
+        }
         for item in &self.items {
             match item {
-                DocItem::Nav(nav) => push_toci(&mut children, nav.get_table_of_contents(filter)),
                 DocItem::Paragraph(par) => push_toci(
                     &mut children,
                     par.get_table_of_contents(filter)

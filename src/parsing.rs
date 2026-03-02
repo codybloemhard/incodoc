@@ -29,7 +29,7 @@ pub fn parse(input: &str) -> Result<Doc, String> {
             Rule::props => doc.props.absorb(parse_props(inner)),
             Rule::paragraph => doc.items.push(DocItem::Paragraph(parse_paragraph(inner))),
             Rule::section => doc.items.push(DocItem::Section(parse_section(0, inner))),
-            Rule::nav_top => doc.items.push(DocItem::Nav(parse_nav(inner, true))),
+            Rule::nav_top => doc.navs.push(parse_nav(inner, true)),
             _ => {},
         }
     }

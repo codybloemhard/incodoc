@@ -280,9 +280,11 @@ fn section_out(section: &Section, spaces: usize, plevel: usize, output: &mut Str
 pub fn doc_out(doc: &Doc, output: &mut String) {
     tags_out(&doc.tags, 0, output);
     props_out(&doc.props, 0, output);
+    for nav in &doc.navs {
+        nav_out(nav, 0, output);
+    }
     for item in &doc.items {
         match item {
-            DocItem::Nav(nav) => nav_out(nav, 0, output),
             DocItem::Paragraph(par) => paragraph_out(par, 0, output),
             DocItem::Section(section) => section_out(section, 0, 0, output),
         }

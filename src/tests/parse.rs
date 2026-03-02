@@ -2498,8 +2498,8 @@ props { (
         }
         ",
         Doc {
-            items: vec![
-                DocItem::Nav(Nav {
+            navs: vec![
+                Nav {
                     links: vec![
                         Link {
                             url: "urla".to_string(),
@@ -2517,7 +2517,7 @@ props { (
                         }
                     ],
                     ..Default::default()
-                })
+                },
             ],
             ..Default::default()
         }
@@ -2532,8 +2532,8 @@ props { (
         /*c*/}/*c*/
         ",
         Doc {
-            items: vec![
-                DocItem::Nav(Nav {
+            navs: vec![
+                Nav {
                     links: vec![
                         Link {
                             url: "urla".to_string(),
@@ -2551,7 +2551,7 @@ props { (
                         }
                     ],
                     ..Default::default()
-                })
+                },
             ],
             ..Default::default()
         }
@@ -2572,8 +2572,8 @@ props { (
         }
         ",
         Doc {
-            items: vec![
-                DocItem::Nav(Nav {
+            navs: vec![
+                Nav {
                     subs: vec![
                         Nav {
                             description: "desca".to_string(),
@@ -2603,7 +2603,7 @@ props { (
                         },
                     ],
                     ..Default::default()
-                })
+                },
             ],
             ..Default::default()
         }
@@ -2624,8 +2624,8 @@ props { (
         },
         ",
         Doc {
-            items: vec![
-                DocItem::Nav(Nav {
+            navs: vec![
+                Nav {
                     subs: vec![
                         Nav {
                             description: "desca".to_string(),
@@ -2655,7 +2655,7 @@ props { (
                         },
                     ],
                     ..Default::default()
-                })
+                },
             ],
             ..Default::default()
         }
@@ -2677,8 +2677,8 @@ props { (
         }
         ",
         Doc {
-            items: vec![
-                DocItem::Nav(Nav {
+            navs: vec![
+                Nav {
                     subs: vec![
                         Nav {
                             description: "desca".to_string(),
@@ -2717,7 +2717,7 @@ props { (
                         },
                     ],
                     ..Default::default()
-                })
+                },
             ],
             ..Default::default()
         }
@@ -2732,8 +2732,8 @@ props { (
         }
         ",
         Doc {
-            items: vec![
-                DocItem::Nav(Nav {
+            navs: vec![
+                Nav {
                     links: vec![
                         Link {
                             url: "urla".to_string(),
@@ -2745,7 +2745,7 @@ props { (
                     ],
                     tags: hset!(["tag"]),
                     ..Default::default()
-                })
+                },
             ],
             ..Default::default()
         }
@@ -2760,8 +2760,8 @@ props { (
         }
         ",
         Doc {
-            items: vec![
-                DocItem::Nav(Nav {
+            navs: vec![
+                Nav {
                     links: vec![
                         Link {
                             url: "urla".to_string(),
@@ -2775,7 +2775,7 @@ props { (
                         ("prop".to_string(), PropVal::Int(0)),
                     ]),
                     ..Default::default()
-                })
+                },
             ],
             ..Default::default()
         }
@@ -2791,8 +2791,8 @@ props { (
         }
         ",
         Doc {
-            items: vec![
-                DocItem::Nav(Nav {
+            navs: vec![
+                Nav {
                     links: vec![
                         Link {
                             url: "urla".to_string(),
@@ -2807,7 +2807,7 @@ props { (
                         ("prop".to_string(), PropVal::Int(0)),
                     ]),
                     ..Default::default()
-                })
+                },
             ],
             ..Default::default()
         }

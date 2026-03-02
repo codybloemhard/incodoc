@@ -51,6 +51,9 @@ Unparse incodoc and yield ANSI text ready for display in terminals.
 [incodoc-to-html](https://github.com/codybloemhard/incodoc-to-html)
 Unparse incodoc and yield HTML documents ready for display in browsers.
 
+[incodoc-ssg](https://github.com/codybloemhard/incodoc-ssg)
+Incodoc powered static site generator.
+
 ## Quick example
 
 ``` incodoc

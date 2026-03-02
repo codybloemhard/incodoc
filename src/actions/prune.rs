@@ -10,6 +10,9 @@ pub trait PruneIncodoc {
 impl PruneIncodoc for Doc {
     fn prune_errors(&mut self) {
         self.props.prune_errors();
+        for nav in &mut self.navs {
+            nav.prune_errors();
+        }
         for item in &mut self.items {
             item.prune_errors();
         }
@@ -18,6 +21,9 @@ impl PruneIncodoc for Doc {
     fn prune_contentless(&mut self) {
         self.tags.prune_contentless();
         self.props.prune_contentless();
+        for nav in &mut self.navs {
+            nav.prune_contentless();
+        }
         for item in &mut self.items {
             item.prune_contentless();
         }
@@ -25,14 +31,13 @@ impl PruneIncodoc for Doc {
     }
 
     fn is_contentless(&self) -> bool {
-        self.items.is_empty()
+        self.items.is_empty() && self.navs.is_empty()
     }
 }
 
 impl PruneIncodoc for DocItem {
     fn prune_errors(&mut self) {
         match self {
-            DocItem::Nav(nav) => nav.prune_errors(),
             DocItem::Paragraph(par) => par.prune_errors(),
             DocItem::Section(section) => section.prune_errors(),
         }
@@ -40,7 +45,6 @@ impl PruneIncodoc for DocItem {
 
     fn prune_contentless(&mut self) {
         match self {
-            DocItem::Nav(nav) => nav.prune_contentless(),
             DocItem::Paragraph(par) => par.prune_contentless(),
             DocItem::Section(section) => section.prune_contentless(),
         }
@@ -48,7 +52,6 @@ impl PruneIncodoc for DocItem {
 
     fn is_contentless(&self) -> bool {
         match self {
-            DocItem::Nav(nav) => nav.is_contentless(),
             DocItem::Paragraph(par) => par.is_contentless(),
             DocItem::Section(section) => section.is_contentless(),
         }
