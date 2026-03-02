@@ -321,6 +321,49 @@ mod prune {
     );
 
     test_prune_contentless!(
+        pc_nav_1,
+        Doc {
+            navs: vec![
+                Nav {
+                    description: "".to_string(),
+                    subs: vec![
+                        Nav {
+                            description: "".to_string(),
+                            subs: vec![],
+                            links: vec![
+                                Link {
+                                    url: "".to_string(),
+                                    items: vec![
+                                        LinkItem::String("".to_string()),
+                                    ],
+                                    ..Default::default()
+                                },
+                            ],
+                            tags: hset!(["not content".to_string()]),
+                            ..Default::default()
+                        }
+                    ],
+                    links: vec![
+                        Link {
+                            url: "".to_string(),
+                            items: vec![],
+                            tags: hset!(["not content".to_string()]),
+                            ..Default::default()
+                        },
+                    ],
+                    ..Default::default()
+                },
+            ],
+            ..Default::default()
+        },
+        Doc {
+            navs: vec![
+            ],
+            ..Default::default()
+        }
+    );
+
+    test_prune_contentless!(
         pc_link,
         Link {
             url: "  ".to_string(),

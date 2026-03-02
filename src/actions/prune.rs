@@ -7,31 +7,47 @@ pub trait PruneIncodoc {
     fn is_contentless(&self) -> bool;
 }
 
-impl PruneIncodoc for Doc {
+impl<T> PruneIncodoc for Vec<T> where T: PruneIncodoc {
     fn prune_errors(&mut self) {
-        self.props.prune_errors();
-        for nav in &mut self.navs {
-            nav.prune_errors();
-        }
-        for item in &mut self.items {
+        for item in self {
             item.prune_errors();
         }
     }
 
     fn prune_contentless(&mut self) {
-        self.tags.prune_contentless();
-        self.props.prune_contentless();
-        for nav in &mut self.navs {
-            nav.prune_contentless();
-        }
-        for item in &mut self.items {
+        for item in self {
             item.prune_contentless();
         }
+    }
+
+    fn is_contentless(&self) -> bool {
+        for item in self {
+            if !item.is_contentless() {
+                return false;
+            }
+        }
+        true
+    }
+}
+
+impl PruneIncodoc for Doc {
+    fn prune_errors(&mut self) {
+        self.props.prune_errors();
+        self.navs.prune_errors();
+        self.items.prune_errors();
+    }
+
+    fn prune_contentless(&mut self) {
+        self.tags.prune_contentless();
+        self.props.prune_contentless();
+        self.navs.prune_contentless();
+        self.navs.retain(|item| !item.is_contentless());
+        self.items.prune_contentless();
         self.items.retain(|item| !item.is_contentless());
     }
 
     fn is_contentless(&self) -> bool {
-        self.items.is_empty() && self.navs.is_empty()
+        self.items.is_contentless() && self.navs.is_contentless()
     }
 }
 
@@ -129,23 +145,19 @@ impl PruneIncodoc for PropVal {
 impl PruneIncodoc for Section {
     fn prune_errors(&mut self) {
         self.props.prune_errors();
-        for item in &mut self.items {
-            item.prune_errors();
-        }
+        self.items.prune_errors();
     }
 
     fn prune_contentless(&mut self) {
         self.heading.prune_contentless();
-        for item in &mut self.items {
-            item.prune_contentless();
-        }
+        self.items.prune_contentless();
         self.items.retain(|item| !item.is_contentless());
         self.tags.prune_contentless();
         self.props.prune_contentless();
     }
 
     fn is_contentless(&self) -> bool {
-        self.heading.is_contentless() && self.items.is_empty()
+        self.heading.is_contentless() && self.items.is_contentless()
     }
 }
 
@@ -175,22 +187,18 @@ impl PruneIncodoc for SectionItem {
 impl PruneIncodoc for Heading {
     fn prune_errors(&mut self) {
         self.props.prune_errors();
-        for item in &mut self.items {
-            item.prune_errors();
-        }
+        self.items.prune_errors();
     }
 
     fn prune_contentless(&mut self) {
-        for item in &mut self.items {
-            item.prune_contentless();
-        }
+        self.items.prune_contentless();
         self.items.retain(|item| !item.is_contentless());
         self.tags.prune_contentless();
         self.props.prune_contentless();
     }
 
     fn is_contentless(&self) -> bool {
-        self.items.is_empty()
+        self.items.is_contentless()
     }
 }
 
@@ -219,22 +227,18 @@ impl PruneIncodoc for HeadingItem {
 impl PruneIncodoc for Paragraph {
     fn prune_errors(&mut self) {
         self.props.prune_errors();
-        for item in &mut self.items {
-            item.prune_errors();
-        }
+        self.items.prune_errors();
     }
 
     fn prune_contentless(&mut self) {
-        for item in &mut self.items {
-            item.prune_contentless();
-        }
+        self.items.prune_contentless();
         self.items.retain(|item| !item.is_contentless());
         self.tags.prune_contentless();
         self.props.prune_contentless();
     }
 
     fn is_contentless(&self) -> bool {
-        self.items.is_empty()
+        self.items.is_contentless()
     }
 }
 
@@ -296,119 +300,95 @@ impl PruneIncodoc for Emphasis {
 impl PruneIncodoc for List {
     fn prune_errors(&mut self) {
         self.props.prune_errors();
-        for par in &mut self.items {
-            par.prune_errors();
-        }
+        self.items.prune_errors();
     }
 
     fn prune_contentless(&mut self) {
-        for par in &mut self.items {
-            par.prune_contentless();
-        }
+        self.items.prune_contentless();
         self.items.retain(|par| !par.is_contentless());
         self.tags.prune_contentless();
         self.props.prune_contentless();
     }
 
     fn is_contentless(&self) -> bool {
-        self.items.is_empty()
+        self.items.is_contentless()
     }
 }
 
 impl PruneIncodoc for Table {
     fn prune_errors(&mut self) {
         self.props.prune_errors();
-        for row in &mut self.rows {
-            row.prune_errors();
-        }
+        self.rows.prune_errors();
     }
 
     fn prune_contentless(&mut self) {
-        for row in &mut self.rows {
-            row.prune_contentless();
-        }
+        self.rows.prune_contentless();
         self.rows.retain(|row| !row.is_contentless());
         self.tags.prune_contentless();
         self.props.prune_contentless();
     }
 
     fn is_contentless(&self) -> bool {
-        self.rows.is_empty()
+        self.rows.is_contentless()
     }
 }
 
 impl PruneIncodoc for TableRow {
     fn prune_errors(&mut self) {
         self.props.prune_errors();
-        for par in &mut self.items {
-            par.prune_errors();
-        }
+        self.items.prune_errors();
     }
 
     fn prune_contentless(&mut self) {
-        for par in &mut self.items {
-            par.prune_contentless();
-        }
+        self.items.prune_contentless();
         self.items.retain(|par| !par.is_contentless());
         self.tags.prune_contentless();
         self.props.prune_contentless();
     }
 
     fn is_contentless(&self) -> bool {
-        self.items.is_empty()
+        self.items.is_contentless()
     }
 }
 
 impl PruneIncodoc for Nav {
     fn prune_errors(&mut self) {
         self.props.prune_errors();
-        for link in &mut self.links {
-            link.prune_errors();
-        }
-        for sub in &mut self.subs {
-            sub.prune_errors();
-        }
+        self.links.prune_errors();
+        self.subs.prune_errors();
     }
 
     fn prune_contentless(&mut self) {
         self.description.prune_contentless();
-        for link in &mut self.links {
-            link.prune_contentless();
-        }
+        self.links.prune_contentless();
         self.links.retain(|link| !link.is_contentless());
-        for sub in &mut self.subs {
-            sub.prune_contentless();
-        }
+        self.subs.prune_contentless();
         self.subs.retain(|sub| !sub.is_contentless());
         self.tags.prune_contentless();
         self.props.prune_contentless();
     }
 
     fn is_contentless(&self) -> bool {
-        self.subs.is_empty() && self.links.is_empty()
+        self.subs.is_contentless() && self.links.is_contentless()
     }
 }
 
 impl PruneIncodoc for Link {
     fn prune_errors(&mut self) {
         self.props.prune_errors();
-        for item in &mut self.items {
-            item.prune_errors();
-        }
+        self.items.prune_errors();
     }
 
     fn prune_contentless(&mut self) {
         self.url.prune_contentless();
-        for item in &mut self.items {
-            item.prune_contentless();
-        }
+        self.items.prune_contentless();
         self.items.retain(|item| !item.is_contentless());
         self.tags.prune_contentless();
         self.props.prune_contentless();
     }
 
     fn is_contentless(&self) -> bool {
-        self.url.is_empty() && self.items.is_empty()
+        self.url.is_contentless() && self.items.is_contentless()
     }
 }
 
