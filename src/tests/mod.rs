@@ -16,4 +16,5 @@ pub mod parse;
 pub mod squash;
 pub mod prune;
 pub mod toc;
+pub mod deemphasise;
 
