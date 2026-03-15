@@ -202,7 +202,7 @@ impl PruneIncodoc for Heading {
     }
 }
 
-impl PruneIncodoc for HeadingItem {
+impl PruneIncodoc for EmOrText {
     fn prune_errors(&mut self) {
         if let Self::Em(em) = self {
             em.prune_errors();
@@ -211,14 +211,14 @@ impl PruneIncodoc for HeadingItem {
 
     fn prune_contentless(&mut self) {
         match self {
-            Self::String(string) => string.prune_contentless(),
+            Self::Text(string) => string.prune_contentless(),
             Self::Em(em) => em.prune_contentless(),
         }
     }
 
     fn is_contentless(&self) -> bool {
         match self {
-            Self::String(string) => string.is_empty(),
+            Self::Text(string) => string.is_empty(),
             Self::Em(em) => em.is_contentless(),
         }
     }
@@ -389,28 +389,6 @@ impl PruneIncodoc for Link {
 
     fn is_contentless(&self) -> bool {
         self.url.is_contentless() && self.items.is_contentless()
-    }
-}
-
-impl PruneIncodoc for LinkItem {
-    fn prune_errors(&mut self) {
-        if let Self::Em(em) = self {
-            em.prune_errors();
-        }
-    }
-
-    fn prune_contentless(&mut self) {
-        match self {
-            Self::String(string) => string.prune_contentless(),
-            Self::Em(em) => em.prune_contentless(),
-        }
-    }
-
-    fn is_contentless(&self) -> bool {
-        match self {
-            Self::String(string) => string.is_empty(),
-            Self::Em(em) => em.is_contentless(),
-        }
     }
 }
 

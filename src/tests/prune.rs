@@ -70,7 +70,7 @@ mod prune {
             heading: Heading {
                 level: 0,
                 items: vec![
-                    HeadingItem::String("h".to_string()),
+                    EmOrText::Text("h".to_string()),
                 ],
                 ..Default::default()
             },
@@ -97,7 +97,7 @@ mod prune {
             heading: Heading {
                 level: 0,
                 items: vec![
-                    HeadingItem::String("h".to_string()),
+                    EmOrText::Text("h".to_string()),
                 ],
                 ..Default::default()
             },
@@ -119,8 +119,8 @@ mod prune {
         Heading {
             level: 0,
             items: vec![
-                HeadingItem::String(" ".to_string()),
-                HeadingItem::String("header".to_string()),
+                EmOrText::Text(" ".to_string()),
+                EmOrText::Text("header".to_string()),
             ],
             tags: hset!(["ok".to_string(), " \n".to_string()]),
             props: props!([
@@ -131,7 +131,7 @@ mod prune {
         Heading {
             level: 0,
             items: vec![
-                HeadingItem::String("header".to_string()),
+                EmOrText::Text("header".to_string()),
             ],
             tags: hset!(["ok".to_string()]),
             props: props!([("ok".to_string(), PropVal::Int(0))]),
@@ -291,7 +291,7 @@ mod prune {
                 Link {
                     url: "url".to_string(),
                     items: vec![
-                        LinkItem::String("link".to_string()),
+                        EmOrText::Text("link".to_string()),
                     ],
                     ..Default::default()
                 },
@@ -311,7 +311,7 @@ mod prune {
                 Link {
                     url: "url".to_string(),
                     items: vec![
-                        LinkItem::String("link".to_string()),
+                        EmOrText::Text("link".to_string()),
                     ],
                     ..Default::default()
                 }
@@ -334,7 +334,7 @@ mod prune {
                                 Link {
                                     url: "".to_string(),
                                     items: vec![
-                                        LinkItem::String("".to_string()),
+                                        EmOrText::Text("".to_string()),
                                     ],
                                     ..Default::default()
                                 },
@@ -368,7 +368,7 @@ mod prune {
         Link {
             url: "  ".to_string(),
             items: vec![
-                LinkItem::String("\n".to_string()),
+                EmOrText::Text("\n".to_string()),
             ],
             tags: hset!([
                 "ok".to_string(),

@@ -45,6 +45,7 @@ think about doing:
 
 - recursive is_contentless? eg section with empty par
 - table of contents: when no id, link to last id known from parents
+https://developer.mozilla.org/en-US/docs/Web/HTML/How_to/Define_terms_with_HTML
 
 things to write about
 

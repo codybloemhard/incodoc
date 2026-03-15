@@ -91,16 +91,9 @@ pub enum SectionItem {
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct Heading {
     pub level: u8,
-    pub items: Vec<HeadingItem>,
+    pub items: Vec<EmOrText>,
     pub tags: Tags,
     pub props: Props,
-}
-
-/// Headings are plain text that can have emphasis.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub enum HeadingItem {
-    String(String),
-    Em(Emphasis),
 }
 
 /// Paragraph is a grouping of content.
@@ -183,16 +176,9 @@ pub struct Nav {
 #[derive(Clone, Default, Debug, Eq, PartialEq)]
 pub struct Link {
     pub url: String,
-    pub items: Vec<LinkItem>,
+    pub items: Vec<EmOrText>,
     pub tags: Tags,
     pub props: Props,
-}
-
-/// Links have an exterior of plain text that may be emphasised.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub enum LinkItem {
-    String(String),
-    Em(Emphasis),
 }
 
 /// `CodeBlock` contains computer code.
@@ -236,6 +222,12 @@ pub struct TableRow {
     pub is_header: bool,
     pub tags: Tags,
     pub props: Props,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum EmOrText {
+    Text(String),
+    Em(Emphasis),
 }
 
 /// Text that has metadata: tags and/or properties.

@@ -120,8 +120,8 @@ pub fn parse_heading(heading_level: &mut u64, pair: Pair<'_, Rule>) -> Heading {
     *heading_level = u64::from(level);
     for inner in iter {
         match inner.as_rule() {
-            Rule::string => items.push(HeadingItem::String(parse_string(inner))),
-            Rule::emphasis => items.push(HeadingItem::Em(parse_emphasis(inner))),
+            Rule::string => items.push(EmOrText::Text(parse_string(inner))),
+            Rule::emphasis => items.push(EmOrText::Em(parse_emphasis(inner))),
             Rule::tags => tags.absorb(parse_tags(inner)),
             Rule::props => props.absorb(parse_props(inner)),
             r => panic!("IP: parse_heading: illegal rule: {r:?};"),
@@ -265,8 +265,8 @@ fn parse_link(pair: Pair<'_, Rule>) -> Link {
     let url = parse_string(iter.next().expect("IP: parse_link: no url;"));
     for inner in iter.by_ref() {
         match inner.as_rule() {
-            Rule::emphasis => items.push(LinkItem::Em(parse_emphasis(inner))),
-            Rule::string => items.push(LinkItem::String(parse_string(inner))),
+            Rule::emphasis => items.push(EmOrText::Em(parse_emphasis(inner))),
+            Rule::string => items.push(EmOrText::Text(parse_string(inner))),
             Rule::tags => tags.absorb(parse_tags(inner)),
             Rule::props => props.absorb(parse_props(inner)),
             r => panic!("IP: parse_link: illegal rule: {r:?};"),

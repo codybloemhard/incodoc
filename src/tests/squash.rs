@@ -207,33 +207,33 @@ mod squash {
         sq_heading,
         Heading {
             items: vec![
-                HeadingItem::String("a\n".to_string()),
-                HeadingItem::String("b\n".to_string()),
-                HeadingItem::Em(Emphasis {
+                EmOrText::Text("a\n".to_string()),
+                EmOrText::Text("b\n".to_string()),
+                EmOrText::Em(Emphasis {
                     text: "em ".to_string(),
                     ..Default::default()
                 }),
-                HeadingItem::Em(Emphasis {
+                EmOrText::Em(Emphasis {
                     text: "em".to_string(),
                     ..Default::default()
                 }),
-                HeadingItem::String("c".to_string()),
-                HeadingItem::Em(Emphasis {
+                EmOrText::Text("c".to_string()),
+                EmOrText::Em(Emphasis {
                     text: "em".to_string(),
                     ..Default::default()
                 }),
-                HeadingItem::String("d".to_string()),
-                HeadingItem::Em(Emphasis {
-                    text: "em".to_string(),
-                    tags: hset!(["A"]),
-                    ..Default::default()
-                }),
-                HeadingItem::Em(Emphasis {
+                EmOrText::Text("d".to_string()),
+                EmOrText::Em(Emphasis {
                     text: "em".to_string(),
                     tags: hset!(["A"]),
                     ..Default::default()
                 }),
-                HeadingItem::Em(Emphasis {
+                EmOrText::Em(Emphasis {
+                    text: "em".to_string(),
+                    tags: hset!(["A"]),
+                    ..Default::default()
+                }),
+                EmOrText::Em(Emphasis {
                     text: "em".to_string(),
                     tags: hset!(["A", "B"]),
                     ..Default::default()
@@ -243,23 +243,23 @@ mod squash {
         },
         Heading {
             items: vec![
-                HeadingItem::String("a\nb\n".to_string()),
-                HeadingItem::Em(Emphasis {
+                EmOrText::Text("a\nb\n".to_string()),
+                EmOrText::Em(Emphasis {
                     text: "em em".to_string(),
                     ..Default::default()
                 }),
-                HeadingItem::String("c".to_string()),
-                HeadingItem::Em(Emphasis {
+                EmOrText::Text("c".to_string()),
+                EmOrText::Em(Emphasis {
                     text: "em".to_string(),
                     ..Default::default()
                 }),
-                HeadingItem::String("d".to_string()),
-                HeadingItem::Em(Emphasis {
+                EmOrText::Text("d".to_string()),
+                EmOrText::Em(Emphasis {
                     text: "emem".to_string(),
                     tags: hset!(["A"]),
                     ..Default::default()
                 }),
-                HeadingItem::Em(Emphasis {
+                EmOrText::Em(Emphasis {
                     text: "em".to_string(),
                     tags: hset!(["A", "B"]),
                     ..Default::default()
@@ -404,9 +404,9 @@ mod squash {
             items: vec![
                 ParagraphItem::Link(Link {
                     items: vec![
-                        LinkItem::String("a".to_string()),
-                        LinkItem::String("\n".to_string()),
-                        LinkItem::String("b".to_string()),
+                        EmOrText::Text("a".to_string()),
+                        EmOrText::Text("\n".to_string()),
+                        EmOrText::Text("b".to_string()),
                     ],
                     ..Default::default()
                 }),
@@ -430,7 +430,7 @@ mod squash {
             items: vec![
                 ParagraphItem::Link(Link {
                     items: vec![
-                        LinkItem::String("a\nb".to_string()),
+                        EmOrText::Text("a\nb".to_string()),
                     ],
                     ..Default::default()
                 }),
@@ -482,34 +482,34 @@ mod squash {
         sq_link,
         Link {
             items: vec![
-                LinkItem::String("a".to_string()),
-                LinkItem::String("\n".to_string()),
-                LinkItem::String("b\n".to_string()),
-                LinkItem::Em(Emphasis {
+                EmOrText::Text("a".to_string()),
+                EmOrText::Text("\n".to_string()),
+                EmOrText::Text("b\n".to_string()),
+                EmOrText::Em(Emphasis {
                     text: "em ".to_string(),
                     ..Default::default()
                 }),
-                LinkItem::Em(Emphasis {
+                EmOrText::Em(Emphasis {
                     text: "em".to_string(),
                     ..Default::default()
                 }),
-                LinkItem::String("c".to_string()),
-                LinkItem::Em(Emphasis {
+                EmOrText::Text("c".to_string()),
+                EmOrText::Em(Emphasis {
                     text: "em".to_string(),
                     ..Default::default()
                 }),
-                LinkItem::String("d".to_string()),
-                LinkItem::Em(Emphasis {
-                    text: "em".to_string(),
-                    tags: hset!(["A"]),
-                    ..Default::default()
-                }),
-                LinkItem::Em(Emphasis {
+                EmOrText::Text("d".to_string()),
+                EmOrText::Em(Emphasis {
                     text: "em".to_string(),
                     tags: hset!(["A"]),
                     ..Default::default()
                 }),
-                LinkItem::Em(Emphasis {
+                EmOrText::Em(Emphasis {
+                    text: "em".to_string(),
+                    tags: hset!(["A"]),
+                    ..Default::default()
+                }),
+                EmOrText::Em(Emphasis {
                     text: "em".to_string(),
                     tags: hset!(["A", "B"]),
                     ..Default::default()
@@ -519,23 +519,23 @@ mod squash {
         },
         Link {
             items: vec![
-                LinkItem::String("a\nb\n".to_string()),
-                LinkItem::Em(Emphasis {
+                EmOrText::Text("a\nb\n".to_string()),
+                EmOrText::Em(Emphasis {
                     text: "em em".to_string(),
                     ..Default::default()
                 }),
-                LinkItem::String("c".to_string()),
-                LinkItem::Em(Emphasis {
+                EmOrText::Text("c".to_string()),
+                EmOrText::Em(Emphasis {
                     text: "em".to_string(),
                     ..Default::default()
                 }),
-                LinkItem::String("d".to_string()),
-                LinkItem::Em(Emphasis {
+                EmOrText::Text("d".to_string()),
+                EmOrText::Em(Emphasis {
                     text: "emem".to_string(),
                     tags: hset!(["A"]),
                     ..Default::default()
                 }),
-                LinkItem::Em(Emphasis {
+                EmOrText::Em(Emphasis {
                     text: "em".to_string(),
                     tags: hset!(["A", "B"]),
                     ..Default::default()

@@ -1491,7 +1491,7 @@ props { (
                     heading: Heading {
                         level: 0,
                         items: vec![
-                            HeadingItem::String("h".to_string()),
+                            EmOrText::Text("h".to_string()),
                         ],
                         ..Default::default()
                     },
@@ -1524,7 +1524,7 @@ props { (
                     heading: Heading {
                         level: 1,
                         items: vec![
-                            HeadingItem::String("h".to_string()),
+                            EmOrText::Text("h".to_string()),
                         ],
                         ..Default::default()
                     },
@@ -1557,7 +1557,7 @@ props { (
                     heading: Heading {
                         level: 255,
                         items: vec![
-                            HeadingItem::String("h".to_string()),
+                            EmOrText::Text("h".to_string()),
                         ],
                         ..Default::default()
                     },
@@ -1590,7 +1590,7 @@ props { (
                     heading: Heading {
                         level: 255,
                         items: vec![
-                            HeadingItem::String("h".to_string()),
+                            EmOrText::Text("h".to_string()),
                         ],
                         ..Default::default()
                     },
@@ -1623,8 +1623,8 @@ props { (
                     heading: Heading {
                         level: 0,
                         items: vec![
-                            HeadingItem::String("hello".to_string()),
-                            HeadingItem::Em(Emphasis {
+                            EmOrText::Text("hello".to_string()),
+                            EmOrText::Em(Emphasis {
                                 text: " world".to_string(),
                                 etype: EmType::Deemphasis,
                                 strength: EmStrength::Medium,
@@ -1765,8 +1765,8 @@ props { (
                     heading: Heading {
                         level: 0,
                         items: vec![
-                            HeadingItem::String("a".to_string()),
-                            HeadingItem::String("b".to_string()),
+                            EmOrText::Text("a".to_string()),
+                            EmOrText::Text("b".to_string()),
                         ],
                         ..Default::default()
                     },
@@ -2065,7 +2065,7 @@ props { (
                     heading: Heading {
                         level: 0,
                         items: vec![
-                            HeadingItem::String("heading".to_string()),
+                            EmOrText::Text("heading".to_string()),
                         ],
                         ..Default::default()
                     },
@@ -2098,7 +2098,7 @@ props { (
                     heading: Heading {
                         level: 0,
                         items: vec![
-                            HeadingItem::String("heading".to_string()),
+                            EmOrText::Text("heading".to_string()),
                         ],
                         ..Default::default()
                     },
@@ -2131,7 +2131,7 @@ props { (
                     heading: Heading {
                         level: 0,
                         items: vec![
-                            HeadingItem::String("heading".to_string()),
+                            EmOrText::Text("heading".to_string()),
                         ],
                         ..Default::default()
                     },
@@ -2140,7 +2140,7 @@ props { (
                             heading: Heading {
                                 level: 1,
                                 items: vec![
-                                    HeadingItem::String("heading".to_string()),
+                                    EmOrText::Text("heading".to_string()),
                                 ],
                                 ..Default::default()
                             },
@@ -2174,7 +2174,7 @@ props { (
                     heading: Heading {
                         level: 0,
                         items: vec![
-                            HeadingItem::String("heading".to_string()),
+                            EmOrText::Text("heading".to_string()),
                         ],
                         ..Default::default()
                     },
@@ -2183,7 +2183,7 @@ props { (
                             heading: Heading {
                                 level: 2,
                                 items: vec![
-                                    HeadingItem::String("heading".to_string()),
+                                    EmOrText::Text("heading".to_string()),
                                 ],
                                 ..Default::default()
                             },
@@ -2217,7 +2217,7 @@ props { (
                     heading: Heading {
                         level: 2,
                         items: vec![
-                            HeadingItem::String("heading".to_string()),
+                            EmOrText::Text("heading".to_string()),
                         ],
                         ..Default::default()
                     },
@@ -2226,7 +2226,7 @@ props { (
                             heading: Heading {
                                 level: 3,
                                 items: vec![
-                                    HeadingItem::String("heading".to_string()),
+                                    EmOrText::Text("heading".to_string()),
                                 ],
                                 ..Default::default()
                             },
@@ -2266,7 +2266,7 @@ props { (
                     heading: Heading {
                         level: 2,
                         items: vec![
-                            HeadingItem::String("heading".to_string()),
+                            EmOrText::Text("heading".to_string()),
                         ],
                         ..Default::default()
                     },
@@ -2275,7 +2275,7 @@ props { (
                             heading: Heading {
                                 level: 4,
                                 items: vec![
-                                    HeadingItem::String("heading".to_string()),
+                                    EmOrText::Text("heading".to_string()),
                                 ],
                                 ..Default::default()
                             },
@@ -2284,7 +2284,7 @@ props { (
                                     heading: Heading {
                                         level: 5,
                                         items: vec![
-                                            HeadingItem::String("heading".to_string()),
+                                            EmOrText::Text("heading".to_string()),
                                         ],
                                         ..Default::default()
                                     },
@@ -2327,7 +2327,7 @@ props { (
                     heading: Heading {
                         level: 0,
                         items: vec![
-                            HeadingItem::String("heading".to_string()),
+                            EmOrText::Text("heading".to_string()),
                         ],
                         ..Default::default()
                     },
@@ -2365,7 +2365,7 @@ props { (
                     heading: Heading {
                         level: 0,
                         items: vec![
-                            HeadingItem::String("h".to_string()),
+                            EmOrText::Text("h".to_string()),
                         ],
                         ..Default::default()
                     },
@@ -2391,7 +2391,7 @@ props { (
             items: vec![
                 ParagraphItem::Link(Link {
                     url: "url".to_string(),
-                    items: vec![LinkItem::String("link".to_string())],
+                    items: vec![EmOrText::Text("link".to_string())],
                     ..Default::default()
                 })
             ],
@@ -2406,7 +2406,7 @@ props { (
             items: vec![
                 ParagraphItem::Link(Link {
                     url: "url".to_string(),
-                    items: vec![LinkItem::String("link".to_string())],
+                    items: vec![EmOrText::Text("link".to_string())],
                     ..Default::default()
                 })
             ],
@@ -2422,13 +2422,13 @@ props { (
                 ParagraphItem::Link(Link {
                     url: "url".to_string(),
                     items: vec![
-                        LinkItem::Em(Emphasis {
+                        EmOrText::Em(Emphasis {
                             text: "em".to_string(),
                             etype: EmType::Emphasis,
                             strength: EmStrength::Light,
                             ..Default::default()
                         }),
-                        LinkItem::String("string".to_string()),
+                        EmOrText::Text("string".to_string()),
                     ],
                     ..Default::default()
                 })
@@ -2444,7 +2444,7 @@ props { (
             items: vec![
                 ParagraphItem::Link(Link {
                     url: "url".to_string(),
-                    items: vec![LinkItem::String("link".to_string())],
+                    items: vec![EmOrText::Text("link".to_string())],
                     tags: hset!(["tag"]),
                     ..Default::default()
                 })
@@ -2460,7 +2460,7 @@ props { (
             items: vec![
                 ParagraphItem::Link(Link {
                     url: "url".to_string(),
-                    items: vec![LinkItem::String("link".to_string())],
+                    items: vec![EmOrText::Text("link".to_string())],
                     props: props!([
                         ("prop".to_string(), PropVal::Int(0)),
                     ]),
@@ -2478,7 +2478,7 @@ props { (
             items: vec![
                 ParagraphItem::Link(Link {
                     url: "url".to_string(),
-                    items: vec![LinkItem::String("link".to_string())],
+                    items: vec![EmOrText::Text("link".to_string())],
                     tags: hset!(["tag"]),
                     props: props!([
                         ("prop".to_string(), PropVal::Int(0)),
@@ -2504,14 +2504,14 @@ props { (
                         Link {
                             url: "urla".to_string(),
                             items: vec![
-                                LinkItem::String("linka".to_string())
+                                EmOrText::Text("linka".to_string())
                             ],
                             ..Default::default()
                         },
                         Link {
                             url: "urlb".to_string(),
                             items: vec![
-                                LinkItem::String("linkb".to_string())
+                                EmOrText::Text("linkb".to_string())
                             ],
                             ..Default::default()
                         }
@@ -2538,14 +2538,14 @@ props { (
                         Link {
                             url: "urla".to_string(),
                             items: vec![
-                                LinkItem::String("linka".to_string())
+                                EmOrText::Text("linka".to_string())
                             ],
                             ..Default::default()
                         },
                         Link {
                             url: "urlb".to_string(),
                             items: vec![
-                                LinkItem::String("linkb".to_string())
+                                EmOrText::Text("linkb".to_string())
                             ],
                             ..Default::default()
                         }
@@ -2581,7 +2581,7 @@ props { (
                                 Link {
                                     url: "urla".to_string(),
                                     items: vec![
-                                        LinkItem::String("linka".to_string())
+                                        EmOrText::Text("linka".to_string())
                                     ],
                                     ..Default::default()
                                 },
@@ -2594,7 +2594,7 @@ props { (
                                 Link {
                                     url: "urlb".to_string(),
                                     items: vec![
-                                        LinkItem::String("linkb".to_string())
+                                        EmOrText::Text("linkb".to_string())
                                     ],
                                     ..Default::default()
                                 },
@@ -2633,7 +2633,7 @@ props { (
                                 Link {
                                     url: "urla".to_string(),
                                     items: vec![
-                                        LinkItem::String("linka".to_string())
+                                        EmOrText::Text("linka".to_string())
                                     ],
                                     ..Default::default()
                                 },
@@ -2646,7 +2646,7 @@ props { (
                                 Link {
                                     url: "urlb".to_string(),
                                     items: vec![
-                                        LinkItem::String("linkb".to_string())
+                                        EmOrText::Text("linkb".to_string())
                                     ],
                                     ..Default::default()
                                 },
@@ -2686,7 +2686,7 @@ props { (
                                 Link {
                                     url: "urla".to_string(),
                                     items: vec![
-                                        LinkItem::String("linka".to_string())
+                                        EmOrText::Text("linka".to_string())
                                     ],
                                     ..Default::default()
                                 },
@@ -2699,7 +2699,7 @@ props { (
                                 Link {
                                     url: "urlb".to_string(),
                                     items: vec![
-                                        LinkItem::String("linkb".to_string())
+                                        EmOrText::Text("linkb".to_string())
                                     ],
                                     ..Default::default()
                                 },
@@ -2711,7 +2711,7 @@ props { (
                         Link {
                             url: "urlc".to_string(),
                             items: vec![
-                                LinkItem::String("linkc".to_string())
+                                EmOrText::Text("linkc".to_string())
                             ],
                             ..Default::default()
                         },
@@ -2738,7 +2738,7 @@ props { (
                         Link {
                             url: "urla".to_string(),
                             items: vec![
-                                LinkItem::String("linka".to_string())
+                                EmOrText::Text("linka".to_string())
                             ],
                             ..Default::default()
                         },
@@ -2766,7 +2766,7 @@ props { (
                         Link {
                             url: "urla".to_string(),
                             items: vec![
-                                LinkItem::String("linka".to_string())
+                                EmOrText::Text("linka".to_string())
                             ],
                             ..Default::default()
                         },
@@ -2797,7 +2797,7 @@ props { (
                         Link {
                             url: "urla".to_string(),
                             items: vec![
-                                LinkItem::String("linka".to_string())
+                                EmOrText::Text("linka".to_string())
                             ],
                             ..Default::default()
                         },

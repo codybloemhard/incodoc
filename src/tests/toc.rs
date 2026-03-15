@@ -29,21 +29,21 @@ mod toc {
                 DocItem::Section(Section {
                     heading: Heading {
                         level: 0,
-                        items: vec![HeadingItem::String("A H1 heading".to_string())],
+                        items: vec![EmOrText::Text("A H1 heading".to_string())],
                         ..Default::default()
                     },
                     items: vec![
                         SectionItem::Section(Section {
                             heading: Heading {
                                 level: 0,
-                                items: vec![HeadingItem::String("H2 heading".to_string())],
+                                items: vec![EmOrText::Text("H2 heading".to_string())],
                                 ..Default::default()
                             },
                             items: vec![
                                 SectionItem::Section(Section {
                                     heading: Heading {
                                         level: 0,
-                                        items: vec![HeadingItem::String("H3".to_string())],
+                                        items: vec![EmOrText::Text("H3".to_string())],
                                         ..Default::default()
                                     },
                                     items: vec![],
@@ -61,7 +61,7 @@ mod toc {
                         SectionItem::Section(Section {
                             heading: Heading {
                                 level: 0,
-                                items: vec![HeadingItem::String("Another H2".to_string())],
+                                items: vec![EmOrText::Text("Another H2".to_string())],
                                 ..Default::default()
                             },
                             items: vec![
@@ -103,7 +103,9 @@ mod toc {
                                         })),
                                         ParagraphItem::Link(Link {
                                             url: "url".to_string(),
-                                            items: vec![LinkItem::String("link".to_string())],
+                                            items: vec![
+                                                EmOrText::Text("link".to_string())
+                                            ],
                                             props: props!([
                                                 (
                                                     "id".to_string(),

@@ -140,7 +140,7 @@ macro_rules! impl_squash_text_em {
             // squash items into earlier item if possible
             for item in &mut self.items {
                 match item {
-                    $enumname::String(text) => {
+                    $enumname::Text(text) => {
                         squash_alg_text_case(&mut ltext, &mut None, &mut lem, text, &mut keep);
                     },
                     $enumname::Em(em) => {
@@ -190,7 +190,7 @@ impl SectionItem {
 }
 
 impl Heading {
-    impl_squash_text_em!(HeadingItem);
+    impl_squash_text_em!(EmOrText);
 }
 
 impl Paragraph {
@@ -232,6 +232,6 @@ impl TableRow {
 }
 
 impl Link {
-    impl_squash_text_em!(LinkItem);
+    impl_squash_text_em!(EmOrText);
 }
 

@@ -65,11 +65,11 @@ fn heading_title_and_id(heading: &Heading, title: &mut String, id: &mut String, 
     }
     for item in &heading.items {
         match item {
-            HeadingItem::String(string) => {
+            EmOrText::Text(string) => {
                 title.push_str(string);
                 id.push_str(&string.to_lowercase().replace(" ", "-"));
             },
-            HeadingItem::Em(em) => {
+            EmOrText::Em(em) => {
                 title.push_str(&em.text);
                 id.push_str(&em.text.to_lowercase().replace(" ", "-"));
             },
@@ -348,8 +348,8 @@ impl GetTableOfContents for Link {
             let mut title = String::new();
             for item in &self.items {
                 match item {
-                    LinkItem::String(string) => title += string,
-                    LinkItem::Em(em) => title += &em.text,
+                    EmOrText::Text(string) => title += string,
+                    EmOrText::Em(em) => title += &em.text,
                 }
             }
             Some(TableOfContentsItem {

@@ -144,11 +144,11 @@ fn link_out(link: &Link, spaces: usize, output: &mut String) {
     output.push_str(",\n");
     for item in &link.items {
         match item {
-            LinkItem::String(string) => {
+            EmOrText::Text(string) => {
                 string_out(string, spaces + 4, output);
                 output.push_str(",\n");
             },
-            LinkItem::Em(em) => {
+            EmOrText::Em(em) => {
                 emphasis_out(em, spaces + 4, output);
             },
         }
@@ -164,11 +164,11 @@ fn heading_out(head: &Heading, spaces: usize, plevel: usize, output: &mut String
     output.push_str(",\n");
     for item in &head.items {
         match item {
-            HeadingItem::String(string) => {
+            EmOrText::Text(string) => {
                 string_out(string, spaces + 4, output);
                 output.push_str(",\n");
             },
-            HeadingItem::Em(em) => {
+            EmOrText::Em(em) => {
                 emphasis_out(em, spaces + 4, output);
             },
         }
