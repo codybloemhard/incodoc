@@ -1,5 +1,6 @@
 use crate::{ EmOrText, Emphasis };
 
+/// Obtain a single plain string from emphasised content.
 pub trait DeEmphasise {
     fn deemphasise(&self) -> String;
 }

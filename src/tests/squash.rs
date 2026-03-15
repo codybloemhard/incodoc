@@ -204,6 +204,47 @@ mod squash {
     );
 
     test_squash!(
+        sq_section_in_doc,
+        Doc {
+            items: vec![
+                DocItem::Section(
+                    Section {
+                        items: vec![
+                            SectionItem::Paragraph(Paragraph {
+                                items: vec![
+                                    ParagraphItem::Text("a".to_string()),
+                                    ParagraphItem::Text("\nb".to_string()),
+                                ],
+                                ..Default::default()
+                            }),
+                        ],
+                        ..Default::default()
+                    }
+                ),
+            ],
+            ..Default::default()
+        },
+        Doc {
+            items: vec![
+                DocItem::Section(
+                    Section {
+                        items: vec![
+                            SectionItem::Paragraph(Paragraph {
+                                items: vec![
+                                    ParagraphItem::Text("a\nb".to_string()),
+                                ],
+                                ..Default::default()
+                            }),
+                        ],
+                        ..Default::default()
+                    }
+                ),
+            ],
+            ..Default::default()
+        }
+    );
+
+    test_squash!(
         sq_heading,
         Heading {
             items: vec![

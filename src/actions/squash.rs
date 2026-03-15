@@ -166,8 +166,9 @@ impl Doc {
 
 impl DocItem {
     pub fn squash(&mut self) {
-        if let DocItem::Paragraph(par) = self {
-            par.squash();
+        match self {
+            Self::Paragraph(par) => par.squash(),
+            Self::Section(section) => section.squash(),
         }
     }
 }
@@ -202,6 +203,7 @@ impl ParagraphItem {
         match self {
             Self::Link(link) => link.squash(),
             Self::List(list) => list.squash(),
+            Self::Table(table) => table.squash(),
             _ => { },
         }
     }
