@@ -18,4 +18,5 @@ pub mod prune;
 pub mod toc;
 pub mod deemphasise;
 pub mod query;
+pub mod collect;
 
